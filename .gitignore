@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Outputs of Some Logging Files
+*.log
+*.txt
