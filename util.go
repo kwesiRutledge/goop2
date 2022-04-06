@@ -1,6 +1,8 @@
 package goop2
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -60,4 +62,50 @@ func Dot(vs []*Var, coeffs []float64) Expr {
 	}
 
 	return newExpr
+}
+
+/*
+FindInSlice
+Description:
+	Identifies if the  input xIn is in the slice sliceIn.
+	If it is, then this function returns the index such that xIn = sliceIn[index] and no errors.
+	If it is not, then this function returns the index -1 and the boolean value false.
+*/
+func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
+
+	switch xIn.(type) {
+	case string:
+		x := xIn.(string)
+		slice := sliceIn.([]string)
+
+		// Perform Search
+		xLocationInSliceIn := -1
+
+		for sliceIndex, sliceValue := range slice {
+			if x == sliceValue {
+				xLocationInSliceIn = sliceIndex
+			}
+		}
+
+		return xLocationInSliceIn, nil
+
+	case int:
+		x := xIn.(int)
+		slice := sliceIn.([]int)
+
+		// Perform Search
+		xLocationInSliceIn := -1
+
+		for sliceIndex, sliceValue := range slice {
+			if x == sliceValue {
+				xLocationInSliceIn = sliceIndex
+			}
+		}
+
+		return xLocationInSliceIn, nil
+
+	default:
+		return -1, fmt.Errorf("The FindInSlice() function was only defined for type string, not type %T:", xIn)
+	}
+
 }
