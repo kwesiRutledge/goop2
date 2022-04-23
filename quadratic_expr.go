@@ -1,5 +1,10 @@
 package goop2
 
+import (
+	"fmt"
+	"os"
+)
+
 /*
 quadratic_expr.go
 Description:
@@ -11,29 +16,100 @@ Description:
 // ================
 
 /*
-MonomialExpr
+QuadraticExpr
 Description:
-	A monomial of optimization variables (given by their indices).
-	The monomial object defines a monomial written as follows:
-		Coefficients[0] * Variables[0][0] * Variables[0][1] + Coefficients[1] * Variables[1][0] * Variables[1][1] + ... + Coefficients[n] * Variables[n][0] * Variables[n][1]
+	A quadratic expression of optimization variables (given by their indices).
+	The quadratic expression object defines a quadratic written as follows:
+		x' * Q * x + q * x + b
 */
 type QuadraticExpr struct {
-	Coefficients  []float64
-	VariablePairs [][2]uint64
+	Q        [][]float64
+	q        []float64
+	b        float64
+	XIndices []uint64
 }
 
 // Member Functions
 // ================
 
-// NewLinearExpr returns a new expression with a single additive constant
-// value, c, and no variables.
-func NewQuadraticExpr(c float64, v1, v2 uint64) *QuadraticExpr {
-	return &QuadraticExpr{
-		Coefficients: []float64{c},
-		VariablePairs: [][2]uint64{
-			[2]uint64{v1, v2},
-		},
+/*
+NewQuadraticExpr_qb0
+Description:
+	NewQuadraticExpr_q0 returns a basic Quadratic expression with only the matrix Q being defined,
+	all other values are assumed to be zero.
+*/
+func NewQuadraticExpr_qb0(QIn [][]float64, xIndicesIn []uint64) (*QuadraticExpr, error) {
+	// Constants
+	numXIndices := len(xIndicesIn)
+
+	// Input Checking
+
+	// Algorithm
+	var qZero []float64
+	for qInd := 0; qInd < numXIndices; qInd++ {
+		qZero = append(qZero, 0.0)
 	}
+
+	return NewQuadraticExpr(QIn, qZero, 0.0, xIndicesIn)
+}
+
+/*
+NewQuadraticExpr
+Description:
+	NewQuadraticExpr returns a basic Quadratic expression whuch is defined by QIn, qIn and bIn.
+*/
+func NewQuadraticExpr(QIn [][]float64, qIn []float64, bIn float64, xIndicesIn []uint64) (*QuadraticExpr, error) {
+	// Constants
+	numXIndices := len(xIndicesIn)
+
+	// Input Checking
+	if len(QIn) != numXIndices {
+		return &QuadraticExpr{}, fmt.Errorf("The number of indices was %v which did not match the first dimension of QIn (%v).", numXIndices, len(QIn))
+	}
+
+	for rowIndex, QRow := range QIn {
+		if len(QRow) != numXIndices {
+			return &QuadraticExpr{}, fmt.Errorf("The number of indices was %v which did not match the length of QIn's %vth row (%v).", numXIndices, rowIndex, len(QRow))
+		}
+	}
+
+	if len(qIn) != numXIndices {
+		return &QuadraticExpr{}, fmt.Errorf("The number of indices was %v which did not match the length of qIn (%v).", numXIndices, len(qIn))
+	}
+
+	// Algorithm
+
+	return &QuadraticExpr{
+		Q:        QIn,
+		q:        qIn,
+		b:        bIn,
+		XIndices: xIndicesIn,
+	}, nil
+}
+
+/*
+Check
+Description:
+	This function checks the dimensions of all of the members of the quadratic expression which are slices.
+	They should have compatible dimensions.
+*/
+func (e *QuadraticExpr) Check() error {
+	// Make the number of elements in q be the dimension of the x in the expression.
+	numXIndices := len(e.q)
+
+	// Check Number of Rows in Q
+	if len(e.Q) != numXIndices {
+		return fmt.Errorf("The nuber of indices was %v which did not match the first dimension of QIn (%v).", numXIndices, len(e.Q))
+	}
+
+	for rowIndex, QRow := range e.Q {
+		if len(QRow) != numXIndices {
+			return fmt.Errorf("The nuber of indices was %v which did not match the length of QIn's %vth row (%v).", numXIndices, rowIndex, len(QRow))
+		}
+	}
+
+	// Otherwise, return no errors.
+	return nil
 }
 
 /*
@@ -44,43 +120,103 @@ Description:
 */
 func (e *QuadraticExpr) NumVars() int {
 
-	// Counting Loop
-	var uniqueVars []uint64
-	for _, variablePairs := range e.VariablePairs {
-		// Check to see if each vp
-
-		// FINISH HERE !!!
-		elt1 := variablePairs[0]
-		if ind1, _ := FindInSlice(elt1, uniqueVars); ind1 == -1 {
-			// If elt1 is not in uniqueVars, then add it.
-			uniqueVars = append(uniqueVars, elt1)
-		}
-
-		elt2 := variablePairs[1]
-		if ind2, _ := FindInSlice(elt2, uniqueVars); ind2 == -1 {
-			// If elt1 is not in uniqueVars, then add it.
-			uniqueVars = append(uniqueVars, elt2)
-		}
-
-	}
-
-	return len(uniqueVars)
+	return len(e.Vars())
 }
 
-// // Vars returns a slice of the Var ids in the expression
-// func (e *LinearExpr) Vars() []uint64 {
-// 	return e.variables
-// }
+/*
+Vars
+Description:
+	Returns the ids of all of the variables in the quadratic expression.
+*/
+func (e *QuadraticExpr) Vars() []uint64 {
+	return e.XIndices
+}
 
-// // Coeffs returns a slice of the coefficients in the expression
-// func (e *LinearExpr) Coeffs() []float64 {
-// 	return e.coefficients
-// }
+/*
+Coeffs
+Description:
+	Returns the slice of all coefficient values for each pair of variable tuples.
+	The coefficients of the quadratic expression are created in an ordering that comes from the following vector.
 
-// // Constant returns the constant additive value in the expression
-// func (e *LinearExpr) Constant() float64 {
-// 	return e.constant
-// }
+	Consider xI (the indices of the input expression e). The output coefficients will be c.
+	The coefficients of the expression
+		e = x' Q x + q' * x + b
+	will be
+		e = c' mx + b
+	where
+		mx = [ x[0]*x[0], x[0]*x[1], ... , x[0]*x[N-1], x[1]*x[1] , x[1]*x[2], ... , x[1]*x[N-1], x[2]*x[2], ... , x[N-1]*x[N-1], x[0], x[1], ... , x[N-1] ]
+*/
+func (e *QuadraticExpr) Coeffs() []float64 {
+	// Create container for all coefficients
+	var coefficientList []float64
+	var numVars int = e.NumVars()
+
+	// Consider all pairs of indices in x.
+	var xPairs [][2]uint64
+	for vIIndex, varIndex := range e.XIndices {
+		for vIIndex2 := vIIndex; vIIndex2 < numVars; vIIndex2++ {
+			varIndex2 := e.XIndices[vIIndex2]
+
+			// Save pairs of indices and the associated coefficients
+			xPairs = append(xPairs, [2]uint64{varIndex, varIndex2})
+
+			if vIIndex == vIIndex2 {
+				coefficientList = append(coefficientList, e.Q[vIIndex][vIIndex2])
+			} else {
+				coefficientList = append(coefficientList, e.Q[vIIndex][vIIndex2]+e.Q[vIIndex2][vIIndex])
+			}
+
+		}
+	}
+
+	return coefficientList
+}
+
+/*
+Constant
+Description:
+	Returns the constant value associated with a quadratic expression.
+*/
+func (e *QuadraticExpr) Constant() float64 {
+	return e.b
+}
+
+/*
+Plus
+Description:
+
+*/
+func (e *QuadraticExpr) Plus(eIn Expr) Expr {
+	// Constants
+	var newQExpr QuadraticExpr = *e
+
+	// Algorithm depends
+	switch eIn.(type) {
+	case *QuadraticExpr:
+		// Add matrices together
+		quadraticEIn := eIn.(*QuadraticExpr)
+		for rowInd, Qrow := range quadraticEIn.Q {
+			for colInd, Qval := range Qrow {
+				newQExpr.Q[rowInd][colInd] += Qval
+			}
+		}
+
+		// Add vectors together
+		for eltInd, qElt := range quadraticEIn.q {
+			newQExpr.q[eltInd] += qElt
+		}
+
+		// Add constants together
+		newQExpr.b += quadraticEIn.b
+
+	default:
+		fmt.Println("Unexpected type given to Plus().")
+		os.Exit(1)
+	}
+
+	return &newQExpr
+
+}
 
 // // Plus adds the current expression to another and returns the resulting
 // // expression
@@ -93,29 +229,59 @@ func (e *QuadraticExpr) NumVars() int {
 
 // // Mult multiplies the current expression to another and returns the
 // // resulting expression
-// func (e *LinearExpr) Mult(c float64) Expr {
-// 	for i, coeff := range e.coefficients {
-// 		e.coefficients[i] = coeff * c
-// 	}
-// 	e.constant *= c
+/*
+Mult
+Description:
+	Mult multiplies the current expression to another and returns the
+	resulting expression
+*/
+func (e *QuadraticExpr) Mult(c float64) Expr {
+	// Iterate through all of the rows and columns of Q
+	nV := e.NumVars()
+	for i := 0; i < nV; i++ {
+		for j := 0; j < nV; j++ {
+			e.Q[i][j] = e.Q[i][j] * c
+		}
+	}
 
-// 	return e
-// }
+	// Iterate through the linear coefficients
+	for i := 0; i < nV; i++ {
+		e.q[i] = e.q[i] * c
+	}
 
-// // LessEq returns a less than or equal to (<=) constraint between the
-// // current expression and another
-// func (e *LinearExpr) LessEq(other Expr) *Constr {
-// 	return LessEq(e, other)
-// }
+	// Update through the constant
+	e.b *= c
 
-// // GreaterEq returns a greater than or equal to (>=) constraint between the
-// // current expression and another
-// func (e *LinearExpr) GreaterEq(other Expr) *Constr {
-// 	return GreaterEq(e, other)
-// }
+	return e
+}
 
-// // Eq returns an equality (==) constraint between the current expression
-// // and another
-// func (e *LinearExpr) Eq(other Expr) *Constr {
-// 	return Eq(e, other)
-// }
+/*
+LessEq
+Description:
+	LessEq returns a less than or equal to (<=) constraint between the
+	current expression and another
+*/
+func (e *QuadraticExpr) LessEq(other Expr) *Constr {
+	return LessEq(e, other)
+}
+
+/*
+GreaterEq
+Description:
+	GreaterEq returns a greater than or equal to (>=) constraint between the
+	current expression and another
+*/
+func (e *QuadraticExpr) GreaterEq(other Expr) *Constr {
+	return GreaterEq(e, other)
+}
+
+/*
+Eq
+Description:
+	Form an equality constraint with this equality constraint and another
+	Eq returns an equality (==) constraint between the current expression
+	and another
+*/
+func (e *QuadraticExpr) Eq(other Expr) *Constr {
+	return Eq(e, other)
+}
