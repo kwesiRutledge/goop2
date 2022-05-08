@@ -20,12 +20,12 @@ QuadraticExpr
 Description:
 	A quadratic expression of optimization variables (given by their indices).
 	The quadratic expression object defines a quadratic written as follows:
-		x' * Q * x + q * x + b
+		x' * Q * x + L * x + C
 */
 type QuadraticExpr struct {
-	Q        [][]float64
-	q        []float64
-	b        float64
+	Q        [][]float64 // Quadratic Term
+	L        []float64   // Linear Term
+	C        float64     // Constant Term
 	XIndices []uint64
 }
 
@@ -81,8 +81,8 @@ func NewQuadraticExpr(QIn [][]float64, qIn []float64, bIn float64, xIndicesIn []
 
 	return &QuadraticExpr{
 		Q:        QIn,
-		q:        qIn,
-		b:        bIn,
+		L:        qIn,
+		C:        bIn,
 		XIndices: xIndicesIn,
 	}, nil
 }
@@ -95,7 +95,7 @@ Description:
 */
 func (e *QuadraticExpr) Check() error {
 	// Make the number of elements in q be the dimension of the x in the expression.
-	numXIndices := len(e.q)
+	numXIndices := len(e.L)
 
 	// Check Number of Rows in Q
 	if len(e.Q) != numXIndices {
@@ -178,43 +178,68 @@ Description:
 	Returns the constant value associated with a quadratic expression.
 */
 func (e *QuadraticExpr) Constant() float64 {
-	return e.b
+	return e.C
 }
 
 /*
 Plus
 Description:
+	Adds a quadratic expression to either:
+	- A Quadratic Expression,
+	- A Linear Expression, or
+	- A Constant
 
 */
 func (e *QuadraticExpr) Plus(eIn Expr) Expr {
 	// Constants
-	var newQExpr QuadraticExpr = *e
 
 	// Algorithm depends
 	switch eIn.(type) {
 	case *QuadraticExpr:
-		// Add matrices together
+
+		var newQExpr QuadraticExpr = *e // get copy of e
 		quadraticEIn := eIn.(*QuadraticExpr)
-		for rowInd, Qrow := range quadraticEIn.Q {
+
+		// Get Combined set of Variables
+		newXIndices := Unique(append(newQExpr.XIndices, quadraticEIn.XIndices...))
+		newQExprAligned, _ := newQExpr.RewriteInTermsOfIndices(newXIndices)
+		quadraticEInAligned, _ := quadraticEIn.RewriteInTermsOfIndices(newXIndices)
+
+		// Add matrices together
+		for rowInd, Qrow := range quadraticEInAligned.Q {
 			for colInd, Qval := range Qrow {
-				newQExpr.Q[rowInd][colInd] += Qval
+				newQExprAligned.Q[rowInd][colInd] += Qval
 			}
 		}
 
 		// Add vectors together
-		for eltInd, qElt := range quadraticEIn.q {
-			newQExpr.q[eltInd] += qElt
+		for eltInd, qElt := range quadraticEInAligned.L {
+			newQExprAligned.L[eltInd] += qElt
 		}
 
 		// Add constants together
-		newQExpr.b += quadraticEIn.b
+		newQExprAligned.C += quadraticEInAligned.C
+		return newQExprAligned
 
+	case *LinearExpr:
+		// Collect Expressions
+		var newQExpr QuadraticExpr = *e // get copy of e
+		linearEIn := eIn.(*LinearExpr)
+
+		// Add linear vector together with the quadratic expression
+		for eltInd, qElt := range linearEIn.L {
+			newQExpr.L[eltInd] += qElt
+		}
+
+		// Add constants together
+		newQExpr.C += linearEIn.C
+		return &newQExpr
 	default:
 		fmt.Println("Unexpected type given to Plus().")
 		os.Exit(1)
-	}
 
-	return &newQExpr
+		return &QuadraticExpr{}
+	}
 
 }
 
@@ -246,11 +271,11 @@ func (e *QuadraticExpr) Mult(c float64) Expr {
 
 	// Iterate through the linear coefficients
 	for i := 0; i < nV; i++ {
-		e.q[i] = e.q[i] * c
+		e.L[i] = e.L[i] * c
 	}
 
 	// Update through the constant
-	e.b *= c
+	e.C *= c
 
 	return e
 }
@@ -284,4 +309,85 @@ Description:
 */
 func (e *QuadraticExpr) Eq(other Expr) *Constr {
 	return Eq(e, other)
+}
+
+/*
+RewriteInTermsOfIndices
+Description:
+	Rewrites the current quadratic expression in terms of the new variables.
+Usage:
+	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
+*/
+func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*QuadraticExpr, error) {
+	// Create new Quadratic Express
+	var newQE QuadraticExpr = QuadraticExpr{
+		XIndices: newXIndices,
+	}
+
+	// Find length of X indices
+	numIndices := len(newXIndices)
+
+	// Create Q matrix of appropriate dimension.
+	var newQ [][]float64
+	for rowIndex := 0; rowIndex < numIndices; rowIndex++ {
+		var newRow []float64
+		for colIndex := 0; colIndex < numIndices; colIndex++ {
+			newRow = append(newRow, 0.0)
+		}
+		newQ = append(newQ, newRow)
+	}
+
+	// Populate Q
+	for oi1Index, oldIndex1 := range e.XIndices {
+		for oi2Index, oldIndex2 := range e.XIndices {
+			// Identify what term is associated with the pair (oldIndex1, oldIndex2)
+			oldQterm := e.Q[oi1Index][oi2Index]
+
+			// Get the new indices corresponding to oi1 and oi2
+			ni1Index, err := FindInSlice(oldIndex1, newXIndices)
+			if err != nil {
+				return &newQE, fmt.Errorf("The index %v was found in the old X indices, but it does not exist in the new ones!", oldIndex1)
+			}
+			newIndex1 := newXIndices[ni1Index]
+
+			ni2Index, err := FindInSlice(oldIndex2, newXIndices)
+			if err != nil {
+				return &newQE, fmt.Errorf("The index %v was found in the old X indices, but it does not exist in the new ones!", oldIndex2)
+			}
+			newIndex2 := newXIndices[ni2Index]
+
+			// Plug the oldQterm into newQ
+			newQ[newIndex1][newIndex2] += oldQterm
+		}
+	}
+	newQE.Q = newQ
+
+	// Create L matrix of appropriate dimension
+	var newL []float64
+	for rowIndex := 0; rowIndex < numIndices; rowIndex++ {
+		newL = append(newL, 0.0)
+	}
+
+	// Populate L
+	for oi1Index, oldIndex1 := range e.XIndices {
+		// Identify what term is associated with the pair (oldIndex1, oldIndex2)
+		oldLterm := e.L[oi1Index]
+
+		// Get the new indices corresponding to oi1 and oi2
+		ni1Index, err := FindInSlice(oldIndex1, newXIndices)
+		if err != nil {
+			return &newQE, fmt.Errorf("The index %v was found in the old X indices, but it does not exist in the new ones!", oldIndex1)
+		}
+		newIndex1 := newXIndices[ni1Index]
+
+		// Plug the oldQterm into newQ
+		newL[newIndex1] += oldLterm
+	}
+	newQE.L = newL
+
+	// Populate C
+	newQE.C = e.C
+
+	return &newQE, nil
+
 }

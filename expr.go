@@ -43,7 +43,7 @@ type Expr interface {
 // for creating new empty expressions that you can perform operatotions on
 // later
 func NewExpr(c float64) Expr {
-	return &LinearExpr{constant: c}
+	return &LinearExpr{C: c}
 }
 
 func getVarsPtr(e Expr) *uint64 {

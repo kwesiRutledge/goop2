@@ -124,3 +124,31 @@ func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
 	}
 
 }
+
+/*
+Unique
+Description:
+	Returns the unique list of variables in a slice of uint64's.
+*/
+func Unique(listIn []uint64) []uint64 {
+	// Create unique list
+	var uniqueList []uint64
+
+	// For each int in the list, determine if it previously existed in the list.
+	for listIndex, tempElt := range listIn {
+		// Don't do any checks if this is the first element.
+		if listIndex == 0 {
+			uniqueList = append(uniqueList, tempElt)
+			continue
+		}
+
+		// check to see if the current element exists in the uniqueList.
+		if foundIndex, _ := FindInSlice(tempElt, uniqueList); foundIndex == -1 {
+			// tempElt does not exist in uniqueList already. Add it.
+			uniqueList = append(uniqueList, tempElt)
+		}
+		// Otherwise, don't add it.
+	}
+
+	return uniqueList
+}
