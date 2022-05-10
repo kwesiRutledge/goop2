@@ -226,14 +226,19 @@ func (e *QuadraticExpr) Plus(eIn Expr) Expr {
 		var newQExpr QuadraticExpr = *e // get copy of e
 		linearEIn := eIn.(*LinearExpr)
 
+		// Get Combined set of Variables
+		newXIndices := Unique(append(newQExpr.XIndices, linearEIn.XIndices...))
+		newQExprAligned, _ := newQExpr.RewriteInTermsOfIndices(newXIndices)
+		linearEInAligned, _ := linearEIn.RewriteInTermsOfIndices(newXIndices)
+
 		// Add linear vector together with the quadratic expression
-		for eltInd, qElt := range linearEIn.L {
-			newQExpr.L[eltInd] += qElt
+		for eltInd, qElt := range linearEInAligned.L {
+			newQExprAligned.L[eltInd] += qElt
 		}
 
 		// Add constants together
-		newQExpr.C += linearEIn.C
-		return &newQExpr
+		newQExprAligned.C += linearEIn.C
+		return newQExprAligned
 	default:
 		fmt.Println("Unexpected type given to Plus().")
 		os.Exit(1)

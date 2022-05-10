@@ -295,8 +295,58 @@ func (gs *GurobiSolver) SetObjective(objIn goop2.Objective) error {
 
 		return nil
 
+	case *goop2.QuadraticExpr:
+		objExpressionAsQE := objExpression.(*goop2.QuadraticExpr)
+		gurobiQE := &gurobi.QuadExpr{}
+
+		// Create quadratic part of quadratic expression
+		for varIndex1, goopIndex1 := range objExpression.Vars() {
+			gurobiIndex1 := gs.GoopIDToGurobiIndexMap[goopIndex1]
+
+			for varIndex2, goopIndex2 := range objExpression.Vars() {
+				gurobiIndex2 := gs.GoopIDToGurobiIndexMap[goopIndex2]
+
+				// Add each linear term to the expression.
+				tempGurobiVar1 := gurobi.Var{
+					Model: gs.CurrentModel,
+					Index: gurobiIndex1,
+				}
+				tempGurobiVar2 := gurobi.Var{
+					Model: gs.CurrentModel,
+					Index: gurobiIndex2,
+				}
+
+				gurobiQE = gurobiQE.AddQTerm(&tempGurobiVar1, &tempGurobiVar2, objExpressionAsQE.Q[varIndex1][varIndex2])
+			}
+		}
+
+		// Create linear part of quadratic expression
+		for varIndex, goopIndex := range objExpression.Vars() {
+			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]
+
+			// Add each linear term to the expression.
+			tempGurobiVar := gurobi.Var{
+				Model: gs.CurrentModel,
+				Index: gurobiIndex,
+			}
+			gurobiQE = gurobiQE.AddTerm(&tempGurobiVar, objExpressionAsQE.L[varIndex])
+		}
+
+		// Create offset
+		gurobiQE = gurobiQE.AddConstant(objExpressionAsQE.C)
+
+		// Return
+		fmt.Println(gurobiQE)
+
+		err := gs.CurrentModel.SetQuadraticObjective(gurobiQE, int32(objIn.Sense))
+		if err != nil {
+			return fmt.Errorf("There was an issue setting the quadratic objective with SetQuadraticObjective(): %v", err)
+		}
+
+		return nil
+
 	default:
-		return fmt.Errorf("Unexpected objective type given to SetObjective(): %T", objExpression)
+		return fmt.Errorf("Unexpected objective type given to gurobisolver's SetObjective(): %T", objExpression)
 	}
 }
 

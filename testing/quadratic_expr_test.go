@@ -325,6 +325,129 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 }
 
 /*
+TestQuadraticExpr_Plus3
+Description:
+	Tests whether or not the Plus() function works for two quadratic expressions containing
+	slightly different variables.
+*/
+func TestQuadraticExpr_Plus3(t *testing.T) {
+	// Constants
+	m := goop2.NewModel()
+
+	v1 := m.AddVar(-10, 10, goop2.Continuous)
+	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v3 := m.AddVar(-10, 10, goop2.Continuous)
+
+	Q1 := [][]float64{
+		[]float64{1.0, 2.0},
+		[]float64{3.0, 4.0},
+	}
+
+	Q2 := [][]float64{
+		[]float64{1.0, 0.0},
+		[]float64{0.0, 1.0},
+	}
+
+	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	if err != nil {
+		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
+	}
+
+	qv2, err := goop2.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v3.ID})
+	if err != nil {
+		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
+	}
+
+	e3 := qv1.Plus(qv2)
+
+	qv3, ok := e3.(*goop2.QuadraticExpr)
+	if !ok {
+		t.Errorf("Unable to convert expression to Quadratic Expression.")
+	}
+
+	// Number of variables for this quadratic expression should be 2
+	if qv3.NumVars() != 3 {
+		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
+	}
+
+	if qv3.Q[0][0] != 2.0 {
+		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q[0][0])
+	}
+
+	if qv3.Q[1][1] != 4.0 {
+		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q[1][1])
+	}
+
+	if qv3.Q[2][2] != 1.0 {
+		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q[1][1])
+	}
+
+}
+
+/*
+TestQuadraticExpr_Plus4
+Description:
+	Tests whether or not the Plus() function works for a quadratic expression and a linear one containing
+	slightly different variables.
+*/
+func TestQuadraticExpr_Plus4(t *testing.T) {
+	// Constants
+	m := goop2.NewModel()
+
+	v1 := m.AddVar(-10, 10, goop2.Continuous)
+	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v3 := m.AddVar(-10, 10, goop2.Continuous)
+
+	Q1 := [][]float64{
+		[]float64{1.0, 2.0},
+		[]float64{3.0, 4.0},
+	}
+
+	L1 := []float64{1.0, 7.0}
+
+	C1 := 3.14
+
+	qe1, err := goop2.NewQuadraticExpr(Q1, L1, C1, []uint64{v1.ID, v2.ID})
+	if err != nil {
+		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
+	}
+
+	L2 := []float64{2.0, 11.0}
+	C2 := 1.25
+
+	le2 := &goop2.LinearExpr{
+		L:        L2,
+		C:        C2,
+		XIndices: []uint64{v2.ID, v3.ID},
+	}
+
+	e3 := qe1.Plus(le2)
+
+	qv3, ok := e3.(*goop2.QuadraticExpr)
+	if !ok {
+		t.Errorf("Unable to convert expression to Quadratic Expression.")
+	}
+
+	// Number of variables for this quadratic expression should be 2
+	if qv3.NumVars() != 3 {
+		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
+	}
+
+	if qv3.L[0] != qe1.L[0] {
+		t.Errorf("Expected for L's 0-th element to be 1.0; received %v", qv3.L[0])
+	}
+
+	if qv3.L[1] != qe1.L[1]+le2.L[0] {
+		t.Errorf("Expected for L's 1-th element to be 5.0; received %v", qv3.L[1])
+	}
+
+	if qv3.L[2] != le2.L[1] {
+		t.Errorf("Expected for L's 2-th element to be 11.0; received %v", qv3.L[2])
+	}
+
+}
+
+/*
 TestQuadraticExpr_RewriteInTermsOfIndices1
 Description:
 	Tests whether or not the rewrite function returns a quadratic expression in three variables when asked.
