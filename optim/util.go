@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 import (
 	"fmt"
@@ -67,6 +67,7 @@ func Dot(vs []*Var, coeffs []float64) Expr {
 /*
 FindInSlice
 Description:
+
 	Identifies if the  input xIn is in the slice sliceIn.
 	If it is, then this function returns the index such that xIn = sliceIn[index] and no errors.
 	If it is not, then this function returns the index -1 and the boolean value false.
@@ -128,6 +129,7 @@ func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
 /*
 Unique
 Description:
+
 	Returns the unique list of variables in a slice of uint64's.
 */
 func Unique(listIn []uint64) []uint64 {

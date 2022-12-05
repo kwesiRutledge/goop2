@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 import (
 	"errors"

@@ -1,10 +1,9 @@
-package testing
+package optim_test
 
 import (
+	"github.com/kwesiRutledge/goop2/optim"
 	"strings"
 	"testing"
-
-	"github.com/kwesiRutledge/goop2"
 )
 
 /*
@@ -16,6 +15,7 @@ Description:
 /*
 TestQuadraticExpr_NewQuadraticExpr_q01
 Description:
+
 	Tests whether or not the function returns two variables for a simple expression.
 */
 func TestQuadraticExpr_NewQuadraticExpr_qb01(t *testing.T) {
@@ -26,7 +26,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb01(t *testing.T) {
 	}
 	xIndices1 := []uint64{1, 2}
 
-	_, err := goop2.NewQuadraticExpr_qb0(Q1, xIndices1)
+	_, err := optim.NewQuadraticExpr_qb0(Q1, xIndices1)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -36,6 +36,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb01(t *testing.T) {
 /*
 TestQuadraticExpr_NewQuadraticExpr_q02
 Description:
+
 	Tests whether or not the NewQuadraticExpr_q0() function gracefully fails when given a badly sized Q matrix.
 */
 func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
@@ -45,7 +46,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
 	}
 	xIndices2 := []uint64{1, 2}
 
-	_, err := goop2.NewQuadraticExpr_qb0(Q2, xIndices2)
+	_, err := optim.NewQuadraticExpr_qb0(Q2, xIndices2)
 	if err == nil {
 		t.Errorf("Expected an error, but there was none!")
 	}
@@ -59,6 +60,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
 /*
 TestQuadraticExpr_NewQuadraticExpr_q03
 Description:
+
 	Tests whether or not the NewQuadraticExpr_q0() function gracefully fails when given a badly sized Q matrix.
 	(Wrong number of columns)
 */
@@ -70,7 +72,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb03(t *testing.T) {
 	}
 	xIndices3 := []uint64{1, 2}
 
-	_, err := goop2.NewQuadraticExpr_qb0(Q3, xIndices3)
+	_, err := optim.NewQuadraticExpr_qb0(Q3, xIndices3)
 	if err == nil {
 		t.Errorf("Expected an error, but there was none!")
 	}
@@ -84,21 +86,22 @@ func TestQuadraticExpr_NewQuadraticExpr_qb03(t *testing.T) {
 /*
 TestQuadraticExpr_NumVars1
 Description:
+
 	Tests whether or not the function returns two variables for a simple expression.
 */
 func TestQuadraticExpr_NumVars1(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -112,15 +115,16 @@ func TestQuadraticExpr_NumVars1(t *testing.T) {
 /*
 TestQuadraticExpr_NumVars2
 Description:
+
 	Tests whether or not the function returns three variables for a more complex expression.
 */
 func TestQuadraticExpr_NumVars2(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
-	v3 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v3 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q2 := [][]float64{
 		[]float64{1.0, 2.0, 3.0},
@@ -128,7 +132,7 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 		[]float64{7.0, 8.0, 9.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID, v3.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID, v3.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -142,19 +146,20 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 /*
 TestQuadraticExpr_NumVars3
 Description:
+
 	Tests whether or not the function returns one variables for a more complex expression.
 */
 func TestQuadraticExpr_NumVars3(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q3 := [][]float64{
 		[]float64{2.3},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q3, []uint64{v1.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q3, []uint64{v1.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -168,21 +173,22 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 /*
 TestQuadraticExpr_Vars1
 Description:
+
 	Tests whether or not the function returns two variables for a simple expression.
 */
 func TestQuadraticExpr_Vars1(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -205,14 +211,15 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 /*
 TestQuadraticExpr_Plus1
 Description:
+
 	Tests whether or not the function returns one variable index for a more complex expression.
 */
 func TestQuadraticExpr_Plus1(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -224,19 +231,19 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 		[]float64{0.0, 1.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	qv2, err := goop2.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID})
+	qv2, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
 	e3 := qv1.Plus(qv2)
 
-	qv3, ok := e3.(*goop2.QuadraticExpr)
+	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -267,28 +274,29 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 /*
 TestQuadraticExpr_Plus2
 Description:
+
 	Tests whether or not the plus function works
 	for a sum of a quadratic expression and a linear expression (no id checking done).
 */
 func TestQuadraticExpr_Plus2(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
 	L2 := []float64{5.0, 6.0}
-	le2 := &goop2.LinearExpr{
+	le2 := &optim.LinearExpr{
 		L:        L2,
 		C:        0.1,
 		XIndices: []uint64{v1.ID, v2.ID},
@@ -296,7 +304,7 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 
 	e3 := qv1.Plus(le2)
 
-	qv3, ok := e3.(*goop2.QuadraticExpr)
+	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -327,16 +335,17 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 /*
 TestQuadraticExpr_Plus3
 Description:
+
 	Tests whether or not the Plus() function works for two quadratic expressions containing
 	slightly different variables.
 */
 func TestQuadraticExpr_Plus3(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
-	v3 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v3 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -348,19 +357,19 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 		[]float64{0.0, 1.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	qv2, err := goop2.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v3.ID})
+	qv2, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v3.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
 	e3 := qv1.Plus(qv2)
 
-	qv3, ok := e3.(*goop2.QuadraticExpr)
+	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -387,16 +396,17 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 /*
 TestQuadraticExpr_Plus4
 Description:
+
 	Tests whether or not the Plus() function works for a quadratic expression and a linear one containing
 	slightly different variables.
 */
 func TestQuadraticExpr_Plus4(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
-	v3 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v3 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -407,7 +417,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 
 	C1 := 3.14
 
-	qe1, err := goop2.NewQuadraticExpr(Q1, L1, C1, []uint64{v1.ID, v2.ID})
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -415,7 +425,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	L2 := []float64{2.0, 11.0}
 	C2 := 1.25
 
-	le2 := &goop2.LinearExpr{
+	le2 := &optim.LinearExpr{
 		L:        L2,
 		C:        C2,
 		XIndices: []uint64{v2.ID, v3.ID},
@@ -423,7 +433,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 
 	e3 := qe1.Plus(le2)
 
-	qv3, ok := e3.(*goop2.QuadraticExpr)
+	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -450,21 +460,22 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 /*
 TestQuadraticExpr_RewriteInTermsOfIndices1
 Description:
+
 	Tests whether or not the rewrite function returns a quadratic expression in three variables when asked.
 */
 func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 	// Constants
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, goop2.Continuous)
-	v2 := m.AddVar(-10, 10, goop2.Continuous)
+	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v2 := m.AddVar(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := goop2.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}

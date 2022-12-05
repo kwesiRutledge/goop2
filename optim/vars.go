@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 // Var represnts a variable in a optimization problem. The variable is
 // identified with an uint64.

@@ -9,27 +9,28 @@ Description:
 
 import (
 	"fmt"
+	"github.com/kwesiRutledge/goop2/optim"
 	"testing"
 
-	"github.com/kwesiRutledge/goop2"
 	"github.com/kwesiRutledge/goop2/solvers"
 )
 
 /*
 TestQP1
 Description:
+
 	Create a simple quadratic program with quadratic objective and no constraints on the optimization variable x.
 */
 func TestQP1(t *testing.T) {
 	// Constants
 
 	// Create Model
-	m := goop2.NewModel()
+	m := optim.NewModel()
 
 	// Create Optimization Variables
 	m.ShowLog(true)
-	x := m.AddVar(-10, 10, goop2.Continuous)
-	y := m.AddVar(-10, 10, goop2.Continuous)
+	x := m.AddVar(-10, 10, optim.Continuous)
+	y := m.AddVar(-10, 10, optim.Continuous)
 
 	// Create Objective
 	Q1 := [][]float64{
@@ -38,9 +39,9 @@ func TestQP1(t *testing.T) {
 	}
 	L1 := []float64{-6.0, -4.0}
 	C1 := -9.0 - 4.0
-	qe1, err := goop2.NewQuadraticExpr(Q1, L1, C1, []uint64{x.ID, y.ID})
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, []uint64{x.ID, y.ID})
 
-	m.SetObjective(qe1, goop2.SenseMinimize)
+	m.SetObjective(qe1, optim.SenseMinimize)
 	sol, err := m.Optimize(solvers.NewGurobiSolver())
 	if err != nil {
 		t.Fatal(err)

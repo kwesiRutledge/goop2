@@ -1,18 +1,19 @@
-package goop2
+package optim_test
 
 import (
+	"github.com/kwesiRutledge/goop2/optim"
 	"testing"
 )
 
 func TestLinearExprCoeffsAndConstant(t *testing.T) {
-	m := NewModel()
+	m := optim.NewModel()
 	x := m.AddBinaryVar()
 	y := m.AddBinaryVar()
 
 	// 2 * x + 4 * y - 5
 	coeffs := []float64{2, 4}
 	constant := -5.0
-	expr := Sum(x.Mult(coeffs[0]), y.Mult(coeffs[1]), K(constant))
+	expr := optim.Sum(x.Mult(coeffs[0]), y.Mult(coeffs[1]), optim.K(constant))
 
 	for i, coeff := range expr.Coeffs() {
 		if coeffs[i] != coeff {

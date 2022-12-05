@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 import (
 	"fmt"
@@ -18,6 +18,7 @@ Description:
 /*
 QuadraticExpr
 Description:
+
 	A quadratic expression of optimization variables (given by their indices).
 	The quadratic expression object defines a quadratic written as follows:
 		x' * Q * x + L * x + C
@@ -35,6 +36,7 @@ type QuadraticExpr struct {
 /*
 NewQuadraticExpr_qb0
 Description:
+
 	NewQuadraticExpr_q0 returns a basic Quadratic expression with only the matrix Q being defined,
 	all other values are assumed to be zero.
 */
@@ -56,6 +58,7 @@ func NewQuadraticExpr_qb0(QIn [][]float64, xIndicesIn []uint64) (*QuadraticExpr,
 /*
 NewQuadraticExpr
 Description:
+
 	NewQuadraticExpr returns a basic Quadratic expression whuch is defined by QIn, qIn and bIn.
 */
 func NewQuadraticExpr(QIn [][]float64, qIn []float64, bIn float64, xIndicesIn []uint64) (*QuadraticExpr, error) {
@@ -90,6 +93,7 @@ func NewQuadraticExpr(QIn [][]float64, qIn []float64, bIn float64, xIndicesIn []
 /*
 Check
 Description:
+
 	This function checks the dimensions of all of the members of the quadratic expression which are slices.
 	They should have compatible dimensions.
 */
@@ -115,6 +119,7 @@ func (e *QuadraticExpr) Check() error {
 /*
 NumVars
 Description:
+
 	Returns the number of variables in the expression.
 	To make this actually meaningful, we only count the unique vars.
 */
@@ -126,6 +131,7 @@ func (e *QuadraticExpr) NumVars() int {
 /*
 Vars
 Description:
+
 	Returns the ids of all of the variables in the quadratic expression.
 */
 func (e *QuadraticExpr) Vars() []uint64 {
@@ -135,6 +141,7 @@ func (e *QuadraticExpr) Vars() []uint64 {
 /*
 Coeffs
 Description:
+
 	Returns the slice of all coefficient values for each pair of variable tuples.
 	The coefficients of the quadratic expression are created in an ordering that comes from the following vector.
 
@@ -175,6 +182,7 @@ func (e *QuadraticExpr) Coeffs() []float64 {
 /*
 Constant
 Description:
+
 	Returns the constant value associated with a quadratic expression.
 */
 func (e *QuadraticExpr) Constant() float64 {
@@ -184,11 +192,11 @@ func (e *QuadraticExpr) Constant() float64 {
 /*
 Plus
 Description:
+
 	Adds a quadratic expression to either:
 	- A Quadratic Expression,
 	- A Linear Expression, or
 	- A Constant
-
 */
 func (e *QuadraticExpr) Plus(eIn Expr) Expr {
 	// Constants
@@ -288,6 +296,7 @@ func (e *QuadraticExpr) Mult(c float64) Expr {
 /*
 LessEq
 Description:
+
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
@@ -298,6 +307,7 @@ func (e *QuadraticExpr) LessEq(other Expr) *Constr {
 /*
 GreaterEq
 Description:
+
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
@@ -308,6 +318,7 @@ func (e *QuadraticExpr) GreaterEq(other Expr) *Constr {
 /*
 Eq
 Description:
+
 	Form an equality constraint with this equality constraint and another
 	Eq returns an equality (==) constraint between the current expression
 	and another
@@ -319,8 +330,11 @@ func (e *QuadraticExpr) Eq(other Expr) *Constr {
 /*
 RewriteInTermsOfIndices
 Description:
+
 	Rewrites the current quadratic expression in terms of the new variables.
+
 Usage:
+
 	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
 */
 func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*QuadraticExpr, error) {

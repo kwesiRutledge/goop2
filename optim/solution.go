@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 import "fmt"
 
@@ -48,6 +48,7 @@ const (
 /*
 ToMessage
 Description:
+
 	Translates the code to the text meaning.
 	This comes from the status codes documentation: https://www.gurobi.com/documentation/9.5/refman/optimization_status_codes.html#sec:StatusCodes
 */

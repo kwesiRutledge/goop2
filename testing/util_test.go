@@ -1,12 +1,13 @@
-package goop2
+package testing
 
 import (
+	"github.com/kwesiRutledge/goop2/optim"
 	"testing"
 )
 
 func TestDot(t *testing.T) {
 	N := 10
-	m := NewModel()
+	m := optim.NewModel()
 	xs := m.AddBinaryVarVector(N)
 	coeffs := make([]float64, N)
 
@@ -14,7 +15,7 @@ func TestDot(t *testing.T) {
 		coeffs[i] = float64(i + 1)
 	}
 
-	expr := Dot(xs, coeffs)
+	expr := optim.Dot(xs, coeffs)
 
 	for i, coeff := range expr.Coeffs() {
 		if coeffs[i] != coeff {
@@ -29,7 +30,7 @@ func TestDot(t *testing.T) {
 
 func TestDotPanic(t *testing.T) {
 	N := 10
-	m := NewModel()
+	m := optim.NewModel()
 	xs := m.AddBinaryVarVector(N)
 	coeffs := make([]float64, N-1)
 
@@ -43,16 +44,16 @@ func TestDotPanic(t *testing.T) {
 		}
 	}()
 
-	Dot(xs, coeffs)
+	optim.Dot(xs, coeffs)
 }
 
 func TestSumVars(t *testing.T) {
 	numVars := 3
-	m := NewModel()
+	m := optim.NewModel()
 	x := m.AddBinaryVar()
 	y := m.AddBinaryVar()
 	z := m.AddBinaryVar()
-	expr := SumVars(x, y, z)
+	expr := optim.SumVars(x, y, z)
 
 	for _, coeff := range expr.Coeffs() {
 		if coeff != 1 {

@@ -1,9 +1,11 @@
-package goop2
+package optim
 
 import "fmt"
 
 // LinearExpr represents a linear general expression of the form
+//
 //	L' * x + C
+//
 // where L is a vector of coefficients that matches the dimension of x, the vector of variables
 // variables and C is a constant
 type LinearExpr struct {
@@ -79,8 +81,11 @@ func (e *LinearExpr) Eq(other Expr) *Constr {
 /*
 RewriteInTermsOfIndices
 Description:
+
 	Rewrites the current linear expression in terms of the new variables.
+
 Usage:
+
 	rewrittenLE, err := orignalLE.RewriteInTermsOfIndices(newXIndices1)
 */
 func (e *LinearExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*LinearExpr, error) {

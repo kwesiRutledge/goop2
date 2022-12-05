@@ -2,20 +2,20 @@ package solvers
 
 import (
 	"fmt"
+	"github.com/kwesiRutledge/goop2/optim"
 
-	"github.com/kwesiRutledge/goop2"
 	"github.com/kwesiRutledge/gurobi.go/gurobi"
 )
 
-func VarTypeToGRBVType(goopTypeIn goop2.VarType) (rune, error) {
+func VarTypeToGRBVType(goopTypeIn optim.VarType) (rune, error) {
 	// Double check
 
 	switch goopTypeIn {
-	case goop2.Continuous:
+	case optim.Continuous:
 		return gurobi.CONTINUOUS, nil
-	case goop2.Binary:
+	case optim.Binary:
 		return gurobi.BINARY, nil
-	case goop2.Integer:
+	case optim.Integer:
 		return gurobi.INTEGER, nil
 	default:
 		return -1, fmt.Errorf("The goop variable type \"%v\" is not currently supported by VarTypeToGRBVType.", goopTypeIn)

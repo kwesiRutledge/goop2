@@ -1,4 +1,4 @@
-package goop2
+package optim
 
 // Objective represents an optimization objective given an expression and
 // objective sense (maximize or minimize).

@@ -2,11 +2,11 @@ package solvers
 
 import (
 	"fmt"
+	"github.com/kwesiRutledge/goop2/optim"
 	"io"
 	"log"
 	"os"
 
-	"github.com/kwesiRutledge/goop2"
 	gurobi "github.com/kwesiRutledge/gurobi.go/gurobi"
 )
 
@@ -24,6 +24,7 @@ type GurobiSolver struct {
 /*
 NewGurobiSolver
 Description:
+
 	Create a new gurobi solver object.
 */
 func NewGurobiSolver() *GurobiSolver {
@@ -42,6 +43,7 @@ func NewGurobiSolver() *GurobiSolver {
 /*
 ShowLog
 Description:
+
 	Decides whether or not to print logs to the terminal?
 */
 func (gs *GurobiSolver) ShowLog(tf bool) error {
@@ -84,8 +86,11 @@ func (gs *GurobiSolver) ShowLog(tf bool) error {
 /*
 SetTimeLimit
 Description:
+
 	Sets the time limit of the current model in gurobi solver gs.
+
 Input:
+
 	limitInS = Value of time limit in seconds (float)
 */
 func (gs *GurobiSolver) SetTimeLimit(limitInS float64) error {
@@ -102,10 +107,15 @@ func (gs *GurobiSolver) SetTimeLimit(limitInS float64) error {
 /*
 GetTimeLimit
 Description:
+
 	Gets the time limit of the current model in gurobi solver gs.
+
 Input:
+
 	None
+
 Output
+
 	limitInS = Value of time limit in seconds (float)
 */
 func (gs *GurobiSolver) GetTimeLimit() (float64, error) {
@@ -122,7 +132,6 @@ func (gs *GurobiSolver) GetTimeLimit() (float64, error) {
 /*
 CreateModel
 Description:
-
 */
 func (gs *GurobiSolver) CreateModel(modelName string) {
 	// Constants
@@ -150,6 +159,7 @@ func (gs *GurobiSolver) CreateModel(modelName string) {
 /*
 FreeEnv
 Description:
+
 	Frees the Env() method. Useful after the problem is solved.
 */
 func (gs *GurobiSolver) FreeEnv() {
@@ -159,6 +169,7 @@ func (gs *GurobiSolver) FreeEnv() {
 /*
 FreeModel
 Description
+
 	Frees the Model member. Useful after the problem is solved.
 */
 func (gs *GurobiSolver) FreeModel() {
@@ -168,6 +179,7 @@ func (gs *GurobiSolver) FreeModel() {
 /*
 Free
 Description:
+
 	Frees the Env and Model elements of the system.
 */
 func (gs *GurobiSolver) Free() {
@@ -178,9 +190,10 @@ func (gs *GurobiSolver) Free() {
 /*
 AddVar
 Description:
+
 	Adds a variable to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVar(varIn *goop2.Var) error {
+func (gs *GurobiSolver) AddVar(varIn *optim.Var) error {
 	// Constants
 
 	// Convert Variable Type
@@ -203,9 +216,10 @@ func (gs *GurobiSolver) AddVar(varIn *goop2.Var) error {
 /*
 AddVars
 Description:
+
 	Adds a set of variables to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVars(varSliceIn []*goop2.Var) error {
+func (gs *GurobiSolver) AddVars(varSliceIn []*optim.Var) error {
 	// Constants
 
 	// Iterate through ALL variable address in varSliceIn
@@ -224,9 +238,10 @@ func (gs *GurobiSolver) AddVars(varSliceIn []*goop2.Var) error {
 /*
 AddConstraint
 Description:
+
 	Adds a single constraint to the gurobi model object inside of the current GurobiSolver object.
 */
-func (gs *GurobiSolver) AddConstr(constrIn *goop2.Constr) error {
+func (gs *GurobiSolver) AddConstr(constrIn *optim.Constr) error {
 	// Constants
 
 	// Identify the variables in the left hand side of this constraint
@@ -261,15 +276,16 @@ func (gs *GurobiSolver) AddConstr(constrIn *goop2.Constr) error {
 /*
 SetObjective
 Description:
+
 	This algorithm should set the objective based on the value of the expression provided as input to this function.
 */
-func (gs *GurobiSolver) SetObjective(objIn goop2.Objective) error {
+func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 
 	objExpression := objIn.Expr
 
 	// Handle this differently for different types of expression inputs
 	switch objExpression.(type) {
-	case *goop2.LinearExpr:
+	case *optim.LinearExpr:
 		gurobiLE := &gurobi.LinExpr{}
 		for varIndex, goopIndex := range objExpression.Vars() {
 			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]
@@ -295,8 +311,8 @@ func (gs *GurobiSolver) SetObjective(objIn goop2.Objective) error {
 
 		return nil
 
-	case *goop2.QuadraticExpr:
-		objExpressionAsQE := objExpression.(*goop2.QuadraticExpr)
+	case *optim.QuadraticExpr:
+		objExpressionAsQE := objExpression.(*optim.QuadraticExpr)
 		gurobiQE := &gurobi.QuadExpr{}
 
 		// Create quadratic part of quadratic expression
@@ -354,27 +370,27 @@ func (gs *GurobiSolver) SetObjective(objIn goop2.Objective) error {
 Optimize
 Description:
 */
-func (gs *GurobiSolver) Optimize() (goop2.Solution, error) {
+func (gs *GurobiSolver) Optimize() (optim.Solution, error) {
 	// Make sure that all changes are applied to the given model.
 	err := gs.CurrentModel.Update()
 	if err != nil {
-		return goop2.Solution{}, fmt.Errorf("There was an issue updating the current gurobi model: %v", err)
+		return optim.Solution{}, fmt.Errorf("There was an issue updating the current gurobi model: %v", err)
 	}
 
 	// Optimize
 	err = gs.CurrentModel.Optimize()
 	if err != nil {
-		return goop2.Solution{}, fmt.Errorf("There was an issue optimizing the current model: %v", err)
+		return optim.Solution{}, fmt.Errorf("There was an issue optimizing the current model: %v", err)
 	}
 
 	// Construct solution:
 	// - Status
-	tempSolution := goop2.Solution{}
+	tempSolution := optim.Solution{}
 	tempStatus, err := gs.CurrentModel.GetIntAttr("Status")
 	if err != nil {
 		return tempSolution, fmt.Errorf("There was an issue collecting the model's status: %v", err)
 	}
-	tempSolution.Status = goop2.OptimizationStatus(tempStatus)
+	tempSolution.Status = optim.OptimizationStatus(tempStatus)
 
 	// - Values
 	tempValues := make(map[uint64]float64)
@@ -407,6 +423,7 @@ func (gs *GurobiSolver) Optimize() (goop2.Solution, error) {
 /*
 DeleteSolver
 Description:
+
 	Attempts to delete all info about the current solver.
 */
 func (gs *GurobiSolver) DeleteSolver() error {

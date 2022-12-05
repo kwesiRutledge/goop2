@@ -2,23 +2,22 @@ package solvers
 
 import (
 	"fmt"
+	"github.com/kwesiRutledge/goop2/optim"
 	"testing"
-
-	"github.com/kwesiRutledge/goop2"
 )
 
-func solveSimpleMIPModel(t *testing.T, solver goop2.Solver) {
-	m := goop2.NewModel()
+func solveSimpleMIPModel(t *testing.T, solver optim.Solver) {
+	m := optim.NewModel()
 	m.ShowLog(false)
 	x := m.AddBinaryVar()
 	y := m.AddBinaryVar()
 	z := m.AddBinaryVar()
 
-	m.AddConstr(goop2.Sum(x, y.Mult(2), z.Mult(3)).LessEq(goop2.K(4)))
-	m.AddConstr(goop2.Sum(x, y).GreaterEq(goop2.One))
+	m.AddConstr(optim.Sum(x, y.Mult(2), z.Mult(3)).LessEq(optim.K(4)))
+	m.AddConstr(optim.Sum(x, y).GreaterEq(optim.One))
 
-	obj := goop2.Sum(x, y, z.Mult(2))
-	m.SetObjective(obj, goop2.SenseMaximize)
+	obj := optim.Sum(x, y, z.Mult(2))
+	m.SetObjective(obj, optim.SenseMaximize)
 	sol, err := m.Optimize(solver)
 
 	if err != nil {
@@ -30,19 +29,19 @@ func solveSimpleMIPModel(t *testing.T, solver goop2.Solver) {
 	t.Log("z =", sol.Value(z))
 }
 
-func solveSumRowsColsModel(t *testing.T, solver goop2.Solver) {
-	m := goop2.NewModel()
+func solveSumRowsColsModel(t *testing.T, solver optim.Solver) {
+	m := optim.NewModel()
 	m.ShowLog(false)
 	rows := 4
 	cols := 4
 	vs := m.AddBinaryVarMatrix(rows, cols)
 
 	for i := 0; i < cols; i++ {
-		m.AddConstr(goop2.SumCol(vs, i).Eq(goop2.One))
+		m.AddConstr(optim.SumCol(vs, i).Eq(optim.One))
 	}
 
 	for i := 0; i < rows; i++ {
-		m.AddConstr(goop2.SumRow(vs, i).Eq(goop2.One))
+		m.AddConstr(optim.SumRow(vs, i).Eq(optim.One))
 	}
 
 	sol, err := m.Optimize(solver)
@@ -54,7 +53,7 @@ func solveSumRowsColsModel(t *testing.T, solver goop2.Solver) {
 	fmt.Println(prettyPrintVarMatrix(vs, sol))
 }
 
-func prettyPrintVarMatrix(vs [][]*goop2.Var, sol *goop2.Solution) string {
+func prettyPrintVarMatrix(vs [][]*optim.Var, sol *optim.Solution) string {
 	rows := len(vs)
 	cols := len(vs[0])
 
