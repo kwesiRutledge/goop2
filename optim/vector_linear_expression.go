@@ -48,3 +48,32 @@ func (v VectorLinearExpr) Check() error {
 	// If all other checks passed, then the VectorLinearExpression seems valid.
 	return nil
 }
+
+/*
+VariableIDs
+Description:
+
+	Returns the goop2 ID of each variable in the current vector linear expression.
+*/
+func (v VectorLinearExpr) VariableIDs() []uint64 {
+	return v.X.IDs()
+}
+
+/*
+Coeffs
+Description:
+
+	Returns a list of coefficients that correspond to each one of the elements of the coefficient matrix.
+*/
+func (v VectorLinearExpr) Coeffs() []float64 {
+
+	var coeffsOut []float64
+	nRows, nCols := v.L.Dims()
+	for rowIndex := 0; rowIndex < nRows; rowIndex++ {
+		for colIndex := 0; colIndex < nCols; colIndex++ {
+			coeffsOut = append(coeffsOut, v.L.At(rowIndex, colIndex))
+		}
+	}
+
+	return coeffsOut
+}

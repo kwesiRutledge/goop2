@@ -36,6 +36,30 @@ func (v VarVector) Len() int {
 	return v.Length()
 }
 
+/*
+At
+Description:
+
+	Mirrors the gonum api for vectors. This extracts the element of the variable vector at the index x.
+*/
 func (v VarVector) At(x int) Var {
 	return v.Elements[x]
+}
+
+/*
+IDs
+Description:
+
+	Returns the unique indices
+*/
+func (v VarVector) IDs() []uint64 {
+	// Algorithm
+	var IDSlice []uint64
+
+	for _, elt := range v.Elements {
+		IDSlice = append(IDSlice, elt.ID)
+	}
+
+	return Unique(IDSlice)
+
 }

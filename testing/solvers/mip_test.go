@@ -1,4 +1,4 @@
-package solvers
+package solvers_test
 
 import (
 	"fmt"

@@ -1,7 +1,8 @@
-package solvers
+package solvers_test
 
 import (
 	"fmt"
+	"github.com/kwesiRutledge/goop2/solvers"
 	"os"
 	"testing"
 )
@@ -9,11 +10,12 @@ import (
 /*
 TestGurobiSolver_CreateModel1
 Description:
+
 	Tests to see if CreateModel() actually works.
 */
 func TestGurobiSolver_CreateModel1(t *testing.T) {
 	// Constants
-	gs1 := GurobiSolver{}
+	gs1 := solvers.GurobiSolver{}
 	modelName1 := "Anniversary"
 
 	// Algorithm
@@ -28,11 +30,12 @@ func TestGurobiSolver_CreateModel1(t *testing.T) {
 /*
 TestGurobiSolver_ShowLog1
 Description:
+
 	Verifies that something is plotted to the screen when running 'go test' on this test.
 */
 func TestGurobiSolver_ShowLog1(t *testing.T) {
 	// Constants
-	gs1 := NewGurobiSolver()
+	gs1 := solvers.NewGurobiSolver()
 	modelName1 := "Anniversary"
 
 	// Algorithm
@@ -50,11 +53,12 @@ func TestGurobiSolver_ShowLog1(t *testing.T) {
 /*
 TestGurobiSolver_SetTimeLimit1
 Description:
+
 	Verifies that we can properly change the time limit when commanding.
 */
 func TestGurobiSolver_SetTimeLimit1(t *testing.T) {
 	// Constants
-	gs1 := NewGurobiSolver()
+	gs1 := solvers.NewGurobiSolver()
 	modelName1 := "Anniversary1"
 
 	newTimeLimit := 1.4
@@ -84,11 +88,12 @@ func TestGurobiSolver_SetTimeLimit1(t *testing.T) {
 /*
 TestGurobiSolver_AddVar1
 Description:
+
 	Verifies that we can properly change the time limit when commanding.
 */
 func TestGurobiSolver_AddVar1(t *testing.T) {
 	// Constants
-	gs1 := NewGurobiSolver()
+	gs1 := solvers.NewGurobiSolver()
 	modelName1 := "Anniversary1"
 
 	newTimeLimit := 1.4
