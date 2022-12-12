@@ -77,3 +77,40 @@ func (v VectorLinearExpr) Coeffs() []float64 {
 
 	return coeffsOut
 }
+
+/*
+Mult
+Description:
+	Returns an expression which corres
+*/
+
+/*
+LessEq
+Description:
+
+	Returns a constraint between the current vector linear expression and the input given
+	as the right hand side.
+*/
+//func (v VectorLinearExpr) LessEq(rhsIn interface{}) (VectorConstraint, error) {
+//	// Output depends on the input type
+//	switch rhsIn.(type) {
+//	case K:
+//		// Constant on right hand side.
+//		rhsK, _ := rhsIn.(K)
+//
+//		lhsDim, _ := v.L.Dims()
+//
+//		onesVec := OnesVector(lhsDim)
+//		var rhs KVector
+//		rhs.ScaleVec(rhsK.float64, onesVec)
+//
+//		// Create new VectorExpression
+//		return VectorConstraint{
+//			LeftHandSide:  v,
+//			RightHandSide: rhs,
+//			Sense:         SenseLessThanEqual,
+//		}, nil
+//	}
+//
+//	return nil, fmt.Errorf("Unexpected type of right hand side %v: %T", rhsIn, rhsIn)
+//}

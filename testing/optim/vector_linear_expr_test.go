@@ -287,3 +287,44 @@ func TestVectorLinearExpression_Coeffs2(t *testing.T) {
 		}
 	}
 }
+
+/*
+TestVectorLinearExpression_LessEq1
+Description:
+	This tests that the less than or equal to command works with a constant input.
+*/
+//func TestVectorLinearExpression_LessEq1(t *testing.T) {
+//	// Constants
+//	m := optim.NewModel()
+//	x := m.AddBinaryVar()
+//
+//	// Create Vector Variables
+//	vv1 := optim.VarVector{
+//		Elements: []optim.Var{*x, *x, *x, *x},
+//	}
+//
+//	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}
+//	L1 := mat.NewDense(2, 4, LElts)
+//	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+//
+//	// Use these to create expression.
+//	ve1 := optim.VectorLinearExpr{
+//		vv1, L1, c1,
+//	}
+//
+//	err := ve1.Check()
+//	if err != nil {
+//		t.Errorf("The vector linear expression was invalid! %v", err)
+//	}
+//
+//	// Algorithm
+//	constr1, err := ve1.LessEq(2.0)
+//	if err != nil {
+//		t.Errorf("There was an error computing the constraint ve1 <= 2.0: %v", err)
+//	}
+//
+//	if constr1.LeftHandSide != ve1 {
+//		t.Errorf("The left hand side (%v) should be the same as ve1 (%v).", constr1.LeftHandSide, ve1)
+//	}
+//
+//}

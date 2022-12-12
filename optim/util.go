@@ -2,6 +2,7 @@ package optim
 
 import (
 	"fmt"
+	"gonum.org/v1/gonum/mat"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -153,4 +154,21 @@ func Unique(listIn []uint64) []uint64 {
 	}
 
 	return uniqueList
+}
+
+/*
+OnesVector
+Description:
+
+	Returns a vector of ones with length lengthIn.
+	Note: this function assumes lengthIn is a positive number.
+*/
+func OnesVector(lengthIn int) mat.VecDense {
+	// Create the empty slice.
+	elts := make([]float64, lengthIn)
+
+	for eltIndex := 0; eltIndex < lengthIn; eltIndex++ {
+		elts[eltIndex] = 1.0
+	}
+	return *mat.NewVecDense(lengthIn, elts)
 }

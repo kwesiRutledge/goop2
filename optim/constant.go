@@ -7,10 +7,10 @@ import (
 
 // Integer constants represnting commonly used numbers. Makes for better
 // readability
-const (
-	Zero = K(0)
-	One  = K(1)
-)
+//const (
+//	Zero = K{0}
+//	One  = K{1}
+//)
 
 // K is a constant expression type for an MIP. K for short ¯\_(ツ)_/¯
 type K float64
