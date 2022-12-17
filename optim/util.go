@@ -172,3 +172,21 @@ func OnesVector(lengthIn int) mat.VecDense {
 	}
 	return *mat.NewVecDense(lengthIn, elts)
 }
+
+/*
+Identity
+Description:
+
+	Returns a symmetric matrix that is the identity matrix.
+	Note: this function assumes lengthIn is a positive number.
+*/
+func Identity(dim int) mat.Matrix {
+	// Create the empty slice.
+	elts := make([]float64, dim)
+
+	for xIndex := 0; xIndex < dim; xIndex++ {
+		elts[xIndex] = 1.0
+	}
+
+	return mat.NewDiagDense(dim, elts)
+}

@@ -18,8 +18,27 @@ KVector
 	A type which is built on top of the KVector()
 	a constant expression type for an MIP. K for short ¯\_(ツ)_/¯
 */
-type KVector struct {
-	mat.VecDense // Inherit all methods from mat.VecDense
+type KVector mat.VecDense // Inherit all methods from mat.VecDense
+
+/*
+Len
+
+	Computes the length of the KVector given.
+*/
+func (kv KVector) Len() int {
+	kvAsVector := mat.VecDense(kv)
+	return kvAsVector.Len()
+}
+
+/*
+At
+Description:
+
+	This function returns the value at the k index.
+*/
+func (kv KVector) At(i int) float64 {
+	kvAsVector := mat.VecDense(kv)
+	return kvAsVector.AtVec(i)
 }
 
 /*
@@ -48,8 +67,8 @@ Description:
 
 	This function returns a slice of the coefficients in the expression. For constants, this is always nil.
 */
-func (c KVector) Coeffs() []float64 {
-	return nil
+func (c KVector) LinearCoeff() mat.Matrix {
+	return Identity(c.Len())
 }
 
 /*
@@ -57,9 +76,10 @@ Constant
 
 	Returns the constant additive value in the expression. For constants, this is just the constants value
 */
-func (c KVector) Constant() mat.Vector {
+func (kv KVector) Constant() mat.Vector {
+	kvAsVector := mat.VecDense(kv)
 
-	return &c.VecDense
+	return &kvAsVector
 }
 
 /*
@@ -73,11 +93,14 @@ func (c KVector) Plus(e VectorExpression) (VectorExpression, error) {
 	case KVector:
 		// Cast type
 		eAsKVector, _ := e.(KVector)
-		// Compute Addition
-		var result KVector
-		result.AddVec(&c, &eAsKVector)
 
-		return result, nil
+		// Compute Addition
+		var result mat.VecDense
+		cAsVec := mat.VecDense(c)
+		eAsVec := mat.VecDense(eAsKVector)
+		result.AddVec(&cAsVec, &eAsVec)
+
+		return KVector(result), nil
 	default:
 		errString := fmt.Sprintf("Unrecognized expression type %T for expression %v!", e, e)
 		return KVector{}, fmt.Errorf(errString)
@@ -93,10 +116,11 @@ Description:
 func (c KVector) Mult(val float64) (VectorExpression, error) {
 
 	// Use mat.Vector's multiplication method
-	var result KVector
-	result.ScaleVec(val, &c)
+	var result mat.VecDense
+	cAsVec := mat.VecDense(c)
+	result.ScaleVec(val, &cAsVec)
 
-	return result, nil
+	return KVector(result), nil
 }
 
 /*

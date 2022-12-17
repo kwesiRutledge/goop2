@@ -26,7 +26,7 @@ type VectorExpression interface {
 	IDs() []uint64
 
 	// Coeffs returns a slice of the coefficients in the expression
-	Coeffs() []float64
+	LinearCoeff() mat.Matrix
 
 	// Constant returns the constant additive value in the expression
 	Constant() mat.Vector
