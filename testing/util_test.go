@@ -69,3 +69,47 @@ func TestSumVars(t *testing.T) {
 		t.Errorf("Constant mismatch: %v != 0", expr.Constant())
 	}
 }
+
+/*
+TestUtil_Identity1
+Description:
+
+	Create identity matrix of dimension 1 (scalar?).
+*/
+func TestUtil_Identity1(t *testing.T) {
+	// Constants
+	n := 1
+	// Algorithm
+	identMat1 := optim.Identity(n)
+
+	nX, nY := identMat1.Dims()
+	if (nX != n) || (nY != n) {
+		t.Errorf("The identity matrix created has dimension %v x %v; Expected %v x %v.",
+			nX, nY,
+			n, n,
+		)
+	}
+
+}
+
+/*
+TestUtil_Identity2
+Description:
+
+	Create identity matrix of dimension 10.
+*/
+func TestUtil_Identity2(t *testing.T) {
+	// Constants
+	n := 10
+	// Algorithm
+	identMat1 := optim.Identity(n)
+
+	nX, nY := identMat1.Dims()
+	if (nX != n) || (nY != n) {
+		t.Errorf("The identity matrix created has dimension %v x %v; Expected %v x %v.",
+			nX, nY,
+			n, n,
+		)
+	}
+
+}

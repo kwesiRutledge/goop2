@@ -193,7 +193,7 @@ Description:
 
 	Adds a variable to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVar(varIn *optim.Var) error {
+func (gs *GurobiSolver) AddVar(varIn optim.Var) error {
 	// Constants
 
 	// Convert Variable Type
@@ -219,12 +219,12 @@ Description:
 
 	Adds a set of variables to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVars(varSliceIn []*optim.Var) error {
+func (gs *GurobiSolver) AddVars(varSliceIn []optim.Var) error {
 	// Constants
 
 	// Iterate through ALL variable address in varSliceIn
-	for _, varPointer := range varSliceIn {
-		err := gs.AddVar(varPointer)
+	for _, tempVar := range varSliceIn {
+		err := gs.AddVar(tempVar)
 		if err != nil {
 			// Terminate early.
 			return fmt.Errorf("Error in AddVar(): %v", err)

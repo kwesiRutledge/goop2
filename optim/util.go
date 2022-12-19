@@ -30,7 +30,7 @@ func SumVars(vs ...*Var) Expr {
 
 // SumRow returns the sum of all the variables in a single specified row of
 // a variable matrix.
-func SumRow(vs [][]*Var, row int) Expr {
+func SumRow(vs [][]Var, row int) Expr {
 	newExpr := NewExpr(0)
 	for col := 0; col < len(vs[0]); col++ {
 		newExpr.Plus(vs[row][col])
@@ -40,7 +40,7 @@ func SumRow(vs [][]*Var, row int) Expr {
 
 // SumCol returns the sum of all variables in a single specified column of
 // a variable matrix.
-func SumCol(vs [][]*Var, col int) Expr {
+func SumCol(vs [][]Var, col int) Expr {
 	newExpr := NewExpr(0)
 	for row := 0; row < len(vs); row++ {
 		newExpr.Plus(vs[row][col])

@@ -13,7 +13,7 @@ import (
 // problem, constraints, objective, and parameters. New variables can only be
 // created using an instantiated Model.
 type Model struct {
-	vars      []*Var
+	Variables []Var
 	constrs   []*Constr
 	obj       *Objective
 	showLog   bool
@@ -38,15 +38,15 @@ func (m *Model) SetTimeLimit(dur time.Duration) {
 
 // AddVar adds a variable of a given variable type to the model given the lower
 // and upper value limits. This variable is returned.
-func (m *Model) AddVar(lower, upper float64, vtype VarType) *Var {
-	id := uint64(len(m.vars))
-	newVar := &Var{id, lower, upper, vtype}
-	m.vars = append(m.vars, newVar)
+func (m *Model) AddVar(lower, upper float64, vtype VarType) Var {
+	id := uint64(len(m.Variables))
+	newVar := Var{id, lower, upper, vtype}
+	m.Variables = append(m.Variables, newVar)
 	return newVar
 }
 
 // AddBinaryVar adds a binary variable to the model and returns said variable.
-func (m *Model) AddBinaryVar() *Var {
+func (m *Model) AddBinaryVar() Var {
 	return m.AddVar(0, 1, Binary)
 }
 
@@ -54,20 +54,20 @@ func (m *Model) AddBinaryVar() *Var {
 // model. It then returns the resulting slice.
 func (m *Model) AddVarVector(
 	num int, lower, upper float64, vtype VarType,
-) []*Var {
-	stID := uint64(len(m.vars))
-	vs := make([]*Var, num)
+) []Var {
+	stID := uint64(len(m.Variables))
+	vs := make([]Var, num)
 	for i := range vs {
-		vs[i] = &Var{stID + uint64(i), lower, upper, vtype}
+		vs[i] = Var{stID + uint64(i), lower, upper, vtype}
 	}
 
-	m.vars = append(m.vars, vs...)
+	m.Variables = append(m.Variables, vs...)
 	return vs
 }
 
 // AddBinaryVarVector adds a vector of binary variables to the model and
 // returns the slice.
-func (m *Model) AddBinaryVarVector(num int) []*Var {
+func (m *Model) AddBinaryVarVector(num int) []Var {
 	return m.AddVarVector(num, 0, 1, Binary)
 }
 
@@ -75,8 +75,8 @@ func (m *Model) AddBinaryVarVector(num int) []*Var {
 // lower and upper value limits and returns the resulting slice.
 func (m *Model) AddVarMatrix(
 	rows, cols int, lower, upper float64, vtype VarType,
-) [][]*Var {
-	vs := make([][]*Var, rows)
+) [][]Var {
+	vs := make([][]Var, rows)
 	for i := range vs {
 		vs[i] = m.AddVarVector(cols, lower, upper, vtype)
 	}
@@ -86,7 +86,7 @@ func (m *Model) AddVarMatrix(
 
 // AddBinaryVarMatrix adds a matrix of binary variables to the model and returns
 // the resulting slice.
-func (m *Model) AddBinaryVarMatrix(rows, cols int) [][]*Var {
+func (m *Model) AddBinaryVarMatrix(rows, cols int) [][]Var {
 	return m.AddVarMatrix(rows, cols, 0, 1, Binary)
 }
 
@@ -108,14 +108,14 @@ func (m *Model) Optimize(solver Solver) (*Solution, error) {
 	var err error
 
 	// Input Processing
-	if len(m.vars) == 0 {
+	if len(m.Variables) == 0 {
 		return nil, errors.New("no variables in model")
 	}
 
-	// lbs := make([]float64, len(m.vars))
-	// ubs := make([]float64, len(m.vars))
+	// lbs := make([]float64, len(m.Variables))
+	// ubs := make([]float64, len(m.Variables))
 	// types := new(bytes.Buffer)
-	// for i, v := range m.vars {
+	// for i, v := range m.Variables {
 	// 	lbs[i] = v.Lower
 	// 	ubs[i] = v.Upper
 	// 	types.WriteByte(byte(v.Vtype))
@@ -127,7 +127,7 @@ func (m *Model) Optimize(solver Solver) (*Solution, error) {
 		solver.SetTimeLimit(m.timeLimit.Seconds())
 	}
 
-	solver.AddVars(m.vars)
+	solver.AddVars(m.Variables)
 
 	for _, constr := range m.constrs {
 		solver.AddConstr(constr)

@@ -24,9 +24,9 @@ func solveSimpleMIPModel(t *testing.T, solver optim.Solver) {
 		t.Fatal(err)
 	}
 
-	t.Log("x =", sol.Value(x))
-	t.Log("y =", sol.Value(y))
-	t.Log("z =", sol.Value(z))
+	t.Log("x =", sol.Value(&x))
+	t.Log("y =", sol.Value(&y))
+	t.Log("z =", sol.Value(&z))
 }
 
 func solveSumRowsColsModel(t *testing.T, solver optim.Solver) {
@@ -53,7 +53,7 @@ func solveSumRowsColsModel(t *testing.T, solver optim.Solver) {
 	fmt.Println(prettyPrintVarMatrix(vs, sol))
 }
 
-func prettyPrintVarMatrix(vs [][]*optim.Var, sol *optim.Solution) string {
+func prettyPrintVarMatrix(vs [][]optim.Var, sol *optim.Solution) string {
 	rows := len(vs)
 	cols := len(vs[0])
 
@@ -61,7 +61,7 @@ func prettyPrintVarMatrix(vs [][]*optim.Var, sol *optim.Solution) string {
 	for i := 0; i < rows; i++ {
 		rowStr := ""
 		for j := 0; j < cols; j++ {
-			if sol.Value(vs[i][j]) > 0.1 {
+			if sol.Value(&vs[i][j]) > 0.1 {
 				rowStr += "1 "
 			} else {
 				rowStr += "0 "
