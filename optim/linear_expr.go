@@ -26,7 +26,7 @@ func (e *LinearExpr) NumVars() int {
 }
 
 // Vars returns a slice of the Var ids in the expression
-func (e *LinearExpr) Vars() []uint64 {
+func (e *LinearExpr) IDs() []uint64 {
 	return e.XIndices
 }
 
@@ -43,7 +43,7 @@ func (e *LinearExpr) Constant() float64 {
 // Plus adds the current expression to another and returns the resulting
 // expression
 func (e *LinearExpr) Plus(other Expr) Expr {
-	e.XIndices = append(e.XIndices, other.Vars()...)
+	e.XIndices = append(e.XIndices, other.IDs()...)
 	e.L = append(e.L, other.Coeffs()...)
 	e.C += other.Constant()
 	return e

@@ -194,15 +194,15 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 	}
 
 	// Number of variables for this quadratic expression should be 2
-	if len(qv1.Vars()) != 2 {
-		t.Errorf("Expected for 2 variables to be found in quadratic expression; function says %v variables exist.", len(qv1.Vars()))
+	if len(qv1.IDs()) != 2 {
+		t.Errorf("Expected for 2 variables to be found in quadratic expression; function says %v variables exist.", len(qv1.IDs()))
 	}
 
-	if tempVars := qv1.Vars(); tempVars[0] != v1.ID {
+	if tempVars := qv1.IDs(); tempVars[0] != v1.ID {
 		t.Errorf("Expected for first ID to be %v; received %v.", v1.ID, tempVars[0])
 	}
 
-	if tempVars := qv1.Vars(); tempVars[1] != v2.ID {
+	if tempVars := qv1.IDs(); tempVars[1] != v2.ID {
 		t.Errorf("Expected for first ID to be %v; received %v.", v2.ID, tempVars[1])
 	}
 

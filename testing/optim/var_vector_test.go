@@ -12,7 +12,7 @@ func TestVarVector_Length1(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	if vv1.Length() != 2 {
@@ -34,7 +34,7 @@ func TestVarVector_Length2(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y, *x, *y, *x},
+		Elements: []optim.Var{x, y, x, y, x},
 	}
 
 	if vv1.Length() != 5 {
@@ -56,11 +56,11 @@ func TestVarVector_At1(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	extractedV := vv1.At(1)
-	if extractedV != *y {
+	if extractedV != y {
 		t.Errorf("Expected for extracted variable, %v, to be the same as %v. They were different!", extractedV, y)
 	}
 }
@@ -79,13 +79,13 @@ func TestVarVector_At2(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	extractedV := vv1.At(1)
 	extractedV.ID = 100
 
-	if extractedV == *y {
+	if extractedV == y {
 		t.Errorf("Expected for extracted variable, %v, to be DIFFERENT from %v. They were the same!", extractedV, y)
 	}
 }
@@ -104,7 +104,7 @@ func TestVarVector_VariableIDs1(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	extractedIDs := vv1.IDs()
@@ -132,7 +132,7 @@ func TestVarVector_VariableIDs2(t *testing.T) {
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *x, *x},
+		Elements: []optim.Var{x, x, x},
 	}
 
 	extractedIDs := vv1.IDs()

@@ -23,7 +23,7 @@ func (c K) NumVars() int {
 
 // Vars returns a slice of the Var ids in the expression. For constants,
 // this is always nil
-func (c K) Vars() []uint64 {
+func (c K) IDs() []uint64 {
 	return nil
 }
 

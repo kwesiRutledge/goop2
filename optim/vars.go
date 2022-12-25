@@ -17,7 +17,7 @@ func (v Var) NumVars() int {
 
 // Vars returns a slice of the Var ids in the expression. For a variable, it
 // always returns a singleton slice with the given variable ID.
-func (v Var) Vars() []uint64 {
+func (v Var) IDs() []uint64 {
 	return []uint64{v.ID}
 }
 
@@ -36,7 +36,7 @@ func (v Var) Constant() float64 {
 // Plus adds the current expression to another and returns the resulting
 // expression.
 func (v Var) Plus(e Expr) Expr {
-	vars := append([]uint64{v.ID}, e.Vars()...)
+	vars := append([]uint64{v.ID}, e.IDs()...)
 	coeffs := append([]float64{1}, e.Coeffs()...)
 	newExpr := &LinearExpr{
 		XIndices: vars,

@@ -20,7 +20,7 @@ func Sum(exprs ...Expr) Expr {
 
 // SumVars returns the sum of the given variables. It creates a new empty
 // expression and adds to it the given variables.
-func SumVars(vs ...*Var) Expr {
+func SumVars(vs ...Var) Expr {
 	newExpr := NewExpr(0)
 	for _, v := range vs {
 		newExpr.Plus(v)
@@ -49,7 +49,7 @@ func SumCol(vs [][]Var, col int) Expr {
 }
 
 // Dot returns the dot product of a vector of variables and slice of floats.
-func Dot(vs []*Var, coeffs []float64) Expr {
+func Dot(vs []Var, coeffs []float64) Expr {
 	if len(vs) != len(coeffs) {
 		log.WithFields(log.Fields{
 			"num_vars":   len(vs),

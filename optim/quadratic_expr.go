@@ -125,7 +125,7 @@ Description:
 */
 func (e *QuadraticExpr) NumVars() int {
 
-	return len(e.Vars())
+	return len(e.IDs())
 }
 
 /*
@@ -134,7 +134,7 @@ Description:
 
 	Returns the ids of all of the variables in the quadratic expression.
 */
-func (e *QuadraticExpr) Vars() []uint64 {
+func (e *QuadraticExpr) IDs() []uint64 {
 	return e.XIndices
 }
 

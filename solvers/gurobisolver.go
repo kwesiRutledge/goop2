@@ -246,7 +246,7 @@ func (gs *GurobiSolver) AddConstr(constrIn *optim.Constr) error {
 
 	// Identify the variables in the left hand side of this constraint
 	var tempVarSlice []*gurobi.Var
-	for _, tempGoopID := range constrIn.LeftHandSide.Vars() {
+	for _, tempGoopID := range constrIn.LeftHandSide.IDs() {
 		tempGurobiIdx := gs.GoopIDToGurobiIndexMap[tempGoopID]
 
 		// Locate the gurobi variable in the current model that has matching ID
@@ -287,7 +287,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 	switch objExpression.(type) {
 	case *optim.LinearExpr:
 		gurobiLE := &gurobi.LinExpr{}
-		for varIndex, goopIndex := range objExpression.Vars() {
+		for varIndex, goopIndex := range objExpression.IDs() {
 			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]
 
 			// Add each linear term to the expression.
@@ -316,10 +316,10 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 		gurobiQE := &gurobi.QuadExpr{}
 
 		// Create quadratic part of quadratic expression
-		for varIndex1, goopIndex1 := range objExpression.Vars() {
+		for varIndex1, goopIndex1 := range objExpression.IDs() {
 			gurobiIndex1 := gs.GoopIDToGurobiIndexMap[goopIndex1]
 
-			for varIndex2, goopIndex2 := range objExpression.Vars() {
+			for varIndex2, goopIndex2 := range objExpression.IDs() {
 				gurobiIndex2 := gs.GoopIDToGurobiIndexMap[goopIndex2]
 
 				// Add each linear term to the expression.
@@ -337,7 +337,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 		}
 
 		// Create linear part of quadratic expression
-		for varIndex, goopIndex := range objExpression.Vars() {
+		for varIndex, goopIndex := range objExpression.IDs() {
 			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]
 
 			// Add each linear term to the expression.

@@ -9,7 +9,7 @@ type Expr interface {
 	NumVars() int
 
 	// Vars returns a slice of the Var ids in the expression
-	Vars() []uint64
+	IDs() []uint64
 
 	// Coeffs returns a slice of the coefficients in the expression
 	Coeffs() []float64
@@ -48,7 +48,7 @@ func NewExpr(c float64) Expr {
 
 func getVarsPtr(e Expr) *uint64 {
 	if e.NumVars() > 0 {
-		return &e.Vars()[0]
+		return &e.IDs()[0]
 	}
 
 	return nil

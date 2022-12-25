@@ -21,7 +21,7 @@ func TestVectorLinearExpression_Check1(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
@@ -53,7 +53,7 @@ func TestVectorLinearExpression_Check2(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -90,7 +90,7 @@ func TestVectorLinearExpression_Check3(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	L1 := mat.NewDense(2, 3, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -126,7 +126,7 @@ func TestVectorLinearExpression_VariableIDs1(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -167,7 +167,7 @@ func TestVectorLinearExpression_VariableIDs2(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *x, *x, *x},
+		Elements: []optim.Var{x, x, x, x},
 	}
 
 	L1 := mat.NewDense(2, 4, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0})
@@ -212,7 +212,7 @@ func TestVectorLinearExpression_Coeffs1(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *y},
+		Elements: []optim.Var{x, y},
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}
@@ -256,7 +256,7 @@ func TestVectorLinearExpression_Coeffs2(t *testing.T) {
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{*x, *x, *x, *x},
+		Elements: []optim.Var{x, x, x, x},
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}
