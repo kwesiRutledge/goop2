@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kwesiRutledge/goop2/optim"
 	"gonum.org/v1/gonum/mat"
+	"strings"
 	"testing"
 )
 
@@ -143,7 +144,7 @@ func TestVectorLinearExpression_VariableIDs1(t *testing.T) {
 	}
 
 	// ve1 should pass all checks.
-	extractedIDs := ve1.VariableIDs()
+	extractedIDs := ve1.IDs()
 	// Check to see that x and y have ids in extractedIDs
 	if foundIndex, _ := optim.FindInSlice(x.ID, extractedIDs); foundIndex == -1 {
 		t.Errorf("x was not found in vv1, but it should have been!")
@@ -184,7 +185,7 @@ func TestVectorLinearExpression_VariableIDs2(t *testing.T) {
 	}
 
 	// ve1 should pass all checks.
-	extractedIDs := ve1.VariableIDs()
+	extractedIDs := ve1.IDs()
 	// Check to see that x has id in extractedIDs (y should not be there)
 	if len(extractedIDs) != 1 {
 		t.Errorf("There is only one unique variable ID and yet %v IDs were returned by the IDs() method.", len(extractedIDs))
@@ -230,15 +231,19 @@ func TestVectorLinearExpression_Coeffs1(t *testing.T) {
 	}
 
 	// ve1 should pass all checks.
-	extractedCoeffs := ve1.Coeffs()
-	for coeffIndex, coeffElt := range extractedCoeffs {
-		if coeffElt != LElts[coeffIndex] {
-			t.Errorf(
-				"The extracted coefficient at index %v (%v) is not the same as the given one (%v).",
-				coeffIndex,
-				coeffElt,
-				LElts[coeffIndex],
-			)
+	m_L, n_L := L1.Dims()
+	extractedCoeffMat := ve1.LinearCoeff()
+	for rowIndex := 0; rowIndex < m_L; rowIndex++ {
+		for colIndex := 0; colIndex < n_L; colIndex++ {
+			// Compare each element of the matrix
+			if L1.At(rowIndex, colIndex) != extractedCoeffMat.At(rowIndex, colIndex) {
+				t.Errorf(
+					"The extracted coefficient at index %v,%v (%v) is not the same as the given one (%v).",
+					rowIndex, colIndex,
+					extractedCoeffMat.At(rowIndex, colIndex),
+					L1.At(rowIndex, colIndex),
+				)
+			}
 		}
 	}
 
@@ -274,16 +279,19 @@ func TestVectorLinearExpression_Coeffs2(t *testing.T) {
 	}
 
 	// ve1 should pass all checks.
-	// ve1 should pass all checks.
-	extractedCoeffs := ve1.Coeffs()
-	for coeffIndex, coeffElt := range extractedCoeffs {
-		if coeffElt != LElts[coeffIndex] {
-			t.Errorf(
-				"The extracted coefficient at index %v (%v) is not the same as the given one (%v).",
-				coeffIndex,
-				coeffElt,
-				LElts[coeffIndex],
-			)
+	m_L, n_L := L1.Dims()
+	extractedCoeffMat := ve1.LinearCoeff()
+	for rowIndex := 0; rowIndex < m_L; rowIndex++ {
+		for colIndex := 0; colIndex < n_L; colIndex++ {
+			// Compare each element of the matrix
+			if L1.At(rowIndex, colIndex) != extractedCoeffMat.At(rowIndex, colIndex) {
+				t.Errorf(
+					"The extracted coefficient at index %v,%v (%v) is not the same as the given one (%v).",
+					rowIndex, colIndex,
+					extractedCoeffMat.At(rowIndex, colIndex),
+					L1.At(rowIndex, colIndex),
+				)
+			}
 		}
 	}
 }
@@ -328,3 +336,88 @@ Description:
 //	}
 //
 //}
+
+/*
+TestVectorLinearExpression_Eq1
+Description:
+
+	Tests whether or not an equality constraint between a ones vector and a standard vector variable works well.
+*/
+func TestVectorLinearExpression_Eq1(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variables
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y},
+	}
+	c := optim.ZerosVector(2)
+	vle1 := optim.VectorLinearExpr{
+		vv1,
+		optim.Identity(2),
+		&c,
+	}
+
+	ones0 := optim.OnesVector(2)
+
+	// Create Constraint
+	constr, err := vle1.Eq(ones0)
+	if err != nil {
+		t.Errorf("There was a problem creating the vector constraint using Eq(): %v", err)
+	}
+
+	n_R := 2
+	for rowIndex := 0; rowIndex < n_R; rowIndex++ {
+		if constr.LeftHandSide.Constant().AtVec(rowIndex) != vle1.Constant().AtVec(rowIndex) {
+			t.Errorf(
+				"The constraint's left hand side has constant value %v at index %v; expected %v!",
+				constr.LeftHandSide.Constant().AtVec(rowIndex),
+				rowIndex,
+				vle1.Constant().AtVec(rowIndex),
+			)
+		}
+	}
+
+}
+
+/*
+TestVectorLinearExpression_Eq2
+Description:
+
+	Tests whether or not an equality constraint between a bool and a proper vector variable leads to an error.
+*/
+func TestVectorLinearExpression_Eq2(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variables
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y},
+	}
+	c := optim.ZerosVector(2)
+	vle1 := optim.VectorLinearExpr{
+		vv1,
+		optim.Identity(2),
+		&c,
+	}
+
+	badRHS := false
+
+	// Create Constraint
+	_, err := vle1.Eq(badRHS)
+	if !strings.Contains(err.Error(), fmt.Sprintf("vector linear expression %v with object of type %T is not currently supported.", vle1, badRHS)) {
+		t.Errorf(
+			"Expected an error containing \"vector linear expression %v with object of type %T is not currently supported\"; instead received %v",
+			vle1,
+			badRHS,
+			err,
+		)
+	}
+
+}

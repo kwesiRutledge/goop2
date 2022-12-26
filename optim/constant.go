@@ -60,18 +60,18 @@ func (c K) Mult(val float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (c K) LessEq(other ScalarExpression) *ScalarConstraint {
-	return LessEq(c, other)
+func (c K) LessEq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{c, other, SenseLessThanEqual}
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (c K) GreaterEq(other ScalarExpression) *ScalarConstraint {
-	return GreaterEq(c, other)
+func (c K) GreaterEq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{c, other, SenseGreaterThanEqual}
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (c K) Eq(other ScalarExpression) *ScalarConstraint {
-	return Eq(c, other)
+func (c K) Eq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{c, other, SenseEqual}
 }

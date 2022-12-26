@@ -229,10 +229,10 @@ func (e *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
 		newQExprAligned.C += quadraticEInAligned.C
 		return newQExprAligned
 
-	case *LinearExpr:
+	case *ScalarLinearExpr:
 		// Collect Expressions
 		var newQExpr QuadraticExpr = *e // get copy of e
-		linearEIn := eIn.(*LinearExpr)
+		linearEIn := eIn.(*ScalarLinearExpr)
 
 		// Get Combined set of Variables
 		newXIndices := Unique(append(newQExpr.XIndices, linearEIn.XIndices...))
@@ -258,7 +258,7 @@ func (e *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
 
 // // Plus adds the current expression to another and returns the resulting
 // // expression
-// func (e *LinearExpr) Plus(other ScalarExpression) ScalarExpression {
+// func (e *ScalarLinearExpr) Plus(other ScalarExpression) ScalarExpression {
 // 	e.variables = append(e.variables, other.Vars()...)
 // 	e.coefficients = append(e.coefficients, other.Coeffs()...)
 // 	e.constant += other.Constant()
@@ -300,7 +300,7 @@ Description:
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) LessEq(other ScalarExpression) *ScalarConstraint {
+func (e *QuadraticExpr) LessEq(other ScalarExpression) ScalarConstraint {
 	return LessEq(e, other)
 }
 
@@ -311,7 +311,7 @@ Description:
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) GreaterEq(other ScalarExpression) *ScalarConstraint {
+func (e *QuadraticExpr) GreaterEq(other ScalarExpression) ScalarConstraint {
 	return GreaterEq(e, other)
 }
 
@@ -323,8 +323,8 @@ Description:
 	Eq returns an equality (==) constraint between the current expression
 	and another
 */
-func (e *QuadraticExpr) Eq(other ScalarExpression) *ScalarConstraint {
-	return Eq(e, other)
+func (e *QuadraticExpr) Eq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{e, other, SenseEqual}
 }
 
 /*

@@ -38,7 +38,7 @@ func (v Var) Constant() float64 {
 func (v Var) Plus(e ScalarExpression) ScalarExpression {
 	vars := append([]uint64{v.ID}, e.IDs()...)
 	coeffs := append([]float64{1}, e.Coeffs()...)
-	newExpr := &LinearExpr{
+	newExpr := &ScalarLinearExpr{
 		XIndices: vars,
 		L:        coeffs,
 		C:        e.Constant(),
@@ -57,7 +57,7 @@ func (v Var) Mult(m float64) ScalarExpression {
 	coeffs := []float64{m * v.Coeffs()[0]}
 
 	// Algorithm
-	newExpr := &LinearExpr{
+	newExpr := &ScalarLinearExpr{
 		XIndices: vars,
 		L:        coeffs,
 		C:        0,
@@ -70,20 +70,20 @@ func (v Var) Mult(m float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (v Var) LessEq(other ScalarExpression) *ScalarConstraint {
-	return LessEq(v, other)
+func (v Var) LessEq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{v, other, SenseLessThanEqual}
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (v Var) GreaterEq(other ScalarExpression) *ScalarConstraint {
-	return GreaterEq(v, other)
+func (v Var) GreaterEq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{v, other, SenseGreaterThanEqual}
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (v Var) Eq(other ScalarExpression) *ScalarConstraint {
-	return Eq(v, other)
+func (v Var) Eq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{v, other, SenseEqual}
 }
 
 /*

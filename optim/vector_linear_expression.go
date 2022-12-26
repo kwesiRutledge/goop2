@@ -29,11 +29,11 @@ Description:
 
 	Checks to see if the VectorLinearExpression is well-defined.
 */
-func (v VectorLinearExpr) Check() error {
+func (vle VectorLinearExpr) Check() error {
 	// Extract the dimension of the vector x
-	m := v.X.Length()
-	nL, mL := v.L.Dims()
-	nC := v.C.Len()
+	m := vle.X.Length()
+	nL, mL := vle.L.Dims()
+	nC := vle.C.Len()
 
 	// Compare the length of vector x with the appropriate dimension of L
 	if m != mL {
@@ -50,39 +50,103 @@ func (v VectorLinearExpr) Check() error {
 }
 
 /*
-VariableIDs
+IDs
 Description:
 
 	Returns the goop2 ID of each variable in the current vector linear expression.
 */
-func (v VectorLinearExpr) VariableIDs() []uint64 {
-	return v.X.IDs()
+func (vle VectorLinearExpr) IDs() []uint64 {
+	return vle.X.IDs()
 }
 
 /*
-Coeffs
+NumVars
 Description:
 
-	Returns a list of coefficients that correspond to each one of the elements of the coefficient matrix.
+	Returns the goop2 ID of each variable in the current vector linear expression.
 */
-func (v VectorLinearExpr) Coeffs() []float64 {
+func (vle VectorLinearExpr) NumVars() int {
+	return len(vle.IDs())
+}
 
-	var coeffsOut []float64
-	nRows, nCols := v.L.Dims()
-	for rowIndex := 0; rowIndex < nRows; rowIndex++ {
-		for colIndex := 0; colIndex < nCols; colIndex++ {
-			coeffsOut = append(coeffsOut, v.L.At(rowIndex, colIndex))
-		}
+/*
+LinearCoeff
+Description:
+
+	Returns the matrix which is applied as a coefficient to the vector X in our expression.
+*/
+func (vle VectorLinearExpr) LinearCoeff() mat.Matrix {
+
+	return vle.L
+}
+
+/*
+Constant
+Description:
+
+	Returns the vector which is given as an offset vector in the linear expression represented by v
+	(the c in the above expression).
+*/
+func (vle VectorLinearExpr) Constant() mat.Vector {
+
+	return vle.C
+}
+
+/*
+GreaterEq
+Description:
+
+	Creates a VectorConstraint that declares vle is greater than or equal to the value to the right hand side rhs.
+*/
+func (vle VectorLinearExpr) GreaterEq(rhs interface{}) (VectorConstraint, error) {
+	// Constant
+
+	// Algorithm
+	switch rhs.(type) {
+	case KVector:
+		return VectorConstraint{}, fmt.Errorf("Unimplemented.")
 	}
 
-	return coeffsOut
+	return VectorConstraint{}, fmt.Errorf("This place should never be reached!")
+}
+
+/*
+LessEq
+Description:
+
+	Creates a VectorConstraint that declares vle is less than or equal to the value to the right hand side rhs.
+*/
+func (vle VectorLinearExpr) LessEq(rhs interface{}) (VectorConstraint, error) {
+	// Constant
+
+	// Algorithm
+	switch rhs.(type) {
+	case KVector:
+		return VectorConstraint{}, fmt.Errorf("Unimplemented.")
+	}
+
+	return VectorConstraint{}, fmt.Errorf("This place should never be reached!")
 }
 
 /*
 Mult
 Description:
-	Returns an expression which corres
+
+	Returns an expression which scales every dimension of the vector linear expression by the input.
 */
+func (vle VectorLinearExpr) Mult(c float64) (VectorExpression, error) {
+	return vle, fmt.Errorf("The multiplication method has not yet been implemented!")
+}
+
+/*
+Plus
+Description:
+
+	Returns an expression which adds the expression e to the vector linear expression at hand.
+*/
+func (vle VectorLinearExpr) Plus(e VectorExpression) (VectorExpression, error) {
+	return vle, fmt.Errorf("The addition method has not yet been implemented!")
+}
 
 /*
 LessEq
@@ -114,3 +178,26 @@ Description:
 //
 //	return nil, fmt.Errorf("Unexpected type of right hand side %v: %T", rhsIn, rhsIn)
 //}
+
+/*
+Eq
+Description:
+
+	Creates a constraint between the current vector linear expression v and the
+	rhs given by rhs.
+*/
+func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
+	// Constants
+
+	// Algorithm
+	switch rhs.(type) {
+	case KVector:
+		rhsAsKVector, _ := rhs.(KVector)
+		return VectorConstraint{vle, rhsAsKVector, SenseEqual}, nil
+	case mat.VecDense:
+		rhsAsVecDense, _ := rhs.(mat.VecDense)
+		return vle.Eq(KVector(rhsAsVecDense))
+	default:
+		return VectorConstraint{}, fmt.Errorf("The comparison of vector linear expression %v with object of type %T is not currently supported.", vle, rhs)
+	}
+}

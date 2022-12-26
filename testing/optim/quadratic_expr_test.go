@@ -296,7 +296,7 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 	}
 
 	L2 := []float64{5.0, 6.0}
-	le2 := &optim.LinearExpr{
+	le2 := &optim.ScalarLinearExpr{
 		L:        L2,
 		C:        0.1,
 		XIndices: []uint64{v1.ID, v2.ID},
@@ -425,7 +425,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	L2 := []float64{2.0, 11.0}
 	C2 := 1.25
 
-	le2 := &optim.LinearExpr{
+	le2 := &optim.ScalarLinearExpr{
 		L:        L2,
 		C:        C2,
 		XIndices: []uint64{v2.ID, v3.ID},

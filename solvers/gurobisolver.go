@@ -285,7 +285,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 
 	// Handle this differently for different types of expression inputs
 	switch objExpression.(type) {
-	case *optim.LinearExpr:
+	case *optim.ScalarLinearExpr:
 		gurobiLE := &gurobi.LinExpr{}
 		for varIndex, goopIndex := range objExpression.IDs() {
 			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]

@@ -174,6 +174,23 @@ func OnesVector(lengthIn int) mat.VecDense {
 }
 
 /*
+ZerosVector
+Description:
+
+	Returns a vector of zeros with length lengthIn.
+	Note: this function assumes lengthIn is a positive number.
+*/
+func ZerosVector(lengthIn int) mat.VecDense {
+	// Create the empty slice.
+	elts := make([]float64, lengthIn)
+
+	for eltIndex := 0; eltIndex < lengthIn; eltIndex++ {
+		elts[eltIndex] = 0.0
+	}
+	return *mat.NewVecDense(lengthIn, elts)
+}
+
+/*
 Identity
 Description:
 

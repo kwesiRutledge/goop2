@@ -16,3 +16,37 @@ When you have cloned this repository and want to begin testing it, then you simp
 ## Examples
 
 There are several examples in the test files. Check out `lp_solve_test.go` for an example.
+
+## To-Dos
+
+- Complete the Operator Eq Function
+  - When Called On Scalars
+    - Constants 
+    - Variables
+    - Linear Expressions
+    - Quadratic Expressions
+  - When Called on Vectors
+    - Constants
+    - Variables
+    - Linear Expressions
+- Replace the vector creation scripts with ones that use the new VarVector type
+- Complete the GreaterEq Function
+    - When Called On Scalars
+        - Constants
+        - Variables
+        - Linear Expressions
+        - Quadratic Expressions
+    - When Called on Vectors
+        - Constants
+        - Variables
+        - Linear Expressions
+- Complete the GreaterEq Function
+    - When Called On Scalars
+        - Constants
+        - Variables
+        - Linear Expressions
+        - Quadratic Expressions
+    - When Called on Vectors
+        - Constants
+        - Variables
+        - Linear Expressions

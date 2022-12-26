@@ -2,13 +2,13 @@ package optim
 
 import "fmt"
 
-// LinearExpr represents a linear general expression of the form
+// ScalarLinearExpr represents a linear general expression of the form
 //
 //	L' * x + C
 //
 // where L is a vector of coefficients that matches the dimension of x, the vector of variables
 // variables and C is a constant
-type LinearExpr struct {
+type ScalarLinearExpr struct {
 	XIndices []uint64
 	L        []float64 // Vector of coefficients. Should match the dimensions of XIndices
 	C        float64
@@ -17,32 +17,32 @@ type LinearExpr struct {
 // NewLinearExpr returns a new expression with a single additive constant
 // value, c, and no variables.
 func NewLinearExpr(c float64) ScalarExpression {
-	return &LinearExpr{C: c}
+	return &ScalarLinearExpr{C: c}
 }
 
 // NumVars returns the number of variables in the expression
-func (e *LinearExpr) NumVars() int {
+func (e *ScalarLinearExpr) NumVars() int {
 	return len(e.XIndices)
 }
 
 // Vars returns a slice of the Var ids in the expression
-func (e *LinearExpr) IDs() []uint64 {
+func (e *ScalarLinearExpr) IDs() []uint64 {
 	return e.XIndices
 }
 
 // Coeffs returns a slice of the coefficients in the expression
-func (e *LinearExpr) Coeffs() []float64 {
+func (e *ScalarLinearExpr) Coeffs() []float64 {
 	return e.L
 }
 
 // Constant returns the constant additive value in the expression
-func (e *LinearExpr) Constant() float64 {
+func (e *ScalarLinearExpr) Constant() float64 {
 	return e.C
 }
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (e *LinearExpr) Plus(other ScalarExpression) ScalarExpression {
+func (e *ScalarLinearExpr) Plus(other ScalarExpression) ScalarExpression {
 	e.XIndices = append(e.XIndices, other.IDs()...)
 	e.L = append(e.L, other.Coeffs()...)
 	e.C += other.Constant()
@@ -51,7 +51,7 @@ func (e *LinearExpr) Plus(other ScalarExpression) ScalarExpression {
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (e *LinearExpr) Mult(c float64) ScalarExpression {
+func (e *ScalarLinearExpr) Mult(c float64) ScalarExpression {
 	for i, coeff := range e.L {
 		e.L[i] = coeff * c
 	}
@@ -62,20 +62,20 @@ func (e *LinearExpr) Mult(c float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (e *LinearExpr) LessEq(other ScalarExpression) *ScalarConstraint {
+func (e *ScalarLinearExpr) LessEq(other ScalarExpression) ScalarConstraint {
 	return LessEq(e, other)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (e *LinearExpr) GreaterEq(other ScalarExpression) *ScalarConstraint {
+func (e *ScalarLinearExpr) GreaterEq(other ScalarExpression) ScalarConstraint {
 	return GreaterEq(e, other)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (e *LinearExpr) Eq(other ScalarExpression) *ScalarConstraint {
-	return Eq(e, other)
+func (e *ScalarLinearExpr) Eq(other ScalarExpression) ScalarConstraint {
+	return ScalarConstraint{e, other, SenseEqual}
 }
 
 /*
@@ -88,9 +88,9 @@ Usage:
 
 	rewrittenLE, err := orignalLE.RewriteInTermsOfIndices(newXIndices1)
 */
-func (e *LinearExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*LinearExpr, error) {
+func (e *ScalarLinearExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*ScalarLinearExpr, error) {
 	// Create new Linear Express
-	var newLE LinearExpr = LinearExpr{
+	var newLE ScalarLinearExpr = ScalarLinearExpr{
 		XIndices: newXIndices,
 	}
 

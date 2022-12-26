@@ -26,7 +26,7 @@ type Expression interface {
 
 	// Mult multiplies the current expression to another and returns the
 	// resulting expression
-	Mult(c Expression) ScalarExpression
+	Mult(c Expression) Expression
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another

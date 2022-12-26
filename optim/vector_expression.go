@@ -41,15 +41,15 @@ type VectorExpression interface {
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another
-	LessEq(e interface{}) (VectorConstraint, error)
+	LessEq(rhs interface{}) (VectorConstraint, error)
 
 	// GreaterEq returns a greater than or equal to (>=) constraint between the
 	// current expression and another
-	GreaterEq(e interface{}) (VectorConstraint, error)
+	GreaterEq(rhs interface{}) (VectorConstraint, error)
 
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
-	Eq(e interface{}) (VectorConstraint, error)
+	Eq(rhs interface{}) (VectorConstraint, error)
 }
 
 /*

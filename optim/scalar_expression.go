@@ -27,15 +27,15 @@ type ScalarExpression interface {
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another
-	LessEq(e ScalarExpression) *ScalarConstraint
+	LessEq(e ScalarExpression) ScalarConstraint
 
 	// GreaterEq returns a greater than or equal to (>=) constraint between the
 	// current expression and another
-	GreaterEq(e ScalarExpression) *ScalarConstraint
+	GreaterEq(e ScalarExpression) ScalarConstraint
 
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
-	Eq(e ScalarExpression) *ScalarConstraint
+	Eq(e ScalarExpression) ScalarConstraint
 }
 
 // NewExpr returns a new expression with a single additive constant value, c,
@@ -43,7 +43,7 @@ type ScalarExpression interface {
 // for creating new empty expressions that you can perform operatotions on
 // later
 func NewExpr(c float64) ScalarExpression {
-	return &LinearExpr{C: c}
+	return &ScalarLinearExpr{C: c}
 }
 
 func getVarsPtr(e ScalarExpression) *uint64 {
