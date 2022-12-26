@@ -93,8 +93,8 @@ func TestQuadraticExpr_NumVars1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -122,9 +122,9 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
-	v3 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q2 := [][]float64{
 		[]float64{1.0, 2.0, 3.0},
@@ -153,7 +153,7 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q3 := [][]float64{
 		[]float64{2.3},
@@ -180,8 +180,8 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -218,8 +218,8 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -282,8 +282,8 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -343,9 +343,9 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
-	v3 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -404,9 +404,9 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
-	v3 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -467,8 +467,8 @@ func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVar(-10, 10, optim.Continuous)
-	v2 := m.AddVar(-10, 10, optim.Continuous)
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},

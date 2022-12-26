@@ -3,6 +3,7 @@ package optim
 import (
 	"errors"
 	"fmt"
+	"github.com/kwesiRutledge/gurobi.go/gurobi"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -36,9 +37,29 @@ func (m *Model) SetTimeLimit(dur time.Duration) {
 	m.timeLimit = dur
 }
 
+/*
+AddVar
+Description:
+
+	This method adds an "unbounded" continuous variable to the model.
+*/
+func (m *Model) AddVar() Var {
+	return m.AddRealVar()
+}
+
+/*
+AddRealVar
+Description:
+
+	Adds a Real variable to the model and returns said variable.
+*/
+func (m *Model) AddRealVar() Var {
+	return m.AddVarClassic(-gurobi.INFINITY, gurobi.INFINITY, Continuous)
+}
+
 // AddVar adds a variable of a given variable type to the model given the lower
 // and upper value limits. This variable is returned.
-func (m *Model) AddVar(lower, upper float64, vtype VarType) Var {
+func (m *Model) AddVarClassic(lower, upper float64, vtype VarType) Var {
 	id := uint64(len(m.Variables))
 	newVar := Var{id, lower, upper, vtype}
 	m.Variables = append(m.Variables, newVar)
@@ -47,14 +68,37 @@ func (m *Model) AddVar(lower, upper float64, vtype VarType) Var {
 
 // AddBinaryVar adds a binary variable to the model and returns said variable.
 func (m *Model) AddBinaryVar() Var {
-	return m.AddVar(0, 1, Binary)
+	return m.AddVarClassic(0, 1, Binary)
 }
 
 // AddVarVector adds a vector of variables of a given variable type to the
 // model. It then returns the resulting slice.
-func (m *Model) AddVarVector(
+/*
+AddVarVector
+Description:
+	Creates a VarVector object using a constructor that assumes you want an "unbounded" vector of real optimization
+	variables.
+*/
+func (m *Model) AddVarVector(dim int) VarVector {
+	// Constants
+
+	// Algorithm
+	varSlice := make([]Var, dim)
+	for eltIndex := 0; eltIndex < dim; eltIndex++ {
+		varSlice[eltIndex] = m.AddVar()
+	}
+	return VarVector{varSlice}
+}
+
+/*
+AddVarVectorClassic
+Description:
+
+	The classic version of AddVarVector defined in the original goop.
+*/
+func (m *Model) AddVarVectorClassic(
 	num int, lower, upper float64, vtype VarType,
-) []Var {
+) VarVector {
 	stID := uint64(len(m.Variables))
 	vs := make([]Var, num)
 	for i := range vs {
@@ -62,13 +106,13 @@ func (m *Model) AddVarVector(
 	}
 
 	m.Variables = append(m.Variables, vs...)
-	return vs
+	return VarVector{vs}
 }
 
 // AddBinaryVarVector adds a vector of binary variables to the model and
 // returns the slice.
-func (m *Model) AddBinaryVarVector(num int) []Var {
-	return m.AddVarVector(num, 0, 1, Binary)
+func (m *Model) AddBinaryVarVector(num int) VarVector {
+	return m.AddVarVectorClassic(num, 0, 1, Binary)
 }
 
 // AddVarMatrix adds a matrix of variables of a given type to the model with
@@ -78,7 +122,8 @@ func (m *Model) AddVarMatrix(
 ) [][]Var {
 	vs := make([][]Var, rows)
 	for i := range vs {
-		vs[i] = m.AddVarVector(cols, lower, upper, vtype)
+		tempVV := m.AddVarVectorClassic(cols, lower, upper, vtype)
+		vs[i] = tempVV.Elements
 	}
 
 	return vs

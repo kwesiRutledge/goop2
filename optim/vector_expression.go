@@ -33,7 +33,7 @@ type VectorExpression interface {
 
 	// Plus adds the current expression to another and returns the resulting
 	// expression
-	Plus(e VectorExpression) (VectorExpression, error)
+	Plus(ve VectorExpression) (VectorExpression, error)
 
 	// Mult multiplies the current expression with another and returns the
 	// resulting expression
@@ -50,6 +50,9 @@ type VectorExpression interface {
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
 	Eq(rhs interface{}) (VectorConstraint, error)
+
+	// Len returns the length of the vector expression.
+	Len() int
 }
 
 /*

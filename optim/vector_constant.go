@@ -180,7 +180,7 @@ Description:
 
 	This method returns an equality (==) constraint between the current expression and another
 */
-func (c KVector) Eq(rhsIn interface{}) (VectorConstraint, error) {
+func (kv KVector) Eq(rhsIn interface{}) (VectorConstraint, error) {
 
 	switch rhsIn.(type) {
 	case KVector:
@@ -189,14 +189,25 @@ func (c KVector) Eq(rhsIn interface{}) (VectorConstraint, error) {
 
 		// Return constraint
 		return VectorConstraint{
-			LeftHandSide:  c,
+			LeftHandSide:  kv,
 			RightHandSide: rhsAsKVector,
 			Sense:         SenseEqual,
 		}, nil
+	case VarVector:
+		// Cast type
+		rhsAsVV, _ := rhsIn.(VarVector)
+
+		// Return constraint
+		return rhsAsVV.Eq(kv)
+	case VectorLinearExpr:
+		// Cast Type
+		rhsAsVLE, _ := rhsIn.(VectorLinearExpr)
+
+		// Return constraint
+		return rhsAsVLE.Eq(kv)
+	default:
+		// Return an error
+		return VectorConstraint{}, fmt.Errorf("The input to KVector's Eq() (%v) has unexpected type: %T", rhsIn, rhsIn)
 
 	}
-
-	// Return an error if none of the above types matched.
-	return VectorConstraint{}, fmt.Errorf("The input to Eq() (%v) has unexpected type: %T", rhsIn, rhsIn)
-
 }

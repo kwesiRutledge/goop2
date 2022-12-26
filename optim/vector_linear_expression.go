@@ -189,15 +189,71 @@ Description:
 func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
 	// Constants
 
+	// Check Input
+	err := vle.Check()
+	if err != nil {
+		return VectorConstraint{}, fmt.Errorf(
+			"There was an issue in the provided vector linear expression %v: %v",
+			vle, err,
+		)
+	}
+
 	// Algorithm
 	switch rhs.(type) {
 	case KVector:
 		rhsAsKVector, _ := rhs.(KVector)
+		// Check length of input and output.
+		if rhsAsKVector.Len() != vle.Len() {
+			return VectorConstraint{},
+				fmt.Errorf(
+					"The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!",
+					vle.Len(),
+					rhsAsKVector.Len(),
+				)
+		}
 		return VectorConstraint{vle, rhsAsKVector, SenseEqual}, nil
 	case mat.VecDense:
 		rhsAsVecDense, _ := rhs.(mat.VecDense)
 		return vle.Eq(KVector(rhsAsVecDense))
+	case VectorLinearExpr:
+		rhsAsVLE, _ := rhs.(VectorLinearExpr)
+		// Check length of input and output.
+		if rhsAsVLE.Len() != vle.Len() {
+			return VectorConstraint{},
+				fmt.Errorf(
+					"The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!",
+					vle.Len(),
+					rhsAsVLE.Len(),
+				)
+		}
+		return VectorConstraint{vle, rhsAsVLE, SenseEqual}, nil
+	case VarVector:
+		rhsAsVV, _ := rhs.(VarVector)
+		// Check length of input and output.
+		if rhsAsVV.Len() != vle.Len() {
+			return VectorConstraint{},
+				fmt.Errorf(
+					"The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!",
+					vle.Len(),
+					rhsAsVV.Len(),
+				)
+		}
+		return VectorConstraint{vle, rhsAsVV, SenseEqual}, nil
+
 	default:
 		return VectorConstraint{}, fmt.Errorf("The comparison of vector linear expression %v with object of type %T is not currently supported.", vle, rhs)
 	}
+}
+
+/*
+Len
+Description:
+
+	The size of the constraint.
+*/
+func (vle VectorLinearExpr) Len() int {
+	// Constants
+
+	// Algorithm
+	return vle.C.Len()
 }

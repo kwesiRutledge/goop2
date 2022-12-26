@@ -421,3 +421,121 @@ func TestVectorLinearExpression_Eq2(t *testing.T) {
 	}
 
 }
+
+/*
+TestVectorLinearExpression_Eq3
+Description:
+
+	Tests whether or not an equality constraint between a KVector and a proper vector variable leads to an error.
+*/
+func TestVectorLinearExpression_Eq3(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variables
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y},
+	}
+	c := optim.ZerosVector(2)
+	vle1 := optim.VectorLinearExpr{
+		vv1,
+		optim.Identity(2),
+		&c,
+	}
+
+	onesVec1 := optim.OnesVector(2)
+	onesVec2 := optim.KVector(onesVec1)
+
+	// Create Constraint
+	vectorConstraint, err := vle1.Eq(onesVec2)
+	if err != nil {
+		t.Errorf(
+			"There was an issue creating a constraint between %v and %v: %v",
+			vle1,
+			onesVec2,
+			err,
+		)
+	}
+
+	if vectorConstraint.LeftHandSide.Len() != onesVec2.Len() {
+		t.Errorf("The length of lhs (%v) and rhs (%v) should be the same!", vle1.Len(), onesVec2.Len())
+	}
+
+}
+
+/*
+TestVectorLinearExpression_Len1
+Description:
+
+	This test will evaluate how well the Len() method for the vector of linear constraints works.
+	A constraint between two vectors of length 2
+*/
+func TestVectorLinearExpression_Len1(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variables
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y},
+	}
+
+	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
+	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vv1, L1, c1,
+	}
+
+	// ve1 should pass all checks.
+	err := ve1.Check()
+	if err != nil {
+		t.Errorf("The vector linear expression was supposed to be valid, but received an error: %v", err)
+	}
+
+	if ve1.Len() != 2 {
+		t.Errorf("Len() of vector linear expression was %v; expeted 2", ve1.Len())
+	}
+}
+
+/*
+TestVectorLinearExpression_Len2
+Description:
+
+	This test will evaluate how well the Len() method for the vector of linear constraints works.
+	A constraint between two vectors of length 10
+*/
+func TestVectorLinearExpression_Len2(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variables
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y},
+	}
+
+	dimX := 10
+	L1 := optim.Identity(dimX)
+	c1 := optim.OnesVector(dimX)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vv1, L1, &c1,
+	}
+
+	err := ve1.Check()
+	if err != nil {
+		t.Errorf("The vector linear expression was invalid! %v", err)
+	}
+
+	// ve1 should pass all checks.
+	if ve1.Len() != dimX {
+		t.Errorf("Len() of vector linear expression was %v; expeted %v", ve1.Len(), dimX)
+	}
+
+}

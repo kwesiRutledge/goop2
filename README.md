@@ -50,3 +50,10 @@ There are several examples in the test files. Check out `lp_solve_test.go` for a
         - Constants
         - Variables
         - Linear Expressions
+- VarVector
+  - Plus
+  - Multiply
+  - LessEq
+  - GreaterEq
+  - Eq
+  - Len

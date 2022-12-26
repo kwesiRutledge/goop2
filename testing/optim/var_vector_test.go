@@ -1,7 +1,9 @@
 package optim_test
 
 import (
+	"fmt"
 	"github.com/kwesiRutledge/goop2/optim"
+	"strings"
 	"testing"
 )
 
@@ -147,5 +149,144 @@ func TestVarVector_VariableIDs2(t *testing.T) {
 
 	if foundIndex, _ := optim.FindInSlice(y.ID, extractedIDs); foundIndex != -1 {
 		t.Errorf("x was not found in vv1, but it should have been!")
+	}
+}
+
+/*
+TestVarVector_Constant1
+Description:
+
+	This test verifies that the constant method returns an all zero vector for any varvector object.
+*/
+func TestVarVector_Constant1(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variable
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y},
+	}
+
+	extractedConstant := vv1.Constant()
+
+	// Check to see that all elts in the vector are zero.
+	for eltIndex := 0; eltIndex < vv1.Len(); eltIndex++ {
+		constElt := extractedConstant.AtVec(eltIndex)
+		if constElt != 0.0 {
+			t.Errorf("Constant vector at index %v is %v; not 0.", eltIndex, constElt)
+		}
+	}
+}
+
+/*
+TestVarVector_Constant2
+Description:
+
+	This test verifies that the constant method returns an all zero vector for any varvector object.
+	This one will be extremely long.
+*/
+func TestVarVector_Constant2(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variable
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+	}
+
+	extractedConstant := vv1.Constant()
+
+	// Check to see that all elts in the vector are zero.
+	for eltIndex := 0; eltIndex < vv1.Len(); eltIndex++ {
+		constElt := extractedConstant.AtVec(eltIndex)
+		if constElt != 0.0 {
+			t.Errorf("Constant vector at index %v is %v; not 0.", eltIndex, constElt)
+		}
+	}
+}
+
+/*
+
+ */
+
+/*
+TestVarVector_Eq1
+Description:
+
+	This test verifies that the Eq method works between a varvector and another object.
+*/
+func TestVarVector_Eq1(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variable
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+	}
+
+	zerosAsVecDense := optim.ZerosVector(vv1.Len())
+	zerosAsKVector := optim.KVector(zerosAsVecDense)
+
+	// Verify that constraint can be created with no issues.
+	_, err := vv1.Eq(zerosAsKVector)
+	if err != nil {
+		t.Errorf("There was an issue creating an equality constraint between vv1 and the zero vector.")
+	}
+}
+
+/*
+TestVarVector_Eq2
+Description:
+
+	This test verifies that the Eq method works between a varvector and another object.
+	Comparison should be between var vector and an unsupported type.
+*/
+func TestVarVector_Eq2(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variable
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+	}
+
+	badRHS := false
+
+	// Verify that constraint can be created with no issues.
+	_, err := vv1.Eq(badRHS)
+	expectedError := fmt.Sprintf("The Eq() method for VarVector is not implemented yet for type %T!", badRHS)
+	if !strings.Contains(err.Error(), expectedError) {
+		t.Errorf("Expected error \"%v\"; received \"%v\"", expectedError, err)
+	}
+}
+
+/*
+TestVarVector_Eq2
+Description:
+
+	This test verifies that the Eq method works between a varvector and another var vector.
+*/
+func TestVarVector_Eq3(t *testing.T) {
+	m := optim.NewModel()
+	x := m.AddBinaryVar()
+	y := m.AddBinaryVar()
+
+	// Create Vector Variable
+	vv1 := optim.VarVector{
+		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+	}
+
+	vv2 := optim.VarVector{
+		Elements: []optim.Var{y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x},
+	}
+
+	// Verify that constraint can be created with no issues.
+	_, err := vv1.Eq(vv2)
+	if err != nil {
+		t.Errorf("There was an error creating equality constraint between the two varvectors: %v", err)
 	}
 }

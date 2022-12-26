@@ -80,3 +80,30 @@ func TestKVector_Len2(t *testing.T) {
 		t.Errorf("The length of vec1 should be %v, but instead it is %v.", desLength, vec1.Len())
 	}
 }
+
+/*
+TestKVector_Eq1
+Description:
+
+	This function tests that the Eq() method is properly working for KVector inputs.
+*/
+func TestKVector_Eq1(t *testing.T) {
+	// Constants
+	desLength := 10
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var vec2 = optim.KVector(optim.ZerosVector(desLength))
+
+	// Create Constraint
+	constr, err := vec1.Eq(vec2)
+	if err != nil {
+		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
+	}
+
+	if constr.LeftHandSide.Len() != vec1.Len() {
+		t.Errorf(
+			"Expected left hand side (length %v) to have same length as vec1 (length %v).",
+			constr.LeftHandSide.Len(),
+			vec1.Len(),
+		)
+	}
+}
