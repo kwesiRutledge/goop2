@@ -198,7 +198,7 @@ Description:
 	- A Linear Expression, or
 	- A Constant
 */
-func (e *QuadraticExpr) Plus(eIn Expr) Expr {
+func (e *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
 	// Constants
 
 	// Algorithm depends
@@ -258,7 +258,7 @@ func (e *QuadraticExpr) Plus(eIn Expr) Expr {
 
 // // Plus adds the current expression to another and returns the resulting
 // // expression
-// func (e *LinearExpr) Plus(other Expr) Expr {
+// func (e *LinearExpr) Plus(other ScalarExpression) ScalarExpression {
 // 	e.variables = append(e.variables, other.Vars()...)
 // 	e.coefficients = append(e.coefficients, other.Coeffs()...)
 // 	e.constant += other.Constant()
@@ -273,7 +273,7 @@ Description:
 	Mult multiplies the current expression to another and returns the
 	resulting expression
 */
-func (e *QuadraticExpr) Mult(c float64) Expr {
+func (e *QuadraticExpr) Mult(c float64) ScalarExpression {
 	// Iterate through all of the rows and columns of Q
 	nV := e.NumVars()
 	for i := 0; i < nV; i++ {
@@ -300,7 +300,7 @@ Description:
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) LessEq(other Expr) *Constr {
+func (e *QuadraticExpr) LessEq(other ScalarExpression) *ScalarConstraint {
 	return LessEq(e, other)
 }
 
@@ -311,7 +311,7 @@ Description:
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) GreaterEq(other Expr) *Constr {
+func (e *QuadraticExpr) GreaterEq(other ScalarExpression) *ScalarConstraint {
 	return GreaterEq(e, other)
 }
 
@@ -323,7 +323,7 @@ Description:
 	Eq returns an equality (==) constraint between the current expression
 	and another
 */
-func (e *QuadraticExpr) Eq(other Expr) *Constr {
+func (e *QuadraticExpr) Eq(other ScalarExpression) *ScalarConstraint {
 	return Eq(e, other)
 }
 

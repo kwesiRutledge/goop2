@@ -41,7 +41,7 @@ func (c K) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (c K) Plus(e Expr) Expr {
+func (c K) Plus(e ScalarExpression) ScalarExpression {
 	switch e.(type) {
 	case K:
 		return K(c.Constant() + e.Constant())
@@ -54,24 +54,24 @@ func (c K) Plus(e Expr) Expr {
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (c K) Mult(val float64) Expr {
+func (c K) Mult(val float64) ScalarExpression {
 	return K(float64(c) * val)
 }
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (c K) LessEq(other Expr) *Constr {
+func (c K) LessEq(other ScalarExpression) *ScalarConstraint {
 	return LessEq(c, other)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (c K) GreaterEq(other Expr) *Constr {
+func (c K) GreaterEq(other ScalarExpression) *ScalarConstraint {
 	return GreaterEq(c, other)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (c K) Eq(other Expr) *Constr {
+func (c K) Eq(other ScalarExpression) *ScalarConstraint {
 	return Eq(c, other)
 }

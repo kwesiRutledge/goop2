@@ -16,7 +16,7 @@ type LinearExpr struct {
 
 // NewLinearExpr returns a new expression with a single additive constant
 // value, c, and no variables.
-func NewLinearExpr(c float64) Expr {
+func NewLinearExpr(c float64) ScalarExpression {
 	return &LinearExpr{C: c}
 }
 
@@ -42,7 +42,7 @@ func (e *LinearExpr) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (e *LinearExpr) Plus(other Expr) Expr {
+func (e *LinearExpr) Plus(other ScalarExpression) ScalarExpression {
 	e.XIndices = append(e.XIndices, other.IDs()...)
 	e.L = append(e.L, other.Coeffs()...)
 	e.C += other.Constant()
@@ -51,7 +51,7 @@ func (e *LinearExpr) Plus(other Expr) Expr {
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (e *LinearExpr) Mult(c float64) Expr {
+func (e *LinearExpr) Mult(c float64) ScalarExpression {
 	for i, coeff := range e.L {
 		e.L[i] = coeff * c
 	}
@@ -62,19 +62,19 @@ func (e *LinearExpr) Mult(c float64) Expr {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (e *LinearExpr) LessEq(other Expr) *Constr {
+func (e *LinearExpr) LessEq(other ScalarExpression) *ScalarConstraint {
 	return LessEq(e, other)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (e *LinearExpr) GreaterEq(other Expr) *Constr {
+func (e *LinearExpr) GreaterEq(other ScalarExpression) *ScalarConstraint {
 	return GreaterEq(e, other)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (e *LinearExpr) Eq(other Expr) *Constr {
+func (e *LinearExpr) Eq(other ScalarExpression) *ScalarConstraint {
 	return Eq(e, other)
 }
 

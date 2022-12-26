@@ -35,7 +35,7 @@ func (v Var) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression.
-func (v Var) Plus(e Expr) Expr {
+func (v Var) Plus(e ScalarExpression) ScalarExpression {
 	vars := append([]uint64{v.ID}, e.IDs()...)
 	coeffs := append([]float64{1}, e.Coeffs()...)
 	newExpr := &LinearExpr{
@@ -48,7 +48,7 @@ func (v Var) Plus(e Expr) Expr {
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (v Var) Mult(m float64) Expr {
+func (v Var) Mult(m float64) ScalarExpression {
 	// Constants
 	// switch m.(type) {
 	// case float64:
@@ -70,19 +70,19 @@ func (v Var) Mult(m float64) Expr {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (v Var) LessEq(other Expr) *Constr {
+func (v Var) LessEq(other ScalarExpression) *ScalarConstraint {
 	return LessEq(v, other)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (v Var) GreaterEq(other Expr) *Constr {
+func (v Var) GreaterEq(other ScalarExpression) *ScalarConstraint {
 	return GreaterEq(v, other)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (v Var) Eq(other Expr) *Constr {
+func (v Var) Eq(other ScalarExpression) *ScalarConstraint {
 	return Eq(v, other)
 }
 

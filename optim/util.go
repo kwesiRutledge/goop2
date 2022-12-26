@@ -9,7 +9,7 @@ import (
 
 // Sum returns the sum of the given expressions. It creates a new empty
 // expression and adds to it the given expressions.
-func Sum(exprs ...Expr) Expr {
+func Sum(exprs ...ScalarExpression) ScalarExpression {
 	newExpr := NewExpr(0)
 	for _, e := range exprs {
 		newExpr.Plus(e)
@@ -20,7 +20,7 @@ func Sum(exprs ...Expr) Expr {
 
 // SumVars returns the sum of the given variables. It creates a new empty
 // expression and adds to it the given variables.
-func SumVars(vs ...Var) Expr {
+func SumVars(vs ...Var) ScalarExpression {
 	newExpr := NewExpr(0)
 	for _, v := range vs {
 		newExpr.Plus(v)
@@ -30,7 +30,7 @@ func SumVars(vs ...Var) Expr {
 
 // SumRow returns the sum of all the variables in a single specified row of
 // a variable matrix.
-func SumRow(vs [][]Var, row int) Expr {
+func SumRow(vs [][]Var, row int) ScalarExpression {
 	newExpr := NewExpr(0)
 	for col := 0; col < len(vs[0]); col++ {
 		newExpr.Plus(vs[row][col])
@@ -40,7 +40,7 @@ func SumRow(vs [][]Var, row int) Expr {
 
 // SumCol returns the sum of all variables in a single specified column of
 // a variable matrix.
-func SumCol(vs [][]Var, col int) Expr {
+func SumCol(vs [][]Var, col int) ScalarExpression {
 	newExpr := NewExpr(0)
 	for row := 0; row < len(vs); row++ {
 		newExpr.Plus(vs[row][col])
@@ -49,7 +49,7 @@ func SumCol(vs [][]Var, col int) Expr {
 }
 
 // Dot returns the dot product of a vector of variables and slice of floats.
-func Dot(vs []Var, coeffs []float64) Expr {
+func Dot(vs []Var, coeffs []float64) ScalarExpression {
 	if len(vs) != len(coeffs) {
 		log.WithFields(log.Fields{
 			"num_vars":   len(vs),

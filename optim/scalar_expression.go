@@ -1,10 +1,10 @@
 package optim
 
-// Expr represents a linear general expression of the form
+// ScalarExpression represents a linear general expression of the form
 // c0 * x0 + c1 * x1 + ... + cn * xn + k where ci are coefficients and xi are
 // variables and k is a constant. This is a base interface that is implemented
 // by single variables, constants, and general linear expressions.
-type Expr interface {
+type ScalarExpression interface {
 	// NumVars returns the number of variables in the expression
 	NumVars() int
 
@@ -19,34 +19,34 @@ type Expr interface {
 
 	// Plus adds the current expression to another and returns the resulting
 	// expression
-	Plus(e Expr) Expr
+	Plus(e ScalarExpression) ScalarExpression
 
 	// Mult multiplies the current expression to another and returns the
 	// resulting expression
-	Mult(c float64) Expr
+	Mult(c float64) ScalarExpression
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another
-	LessEq(e Expr) *Constr
+	LessEq(e ScalarExpression) *ScalarConstraint
 
 	// GreaterEq returns a greater than or equal to (>=) constraint between the
 	// current expression and another
-	GreaterEq(e Expr) *Constr
+	GreaterEq(e ScalarExpression) *ScalarConstraint
 
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
-	Eq(e Expr) *Constr
+	Eq(e ScalarExpression) *ScalarConstraint
 }
 
 // NewExpr returns a new expression with a single additive constant value, c,
 // and no variables. Creating an expression like sum := NewExpr(0) is useful
 // for creating new empty expressions that you can perform operatotions on
 // later
-func NewExpr(c float64) Expr {
+func NewExpr(c float64) ScalarExpression {
 	return &LinearExpr{C: c}
 }
 
-func getVarsPtr(e Expr) *uint64 {
+func getVarsPtr(e ScalarExpression) *uint64 {
 	if e.NumVars() > 0 {
 		return &e.IDs()[0]
 	}
@@ -54,7 +54,7 @@ func getVarsPtr(e Expr) *uint64 {
 	return nil
 }
 
-func getCoeffsPtr(e Expr) *float64 {
+func getCoeffsPtr(e ScalarExpression) *float64 {
 	if e.NumVars() > 0 {
 		return &e.Coeffs()[0]
 	}

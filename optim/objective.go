@@ -3,13 +3,13 @@ package optim
 // Objective represents an optimization objective given an expression and
 // objective sense (maximize or minimize).
 type Objective struct {
-	Expr
+	ScalarExpression
 	Sense ObjSense
 }
 
 // NewObjective returns a new optimization objective given an expression and
 // objective sense
-func NewObjective(e Expr, sense ObjSense) *Objective {
+func NewObjective(e ScalarExpression, sense ObjSense) *Objective {
 	return &Objective{e, sense}
 }
 

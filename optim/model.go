@@ -14,7 +14,7 @@ import (
 // created using an instantiated Model.
 type Model struct {
 	Variables []Var
-	constrs   []*Constr
+	constrs   []*ScalarConstraint
 	obj       *Objective
 	showLog   bool
 	timeLimit time.Duration
@@ -91,13 +91,13 @@ func (m *Model) AddBinaryVarMatrix(rows, cols int) [][]Var {
 }
 
 // AddConstr adds a the given constraint to the model.
-func (m *Model) AddConstr(constr *Constr) {
+func (m *Model) AddConstr(constr *ScalarConstraint) {
 	m.constrs = append(m.constrs, constr)
 }
 
 // SetObjective sets the objective of the model given an expression and
 // objective sense.
-func (m *Model) SetObjective(e Expr, sense ObjSense) {
+func (m *Model) SetObjective(e ScalarExpression, sense ObjSense) {
 	m.obj = NewObjective(e, sense)
 }
 

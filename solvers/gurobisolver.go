@@ -241,7 +241,7 @@ Description:
 
 	Adds a single constraint to the gurobi model object inside of the current GurobiSolver object.
 */
-func (gs *GurobiSolver) AddConstr(constrIn *optim.Constr) error {
+func (gs *GurobiSolver) AddConstr(constrIn *optim.ScalarConstraint) error {
 	// Constants
 
 	// Identify the variables in the left hand side of this constraint
@@ -281,7 +281,7 @@ Description:
 */
 func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 
-	objExpression := objIn.Expr
+	objExpression := objIn.ScalarExpression
 
 	// Handle this differently for different types of expression inputs
 	switch objExpression.(type) {

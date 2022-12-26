@@ -11,7 +11,7 @@ type Solver interface {
 	SetTimeLimit(timeLimit float64) error
 	AddVar(varIn Var) error
 	AddVars(varSlice []Var) error
-	AddConstr(constrIn *Constr) error
+	AddConstr(constrIn *ScalarConstraint) error
 	SetObjective(objectiveIn Objective) error
 	Optimize() (Solution, error)
 	DeleteSolver() error
