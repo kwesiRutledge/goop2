@@ -1,7 +1,7 @@
 # goop2
 This project is meant to implement an optimization toolbox with nice default features like MATLAB's YALMIP. It is a spiritual successor to the goop library from MIT's Distributed Robotics Lab. This version is meant to be written in pure Go and makes use of my own low-level library for interfacing with Gurobi.
 
-| ![](images/lp-example1.png)  |
+| ![](images/lp-example1/lp-example1.png)  |
 |:--------------------:|
 | Goop2 Can Solve Simple LPs |
 
@@ -15,7 +15,10 @@ When you have cloned this repository and want to begin testing it, then you simp
 
 ## Examples
 
-There are several examples in the test files. Check out `lp_solve_test.go` for an example.
+We aim to include examples for how to use Goop2 in a Wiki page [here](https://github.com/kwesiRutledge/goop2/wiki/Examples).
+
+Some extra examples can also be found in the test files. 
+Check out the files in `testing/solvers` for such examples (for example, `lp_solve_test.go` contains an example of a Linear Program).
 
 ## To-Dos
 
