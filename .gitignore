@@ -17,3 +17,6 @@
 # Outputs of Some Logging Files
 *.log
 *.txt
+
+# Ignore GoLand files
+.idea/*
