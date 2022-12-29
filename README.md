@@ -19,31 +19,33 @@ There are several examples in the test files. Check out `lp_solve_test.go` for a
 
 ## To-Dos
 
-- Complete the Operator Eq Function
-  - When Called On Scalars
-    - Constants 
-    - Variables
-    - Linear Expressions
-    - Quadratic Expressions
-  - When Called on Vectors
-    - Variables
-- Replace the vector creation scripts with ones that use the new VarVector type
-- Complete the GreaterEq Function
-    - When Called On Scalars
-        - Constants
-        - Variables
-        - Linear Expressions
-        - Quadratic Expressions
-    - When Called on Vectors
-        - Variables
-- Complete the LessEq Function
-    - When Called On Scalars
-        - Constants
-        - Variables
-        - Linear Expressions
-        - Quadratic Expressions
-    - When Called on Vectors
-        - Variables
+- Create New AddConstr methods which work for vector constraints
+- Mult 
+  - General Function (in operators.go)
+  - Methods for
+    - Scalars
+      - Constant
+      - Var
+      - ScalarLinearExpression
+      - QuadraticExpression
+    - Vectors
+      - Vector Constant
+      - VarVector
+      - VectorLinearExpression
+- Plus
+  - General Function (in operators.go)
+  - Methods for
+    - Scalars
+      - Constant
+      - Var
+      - ScalarLinearExpression
+      - QuadraticExpression
+    - Vectors
+      - Vector Constant
+      - VarVector
+      - VectorLinearExpression
+- Introducing Optional Input for Variable Name to Var/VarVector
+- Consider renaming VarVector to VectorVar
 - VarVector
   - Plus
   - Multiply
