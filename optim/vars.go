@@ -70,20 +70,37 @@ func (v Var) Mult(m float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (v Var) LessEq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{v, other, SenseLessThanEqual}
+func (v Var) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+	return v.Comparison(other, SenseLessThanEqual)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (v Var) GreaterEq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{v, other, SenseGreaterThanEqual}
+func (v Var) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+	return v.Comparison(other, SenseGreaterThanEqual)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (v Var) Eq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{v, other, SenseEqual}
+func (v Var) Eq(other ScalarExpression) (ScalarConstraint, error) {
+	return v.Comparison(other, SenseEqual)
+}
+
+/*
+Comparison
+Description:
+
+	This method compares the receiver with expression rhs in the sense provided by sense.
+
+Usage:
+
+	constr, err := v.Comparison(expr1,SenseGreaterThanEqual)
+*/
+func (v Var) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+	// Constants
+
+	// Algorithm
+	return ScalarConstraint{v, rhs, sense}, nil
 }
 
 /*

@@ -62,20 +62,34 @@ func (e *ScalarLinearExpr) Mult(c float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (e *ScalarLinearExpr) LessEq(other ScalarExpression) ScalarConstraint {
-	return LessEq(e, other)
+func (e *ScalarLinearExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+	return e.Comparison(other, SenseLessThanEqual)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (e *ScalarLinearExpr) GreaterEq(other ScalarExpression) ScalarConstraint {
-	return GreaterEq(e, other)
+func (e *ScalarLinearExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+	return e.Comparison(other, SenseGreaterThanEqual)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (e *ScalarLinearExpr) Eq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{e, other, SenseEqual}
+func (e *ScalarLinearExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
+	return e.Comparison(other, SenseEqual)
+}
+
+/*
+Comparison
+Description:
+
+	This method compares the receiver with expression rhs in the sense provided by sense.
+
+Usage:
+
+	constr, err := e.Comparison(expr1,SenseGreaterThanEqual)
+*/
+func (e *ScalarLinearExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+	return ScalarConstraint{e, rhs, sense}, nil
 }
 
 /*

@@ -15,7 +15,7 @@ import (
 // created using an instantiated Model.
 type Model struct {
 	Variables []Var
-	constrs   []*ScalarConstraint
+	constrs   []ScalarConstraint
 	obj       *Objective
 	showLog   bool
 	timeLimit time.Duration
@@ -136,7 +136,38 @@ func (m *Model) AddBinaryVarMatrix(rows, cols int) [][]Var {
 }
 
 // AddConstr adds a the given constraint to the model.
-func (m *Model) AddConstr(constr *ScalarConstraint) {
+func (m *Model) AddConstr(constr ScalarConstraint, extras ...interface{}) {
+	// Constants
+	nExtraArguments := len(extras)
+
+	// Input Processing
+	if nExtraArguments > 1 {
+		// Do nothing, but report an error.
+		logrus.Error(
+			fmt.Sprintf("The optimizer tried to add a constraint using a bad call to AddConstr! Skipping this constraint: %v , because of extra inputs %v", constr, extras),
+		)
+		return
+	}
+
+	optionalErrorArgument := extras[0]
+	switch optionalErrorArgument.(type) {
+	case error:
+		// Cast argument
+		err, _ := optionalErrorArgument.(error)
+		if err != nil {
+			logrus.Error(
+				fmt.Sprintf("There was an error computing constraint %v: %v", constr, err),
+			)
+			return
+		}
+	default:
+		logrus.Info(
+			fmt.Sprintf("Unexpected input to AddConstr %v of type %T.", optionalErrorArgument, optionalErrorArgument),
+		)
+		return
+	}
+
+	// Algorithm
 	m.constrs = append(m.constrs, constr)
 }
 

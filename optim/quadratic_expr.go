@@ -97,16 +97,16 @@ Description:
 	This function checks the dimensions of all of the members of the quadratic expression which are slices.
 	They should have compatible dimensions.
 */
-func (e *QuadraticExpr) Check() error {
+func (qe *QuadraticExpr) Check() error {
 	// Make the number of elements in q be the dimension of the x in the expression.
-	numXIndices := len(e.L)
+	numXIndices := len(qe.L)
 
 	// Check Number of Rows in Q
-	if len(e.Q) != numXIndices {
-		return fmt.Errorf("The nuber of indices was %v which did not match the first dimension of QIn (%v).", numXIndices, len(e.Q))
+	if len(qe.Q) != numXIndices {
+		return fmt.Errorf("The nuber of indices was %v which did not match the first dimension of QIn (%v).", numXIndices, len(qe.Q))
 	}
 
-	for rowIndex, QRow := range e.Q {
+	for rowIndex, QRow := range qe.Q {
 		if len(QRow) != numXIndices {
 			return fmt.Errorf("The nuber of indices was %v which did not match the length of QIn's %vth row (%v).", numXIndices, rowIndex, len(QRow))
 		}
@@ -123,9 +123,9 @@ Description:
 	Returns the number of variables in the expression.
 	To make this actually meaningful, we only count the unique vars.
 */
-func (e *QuadraticExpr) NumVars() int {
+func (qe *QuadraticExpr) NumVars() int {
 
-	return len(e.IDs())
+	return len(qe.IDs())
 }
 
 /*
@@ -134,8 +134,8 @@ Description:
 
 	Returns the ids of all of the variables in the quadratic expression.
 */
-func (e *QuadraticExpr) IDs() []uint64 {
-	return e.XIndices
+func (qe *QuadraticExpr) IDs() []uint64 {
+	return qe.XIndices
 }
 
 /*
@@ -153,24 +153,24 @@ Description:
 	where
 		mx = [ x[0]*x[0], x[0]*x[1], ... , x[0]*x[N-1], x[1]*x[1] , x[1]*x[2], ... , x[1]*x[N-1], x[2]*x[2], ... , x[N-1]*x[N-1], x[0], x[1], ... , x[N-1] ]
 */
-func (e *QuadraticExpr) Coeffs() []float64 {
+func (qe *QuadraticExpr) Coeffs() []float64 {
 	// Create container for all coefficients
 	var coefficientList []float64
-	var numVars int = e.NumVars()
+	var numVars int = qe.NumVars()
 
 	// Consider all pairs of indices in x.
 	var xPairs [][2]uint64
-	for vIIndex, varIndex := range e.XIndices {
+	for vIIndex, varIndex := range qe.XIndices {
 		for vIIndex2 := vIIndex; vIIndex2 < numVars; vIIndex2++ {
-			varIndex2 := e.XIndices[vIIndex2]
+			varIndex2 := qe.XIndices[vIIndex2]
 
 			// Save pairs of indices and the associated coefficients
 			xPairs = append(xPairs, [2]uint64{varIndex, varIndex2})
 
 			if vIIndex == vIIndex2 {
-				coefficientList = append(coefficientList, e.Q[vIIndex][vIIndex2])
+				coefficientList = append(coefficientList, qe.Q[vIIndex][vIIndex2])
 			} else {
-				coefficientList = append(coefficientList, e.Q[vIIndex][vIIndex2]+e.Q[vIIndex2][vIIndex])
+				coefficientList = append(coefficientList, qe.Q[vIIndex][vIIndex2]+qe.Q[vIIndex2][vIIndex])
 			}
 
 		}
@@ -185,8 +185,8 @@ Description:
 
 	Returns the constant value associated with a quadratic expression.
 */
-func (e *QuadraticExpr) Constant() float64 {
-	return e.C
+func (qe *QuadraticExpr) Constant() float64 {
+	return qe.C
 }
 
 /*
@@ -198,14 +198,14 @@ Description:
 	- A Linear Expression, or
 	- A Constant
 */
-func (e *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
+func (qe *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
 	// Constants
 
 	// Algorithm depends
 	switch eIn.(type) {
 	case *QuadraticExpr:
 
-		var newQExpr QuadraticExpr = *e // get copy of e
+		var newQExpr QuadraticExpr = *qe // get copy of e
 		quadraticEIn := eIn.(*QuadraticExpr)
 
 		// Get Combined set of Variables
@@ -231,7 +231,7 @@ func (e *QuadraticExpr) Plus(eIn ScalarExpression) ScalarExpression {
 
 	case *ScalarLinearExpr:
 		// Collect Expressions
-		var newQExpr QuadraticExpr = *e // get copy of e
+		var newQExpr QuadraticExpr = *qe // get copy of e
 		linearEIn := eIn.(*ScalarLinearExpr)
 
 		// Get Combined set of Variables
@@ -273,24 +273,24 @@ Description:
 	Mult multiplies the current expression to another and returns the
 	resulting expression
 */
-func (e *QuadraticExpr) Mult(c float64) ScalarExpression {
+func (qe *QuadraticExpr) Mult(c float64) ScalarExpression {
 	// Iterate through all of the rows and columns of Q
-	nV := e.NumVars()
+	nV := qe.NumVars()
 	for i := 0; i < nV; i++ {
 		for j := 0; j < nV; j++ {
-			e.Q[i][j] = e.Q[i][j] * c
+			qe.Q[i][j] = qe.Q[i][j] * c
 		}
 	}
 
 	// Iterate through the linear coefficients
 	for i := 0; i < nV; i++ {
-		e.L[i] = e.L[i] * c
+		qe.L[i] = qe.L[i] * c
 	}
 
 	// Update through the constant
-	e.C *= c
+	qe.C *= c
 
-	return e
+	return qe
 }
 
 /*
@@ -300,8 +300,8 @@ Description:
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) LessEq(other ScalarExpression) ScalarConstraint {
-	return LessEq(e, other)
+func (qe *QuadraticExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+	return qe.Comparison(other, SenseLessThanEqual)
 }
 
 /*
@@ -311,8 +311,8 @@ Description:
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
-func (e *QuadraticExpr) GreaterEq(other ScalarExpression) ScalarConstraint {
-	return GreaterEq(e, other)
+func (qe *QuadraticExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+	return qe.Comparison(other, SenseGreaterThanEqual)
 }
 
 /*
@@ -323,8 +323,22 @@ Description:
 	Eq returns an equality (==) constraint between the current expression
 	and another
 */
-func (e *QuadraticExpr) Eq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{e, other, SenseEqual}
+func (qe *QuadraticExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
+	return qe.Comparison(other, SenseEqual)
+}
+
+/*
+Comparison
+Description:
+
+	This method compares the receiver with expression rhs in the sense provided by sense.
+
+Usage:
+
+	constr, err := qe.Comparison(expr1,SenseGreaterThanEqual)
+*/
+func (qe *QuadraticExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+	return ScalarConstraint{qe, rhs, sense}, nil
 }
 
 /*
@@ -337,7 +351,7 @@ Usage:
 
 	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
 */
-func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*QuadraticExpr, error) {
+func (qe *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*QuadraticExpr, error) {
 	// Create new Quadratic Express
 	var newQE QuadraticExpr = QuadraticExpr{
 		XIndices: newXIndices,
@@ -357,10 +371,10 @@ func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*Quadrati
 	}
 
 	// Populate Q
-	for oi1Index, oldIndex1 := range e.XIndices {
-		for oi2Index, oldIndex2 := range e.XIndices {
+	for oi1Index, oldIndex1 := range qe.XIndices {
+		for oi2Index, oldIndex2 := range qe.XIndices {
 			// Identify what term is associated with the pair (oldIndex1, oldIndex2)
-			oldQterm := e.Q[oi1Index][oi2Index]
+			oldQterm := qe.Q[oi1Index][oi2Index]
 
 			// Get the new indices corresponding to oi1 and oi2
 			ni1Index, err := FindInSlice(oldIndex1, newXIndices)
@@ -388,9 +402,9 @@ func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*Quadrati
 	}
 
 	// Populate L
-	for oi1Index, oldIndex1 := range e.XIndices {
+	for oi1Index, oldIndex1 := range qe.XIndices {
 		// Identify what term is associated with the pair (oldIndex1, oldIndex2)
-		oldLterm := e.L[oi1Index]
+		oldLterm := qe.L[oi1Index]
 
 		// Get the new indices corresponding to oi1 and oi2
 		ni1Index, err := FindInSlice(oldIndex1, newXIndices)
@@ -405,7 +419,7 @@ func (e *QuadraticExpr) RewriteInTermsOfIndices(newXIndices []uint64) (*Quadrati
 	newQE.L = newL
 
 	// Populate C
-	newQE.C = e.C
+	newQE.C = qe.C
 
 	return &newQE, nil
 

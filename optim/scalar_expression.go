@@ -27,15 +27,19 @@ type ScalarExpression interface {
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another
-	LessEq(e ScalarExpression) ScalarConstraint
+	LessEq(e ScalarExpression) (ScalarConstraint, error)
 
 	// GreaterEq returns a greater than or equal to (>=) constraint between the
 	// current expression and another
-	GreaterEq(e ScalarExpression) ScalarConstraint
+	GreaterEq(e ScalarExpression) (ScalarConstraint, error)
 
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
-	Eq(e ScalarExpression) ScalarConstraint
+	Eq(e ScalarExpression) (ScalarConstraint, error)
+
+	//Comparison
+	// Compares the receiver expression rhs with the expression rhs in the sense of sense.
+	Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error)
 }
 
 // NewExpr returns a new expression with a single additive constant value, c,

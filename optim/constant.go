@@ -60,18 +60,31 @@ func (c K) Mult(val float64) ScalarExpression {
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (c K) LessEq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{c, other, SenseLessThanEqual}
+func (c K) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+	return c.Comparison(other, SenseLessThanEqual)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (c K) GreaterEq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{c, other, SenseGreaterThanEqual}
+func (c K) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+	return c.Comparison(other, SenseGreaterThanEqual)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (c K) Eq(other ScalarExpression) ScalarConstraint {
-	return ScalarConstraint{c, other, SenseEqual}
+func (c K) Eq(other ScalarExpression) (ScalarConstraint, error) {
+	return c.Comparison(other, SenseEqual)
+}
+
+/*
+Comparison
+Description:
+
+	This method compares the receiver with expression rhs in the sense provided by sense.
+*/
+func (c K) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+	// Constants
+
+	// Algorithm
+	return ScalarConstraint{c, rhs, sense}, nil
 }
