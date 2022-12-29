@@ -290,3 +290,60 @@ func TestVarVector_Eq3(t *testing.T) {
 		t.Errorf("There was an error creating equality constraint between the two varvectors: %v", err)
 	}
 }
+
+/*
+TestVarVector_Comparison1
+Description:
+
+	Tests how well the comparison function works with a VectorLinearExpression comparison.
+*/
+func TestVarVector_Comparison1(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	var vec1 = m.AddVarVector(desLength)
+	var vec2 = m.AddVarVector(desLength - 1)
+
+	L1 := optim.Identity(desLength - 1)
+	c1 := optim.OnesVector(desLength - 1)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vec2, L1, &c1,
+	}
+
+	// Create Constraint
+	_, err := vec1.Comparison(ve1, optim.SenseGreaterThanEqual)
+	if strings.Contains(err.Error(), fmt.Sprintf("The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!", vec1.Len(), ve1.Len())) {
+		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
+	}
+}
+
+/*
+TestVarVector_Comparison2
+Description:
+
+	Tests how well the comparison function works with a VectorLinearExpression comparison.
+	Valid comparison of
+*/
+func TestVarVector_Comparison2(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	var vec1 = m.AddVarVector(desLength)
+	var vec2 = m.AddVarVector(desLength)
+
+	L1 := optim.Identity(desLength)
+	c1 := optim.OnesVector(desLength)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vec2, L1, &c1,
+	}
+
+	// Create Constraint
+	_, err := vec1.Comparison(ve1, optim.SenseGreaterThanEqual)
+	if err != nil {
+		t.Errorf("There was an error computing a comparison for operator >=: %v", err)
+	}
+}

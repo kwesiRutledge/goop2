@@ -135,7 +135,7 @@ Description:
 	input rhs as the right hand side if it is valid.
 */
 func (vv VarVector) LessEq(rhs interface{}) (VectorConstraint, error) {
-	return VectorConstraint{}, fmt.Errorf("The LessEq() method for VarVector is not implemented yet!")
+	return vv.Comparison(rhs, SenseLessThanEqual)
 }
 
 /*
@@ -146,7 +146,7 @@ Description:
 	input rhs as the right hand side if it is valid.
 */
 func (vv VarVector) GreaterEq(rhs interface{}) (VectorConstraint, error) {
-	return VectorConstraint{}, fmt.Errorf("The GreaterEq() method for VarVector is not implemented yet!")
+	return vv.Comparison(rhs, SenseGreaterThanEqual)
 }
 
 /*
@@ -214,6 +214,13 @@ func (vv VarVector) Comparison(rhs interface{}, sense ConstrSense) (VectorConstr
 		}
 		// Do Computation
 		return VectorConstraint{vv, rhsAsVV, sense}, nil
+
+	case VectorLinearExpr:
+		// Cast type
+		rhsAsVLE, _ := rhs.(VectorLinearExpr)
+
+		// Do computation
+		return rhsAsVLE.Comparison(vv, sense)
 
 	default:
 		return VectorConstraint{}, fmt.Errorf("The Eq() method for VarVector is not implemented yet for type %T!", rhs)

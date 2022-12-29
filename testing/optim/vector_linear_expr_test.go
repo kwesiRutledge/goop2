@@ -342,6 +342,9 @@ TestVectorLinearExpression_Eq1
 Description:
 
 	Tests whether or not an equality constraint between a ones vector and a standard vector variable works well.
+	Eq comparison between:
+	- Vector Linear Expression, and
+	- mat.VecDense
 */
 func TestVectorLinearExpression_Eq1(t *testing.T) {
 	// Constants
@@ -388,6 +391,9 @@ TestVectorLinearExpression_Eq2
 Description:
 
 	Tests whether or not an equality constraint between a bool and a proper vector variable leads to an error.
+	Eq comparison between:
+	- Vector Linear Expression, and
+	- bool
 */
 func TestVectorLinearExpression_Eq2(t *testing.T) {
 	// Constants
@@ -427,6 +433,9 @@ TestVectorLinearExpression_Eq3
 Description:
 
 	Tests whether or not an equality constraint between a KVector and a proper vector variable leads to an error.
+	Eq comparison between:
+	- Vector Linear Expression, and
+	- KVector
 */
 func TestVectorLinearExpression_Eq3(t *testing.T) {
 	// Constants
@@ -462,6 +471,78 @@ func TestVectorLinearExpression_Eq3(t *testing.T) {
 
 	if vectorConstraint.LeftHandSide.Len() != onesVec2.Len() {
 		t.Errorf("The length of lhs (%v) and rhs (%v) should be the same!", vle1.Len(), onesVec2.Len())
+	}
+
+}
+
+/*
+TestVectorLinearExpression_Eq4
+Description:
+
+	This test will evaluate how well the Eq() method for the vector of linear constraints works.
+	Creates a simple two-dimensional constraint.
+	Eq comparison between:
+	- Vector Linear Expression, and
+	- VarVector
+*/
+func TestVectorLinearExpression_Eq4(t *testing.T) {
+	m := optim.NewModel()
+	dimX := 2
+	x := m.AddVarVector(dimX)
+
+	L1 := optim.Identity(dimX)
+	c1 := optim.OnesVector(dimX)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		x, L1, &c1,
+	}
+
+	err := ve1.Check()
+	if err != nil {
+		t.Errorf("The vector linear expression was invalid! %v", err)
+	}
+
+	// Create equality comparison.
+	_, err = ve1.Eq(x)
+	if err != nil {
+		t.Errorf("There was an issue creating the equality constraint")
+	}
+
+}
+
+/*
+TestVectorLinearExpression_Eq5
+Description:
+
+	This test will evaluate how well the Eq() method for the vector of linear constraints works.
+	Creates a simple two-dimensional constraint.
+	Eq comparison between:
+	- Vector Linear Expression, and
+	- Vector Linear Expression
+*/
+func TestVectorLinearExpression_Eq5(t *testing.T) {
+	m := optim.NewModel()
+	dimX := 2
+	x := m.AddVarVector(dimX)
+
+	L1 := optim.Identity(dimX)
+	c1 := optim.OnesVector(dimX)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		x, L1, &c1,
+	}
+
+	err := ve1.Check()
+	if err != nil {
+		t.Errorf("The vector linear expression was invalid! %v", err)
+	}
+
+	// Create equality comparison.
+	_, err = ve1.Eq(ve1)
+	if err != nil {
+		t.Errorf("There was an issue creating the equality constraint")
 	}
 
 }

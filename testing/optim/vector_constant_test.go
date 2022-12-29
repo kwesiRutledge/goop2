@@ -1,8 +1,10 @@
 package optim_test
 
 import (
+	"fmt"
 	"github.com/kwesiRutledge/goop2/optim"
 	"gonum.org/v1/gonum/mat"
+	"strings"
 	"testing"
 )
 
@@ -82,19 +84,19 @@ func TestKVector_Len2(t *testing.T) {
 }
 
 /*
-TestKVector_Eq1
+TestKVector_Comparison1
 Description:
 
-	This function tests that the Eq() method is properly working for KVector inputs.
+	This function tests that the Comparison() method is properly working for KVector inputs.
 */
-func TestKVector_Eq1(t *testing.T) {
+func TestKVector_Comparison1(t *testing.T) {
 	// Constants
 	desLength := 10
 	var vec1 = optim.KVector(optim.OnesVector(desLength))
 	var vec2 = optim.KVector(optim.ZerosVector(desLength))
 
 	// Create Constraint
-	constr, err := vec1.Eq(vec2)
+	constr, err := vec1.Comparison(vec2, optim.SenseEqual)
 	if err != nil {
 		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
 	}
@@ -105,5 +107,110 @@ func TestKVector_Eq1(t *testing.T) {
 			constr.LeftHandSide.Len(),
 			vec1.Len(),
 		)
+	}
+}
+
+/*
+TestKVector_Comparison2
+Description:
+
+	This function tests that the Comparison() method is properly working for KVector inputs.
+	Uses SenseLessThanEqual.
+	Comparison of:
+	- KVector
+	- VarVector
+*/
+func TestKVector_Comparison2(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var vec2 = m.AddVarVector(desLength)
+
+	// Create Constraint
+	constr, err := vec1.Comparison(vec2, optim.SenseLessThanEqual)
+	if err != nil {
+		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
+	}
+
+	if constr.LeftHandSide.Len() != vec1.Len() {
+		t.Errorf(
+			"Expected left hand side (length %v) to have same length as vec1 (length %v).",
+			constr.LeftHandSide.Len(),
+			vec1.Len(),
+		)
+	}
+}
+
+/*
+TestKVector_Comparison3
+Description:
+
+	This function tests that the Comparison() method is properly working for KVector inputs.
+	Uses SenseGreaterThanEqual.
+	Comparison of:
+	- KVector
+	- VectorLinearExpression
+*/
+func TestKVector_Comparison3(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var vec2 = m.AddVarVector(desLength)
+
+	L1 := optim.Identity(desLength)
+	c1 := optim.OnesVector(desLength)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vec2, L1, &c1,
+	}
+
+	// Create Constraint
+	constr, err := vec1.Comparison(ve1, optim.SenseGreaterThanEqual)
+	if err != nil {
+		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
+	}
+
+	if constr.LeftHandSide.Len() != vec1.Len() {
+		t.Errorf(
+			"Expected left hand side (length %v) to have same length as vec1 (length %v).",
+			constr.LeftHandSide.Len(),
+			vec1.Len(),
+		)
+	}
+}
+
+/*
+TestKVector_Comparison4
+Description:
+
+	This function tests that the Comparison() method is properly working for KVector inputs.
+	Input is bad (dimension of linear vector expression is different from constant vector) and error should be thrown.
+	Uses SenseGreaterThanEqual.
+	Comparison of:
+	- KVector
+	- VectorLinearExpression
+*/
+func TestKVector_Comparison4(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var vec2 = m.AddVarVector(desLength - 1)
+
+	L1 := optim.Identity(desLength - 1)
+	c1 := optim.OnesVector(desLength - 1)
+
+	// Use these to create expression.
+	ve1 := optim.VectorLinearExpr{
+		vec2, L1, &c1,
+	}
+
+	// Create Constraint
+	_, err := vec1.Comparison(ve1, optim.SenseGreaterThanEqual)
+	if strings.Contains(err.Error(), fmt.Sprintf("The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!", vec1.Len(), ve1.Len())) {
+		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
 	}
 }

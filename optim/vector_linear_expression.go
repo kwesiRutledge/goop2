@@ -99,15 +99,7 @@ Description:
 	Creates a VectorConstraint that declares vle is greater than or equal to the value to the right hand side rhs.
 */
 func (vle VectorLinearExpr) GreaterEq(rhs interface{}) (VectorConstraint, error) {
-	// Constant
-
-	// Algorithm
-	switch rhs.(type) {
-	case KVector:
-		return VectorConstraint{}, fmt.Errorf("Unimplemented.")
-	}
-
-	return VectorConstraint{}, fmt.Errorf("This place should never be reached!")
+	return vle.Comparison(rhs, SenseGreaterThanEqual)
 }
 
 /*
@@ -117,15 +109,7 @@ Description:
 	Creates a VectorConstraint that declares vle is less than or equal to the value to the right hand side rhs.
 */
 func (vle VectorLinearExpr) LessEq(rhs interface{}) (VectorConstraint, error) {
-	// Constant
-
-	// Algorithm
-	switch rhs.(type) {
-	case KVector:
-		return VectorConstraint{}, fmt.Errorf("Unimplemented.")
-	}
-
-	return VectorConstraint{}, fmt.Errorf("This place should never be reached!")
+	return vle.Comparison(rhs, SenseLessThanEqual)
 }
 
 /*
@@ -187,6 +171,30 @@ Description:
 	rhs given by rhs.
 */
 func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
+	return vle.Comparison(rhs, SenseEqual)
+}
+
+/*
+Len
+Description:
+
+	The size of the constraint.
+*/
+func (vle VectorLinearExpr) Len() int {
+	// Constants
+
+	// Algorithm
+	return vle.C.Len()
+}
+
+/*
+Comparison
+Description:
+
+	Compares the input vector linear expression with respect to the expression rhsIn and the sense
+	senseIn.
+*/
+func (vle VectorLinearExpr) Comparison(rhs interface{}, sense ConstrSense) (VectorConstraint, error) {
 	// Constants
 
 	// Check Input
@@ -211,7 +219,7 @@ func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
 					rhsAsKVector.Len(),
 				)
 		}
-		return VectorConstraint{vle, rhsAsKVector, SenseEqual}, nil
+		return VectorConstraint{vle, rhsAsKVector, sense}, nil
 	case mat.VecDense:
 		rhsAsVecDense, _ := rhs.(mat.VecDense)
 		return vle.Eq(KVector(rhsAsVecDense))
@@ -226,7 +234,7 @@ func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
 					rhsAsVLE.Len(),
 				)
 		}
-		return VectorConstraint{vle, rhsAsVLE, SenseEqual}, nil
+		return VectorConstraint{vle, rhsAsVLE, sense}, nil
 	case VarVector:
 		rhsAsVV, _ := rhs.(VarVector)
 		// Check length of input and output.
@@ -238,22 +246,9 @@ func (vle VectorLinearExpr) Eq(rhs interface{}) (VectorConstraint, error) {
 					rhsAsVV.Len(),
 				)
 		}
-		return VectorConstraint{vle, rhsAsVV, SenseEqual}, nil
+		return VectorConstraint{vle, rhsAsVV, sense}, nil
 
 	default:
 		return VectorConstraint{}, fmt.Errorf("The comparison of vector linear expression %v with object of type %T is not currently supported.", vle, rhs)
 	}
-}
-
-/*
-Len
-Description:
-
-	The size of the constraint.
-*/
-func (vle VectorLinearExpr) Len() int {
-	// Constants
-
-	// Algorithm
-	return vle.C.Len()
 }

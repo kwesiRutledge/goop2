@@ -37,6 +37,16 @@ Description:
 	This function returns the value at the k index.
 */
 func (kv KVector) At(i int) float64 {
+	return kv.AtVec(i)
+}
+
+/*
+AtVec
+Description:
+
+	This function returns the value at the k index.
+*/
+func (kv KVector) AtVec(i int) float64 {
 	kvAsVector := mat.VecDense(kv)
 	return kvAsVector.AtVec(i)
 }
@@ -47,7 +57,7 @@ Description:
 
 	This returns the number of variables in the expression. For constants, this is 0.
 */
-func (c KVector) NumVars() int {
+func (kv KVector) NumVars() int {
 	return 0
 }
 
@@ -57,7 +67,7 @@ Description:
 
 	This function returns a slice of the Var ids in the expression. For constants, this is always nil.
 */
-func (c KVector) IDs() []uint64 {
+func (kv KVector) IDs() []uint64 {
 	return nil
 }
 
@@ -67,8 +77,8 @@ Description:
 
 	This function returns a slice of the coefficients in the expression. For constants, this is always nil.
 */
-func (c KVector) LinearCoeff() mat.Matrix {
-	return Identity(c.Len())
+func (kv KVector) LinearCoeff() mat.Matrix {
+	return Identity(kv.Len())
 }
 
 /*
@@ -88,7 +98,7 @@ Description:
 
 	Adds the current expression to another and returns the resulting expression
 */
-func (c KVector) Plus(e VectorExpression) (VectorExpression, error) {
+func (kv KVector) Plus(e VectorExpression) (VectorExpression, error) {
 	switch e.(type) {
 	case KVector:
 		// Cast type
@@ -96,9 +106,9 @@ func (c KVector) Plus(e VectorExpression) (VectorExpression, error) {
 
 		// Compute Addition
 		var result mat.VecDense
-		cAsVec := mat.VecDense(c)
+		kvAsVec := mat.VecDense(kv)
 		eAsVec := mat.VecDense(eAsKVector)
-		result.AddVec(&cAsVec, &eAsVec)
+		result.AddVec(&kvAsVec, &eAsVec)
 
 		return KVector(result), nil
 	default:
@@ -113,12 +123,12 @@ Description:
 
 	This method multiplies the current expression to another and returns the resulting expression.
 */
-func (c KVector) Mult(val float64) (VectorExpression, error) {
+func (kv KVector) Mult(val float64) (VectorExpression, error) {
 
 	// Use mat.Vector's multiplication method
 	var result mat.VecDense
-	cAsVec := mat.VecDense(c)
-	result.ScaleVec(val, &cAsVec)
+	kvAsVec := mat.VecDense(kv)
+	result.ScaleVec(val, &kvAsVec)
 
 	return KVector(result), nil
 }
@@ -129,24 +139,8 @@ Description:
 
 	Returns a less than or equal to (<=) constraint between the current expression and another
 */
-func (c KVector) LessEq(rhsIn interface{}) (VectorConstraint, error) {
-
-	switch rhsIn.(type) {
-	case KVector:
-		// Cast type
-		rhsAsKVector, _ := rhsIn.(KVector)
-
-		// Return constraint
-		return VectorConstraint{
-			LeftHandSide:  c,
-			RightHandSide: rhsAsKVector,
-			Sense:         SenseEqual,
-		}, nil
-
-	}
-
-	// Return an error if none of the above types matched.
-	return VectorConstraint{}, fmt.Errorf("The input to Eq() (%v) has unexpected type: %T", rhsIn, rhsIn)
+func (kv KVector) LessEq(rhsIn interface{}) (VectorConstraint, error) {
+	return kv.Comparison(rhsIn, SenseLessThanEqual)
 }
 
 /*
@@ -155,23 +149,8 @@ Description:
 
 	This method returns a greater than or equal to (>=) constraint between the current expression and another
 */
-func (c KVector) GreaterEq(rhsIn interface{}) (VectorConstraint, error) {
-	switch rhsIn.(type) {
-	case KVector:
-		// Cast type
-		rhsAsKVector, _ := rhsIn.(KVector)
-
-		// Return constraint
-		return VectorConstraint{
-			LeftHandSide:  c,
-			RightHandSide: rhsAsKVector,
-			Sense:         SenseEqual,
-		}, nil
-
-	}
-
-	// Return an error if none of the above types matched.
-	return VectorConstraint{}, fmt.Errorf("The input to Eq() (%v) has unexpected type: %T", rhsIn, rhsIn)
+func (kv KVector) GreaterEq(rhsIn interface{}) (VectorConstraint, error) {
+	return kv.Comparison(rhsIn, SenseGreaterThanEqual)
 }
 
 /*
@@ -181,33 +160,46 @@ Description:
 	This method returns an equality (==) constraint between the current expression and another
 */
 func (kv KVector) Eq(rhsIn interface{}) (VectorConstraint, error) {
+	return kv.Comparison(rhsIn, SenseEqual)
+}
 
-	switch rhsIn.(type) {
+func (kv KVector) Comparison(rhs interface{}, sense ConstrSense) (VectorConstraint, error) {
+	switch rhs.(type) {
 	case KVector:
 		// Cast type
-		rhsAsKVector, _ := rhsIn.(KVector)
+		rhsAsKVector, _ := rhs.(KVector)
+
+		// Check Lengths
+		if kv.Len() != rhsAsKVector.Len() {
+			return VectorConstraint{},
+				fmt.Errorf(
+					"The left hand side's dimension (%v) and the left hand side's dimension (%v) do not match!",
+					kv.Len(),
+					rhsAsKVector.Len(),
+				)
+		}
 
 		// Return constraint
 		return VectorConstraint{
 			LeftHandSide:  kv,
 			RightHandSide: rhsAsKVector,
-			Sense:         SenseEqual,
+			Sense:         sense,
 		}, nil
 	case VarVector:
 		// Cast type
-		rhsAsVV, _ := rhsIn.(VarVector)
+		rhsAsVV, _ := rhs.(VarVector)
 
 		// Return constraint
-		return rhsAsVV.Eq(kv)
+		return rhsAsVV.Comparison(kv, sense)
 	case VectorLinearExpr:
 		// Cast Type
-		rhsAsVLE, _ := rhsIn.(VectorLinearExpr)
+		rhsAsVLE, _ := rhs.(VectorLinearExpr)
 
 		// Return constraint
-		return rhsAsVLE.Eq(kv)
+		return rhsAsVLE.Comparison(kv, sense)
 	default:
 		// Return an error
-		return VectorConstraint{}, fmt.Errorf("The input to KVector's Eq() (%v) has unexpected type: %T", rhsIn, rhsIn)
+		return VectorConstraint{}, fmt.Errorf("The input to KVector's '%v' comparison (%v) has unexpected type: %T", sense, rhs, rhs)
 
 	}
 }

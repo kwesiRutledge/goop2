@@ -47,6 +47,11 @@ type VectorExpression interface {
 	// current expression and another
 	GreaterEq(rhs interface{}) (VectorConstraint, error)
 
+	// Comparison
+	// Returns a constraint with respect to the sense (senseIn) between the
+	// current expression and another.
+	Comparison(rhs interface{}, sense ConstrSense) (VectorConstraint, error)
+
 	// Eq returns an equality (==) constraint between the current expression
 	// and another
 	Eq(rhs interface{}) (VectorConstraint, error)
