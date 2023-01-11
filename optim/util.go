@@ -3,8 +3,6 @@ package optim
 import (
 	"fmt"
 	"gonum.org/v1/gonum/mat"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // Sum returns the sum of the given expressions. It creates a new empty
@@ -45,23 +43,6 @@ func SumCol(vs [][]Var, col int) ScalarExpression {
 	for row := 0; row < len(vs); row++ {
 		newExpr.Plus(vs[row][col])
 	}
-	return newExpr
-}
-
-// Dot returns the dot product of a vector of variables and slice of floats.
-func Dot(vs []Var, coeffs []float64) ScalarExpression {
-	if len(vs) != len(coeffs) {
-		log.WithFields(log.Fields{
-			"num_vars":   len(vs),
-			"num_coeffs": len(coeffs),
-		}).Panic("Number of vars and coeffs mismatch")
-	}
-
-	newExpr := NewExpr(0)
-	for i := range vs {
-		newExpr.Plus(vs[i].Mult(coeffs[i]))
-	}
-
 	return newExpr
 }
 
