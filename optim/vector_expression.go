@@ -58,6 +58,10 @@ type VectorExpression interface {
 
 	// Len returns the length of the vector expression.
 	Len() int
+
+	//Multiply
+	// Multiplies the given scalar expression with another expression
+	//Multiply(term1 interface{}) (Expression, error)
 }
 
 /*

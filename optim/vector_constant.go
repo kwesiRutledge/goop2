@@ -203,3 +203,14 @@ func (kv KVector) Comparison(rhs interface{}, sense ConstrSense) (VectorConstrai
 
 	}
 }
+
+/*
+Multiply
+Description:
+
+	This method is used to compute the multiplication of the input vector constant with another term.
+*/
+func (kv KVector) Multiply(term1 interface{}, extras ...interface{}) (Expression, error) {
+	// TODO: Implement this!
+	return K(0), fmt.Errorf("The Multiply() method for KVector has not been implemented yet!")
+}

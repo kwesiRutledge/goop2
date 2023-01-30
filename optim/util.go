@@ -102,6 +102,23 @@ func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
 
 		return xLocationInSliceIn, nil
 
+	case Var:
+		x := xIn.(Var)
+		slice, ok := sliceIn.([]Var)
+		if !ok {
+			return -1, fmt.Errorf("The input slice was not of type %T; expected type %T", x, slice)
+		}
+
+		// Perform Search
+		xLocationInSliceIn := -1
+		for sliceIndex, sliceValue := range slice {
+			if x.ID != sliceValue.ID {
+				xLocationInSliceIn = sliceIndex
+			}
+		}
+
+		return xLocationInSliceIn, nil
+
 	default:
 		return -1, fmt.Errorf("The FindInSlice() function was only defined for type string, not type %T:", xIn)
 	}

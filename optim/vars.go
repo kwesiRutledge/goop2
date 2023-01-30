@@ -1,5 +1,7 @@
 package optim
 
+import "gonum.org/v1/gonum/mat"
+
 // Var represnts a variable in a optimization problem. The variable is
 // identified with an uint64.
 type Var struct {
@@ -7,6 +9,16 @@ type Var struct {
 	Lower float64
 	Upper float64
 	Vtype VarType
+}
+
+/*
+Variables
+Description:
+
+	This function returns a slice containing all unique variables in the variable expression v.
+*/
+func (v Var) Variables() []Var {
+	return []Var{v}
 }
 
 // NumVars returns the number of variables in the expression. For a variable, it
@@ -35,34 +47,36 @@ func (v Var) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression.
-func (v Var) Plus(e ScalarExpression) ScalarExpression {
-	vars := append([]uint64{v.ID}, e.IDs()...)
+func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+	vv := VarVector{
+		UniqueVars(append([]Var{v}, e.Variables()...)),
+	}
 	coeffs := append([]float64{1}, e.Coeffs()...)
 	newExpr := &ScalarLinearExpr{
-		XIndices: vars,
-		L:        coeffs,
-		C:        e.Constant(),
+		X: vv,
+		L: *mat.NewVecDense(vv.Len(), coeffs),
+		C: e.Constant(),
 	}
-	return newExpr
+	return newExpr, nil
 }
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (v Var) Mult(m float64) ScalarExpression {
+func (v Var) Mult(m float64) (ScalarExpression, error) {
 	// Constants
 	// switch m.(type) {
 	// case float64:
 
-	vars := []uint64{v.ID}
+	vars := []Var{v}
 	coeffs := []float64{m * v.Coeffs()[0]}
 
 	// Algorithm
 	newExpr := &ScalarLinearExpr{
-		XIndices: vars,
-		L:        coeffs,
-		C:        0,
+		X: VarVector{vars},
+		L: *mat.NewVecDense(1, coeffs),
+		C: 0,
 	}
-	return newExpr
+	return newExpr, nil
 	// case *Var:
 	// 	return nil
 	// }
@@ -136,3 +150,25 @@ const (
 	Binary             = 'B'
 	Integer            = 'I'
 )
+
+/*
+UniqueVars
+Description:
+
+	This function creates a slice of unique variables from the slice given in
+	varsIn
+*/
+func UniqueVars(varsIn []Var) []Var {
+	// Constants
+
+	// Algorithm
+	var varsOut []Var
+	for _, v := range varsIn {
+		if vIndex, _ := FindInSlice(v, varsOut); vIndex == -1 { // If v is not yet in varsOut, then add it
+			varsOut = append(varsOut, v)
+		}
+	}
+
+	return varsOut
+
+}

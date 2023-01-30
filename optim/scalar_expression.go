@@ -5,6 +5,9 @@ package optim
 // variables and k is a constant. This is a base interface that is implemented
 // by single variables, constants, and general linear expressions.
 type ScalarExpression interface {
+	// Variables returns the variables included in the scalar expression
+	Variables() []Var
+
 	// NumVars returns the number of variables in the expression
 	NumVars() int
 
@@ -19,11 +22,11 @@ type ScalarExpression interface {
 
 	// Plus adds the current expression to another and returns the resulting
 	// expression
-	Plus(e ScalarExpression) ScalarExpression
+	Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error)
 
 	// Mult multiplies the current expression to another and returns the
 	// resulting expression
-	Mult(c float64) ScalarExpression
+	Mult(c float64) (ScalarExpression, error)
 
 	// LessEq returns a less than or equal to (<=) constraint between the
 	// current expression and another
@@ -40,6 +43,10 @@ type ScalarExpression interface {
 	//Comparison
 	// Compares the receiver expression rhs with the expression rhs in the sense of sense.
 	Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error)
+
+	//Multiply
+	// Multiplies the given scalar expression with another expression
+	//Multiply(term1 interface{}, extras...) (Expression, error)
 }
 
 // NewExpr returns a new expression with a single additive constant value, c,

@@ -2,6 +2,7 @@ package optim_test
 
 import (
 	"github.com/kwesiRutledge/goop2/optim"
+	"gonum.org/v1/gonum/mat"
 	"strings"
 	"testing"
 )
@@ -26,7 +27,17 @@ func TestQuadraticExpr_NewQuadraticExpr_qb01(t *testing.T) {
 	}
 	xIndices1 := []uint64{1, 2}
 
-	_, err := optim.NewQuadraticExpr_qb0(Q1, xIndices1)
+	// Create inputs for NeqQuadraticExpr
+	Q_vectorized := append(Q1[0], Q1[1]...)
+	Q1_as_mat := mat.NewDense(2, 2, Q_vectorized)
+
+	var vv = optim.VarVector{}
+	for _, tempId := range xIndices1 {
+		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+	}
+
+	// Algorithm
+	_, err := optim.NewQuadraticExpr_qb0(*Q1_as_mat, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -46,7 +57,17 @@ func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
 	}
 	xIndices2 := []uint64{1, 2}
 
-	_, err := optim.NewQuadraticExpr_qb0(Q2, xIndices2)
+	// Create Inputs for NewQuadraticExpr_qb0
+	Q2_vectorized := Q2[0]
+	Q2_as_mat := mat.NewDense(1, 2, Q2_vectorized)
+
+	var vv = optim.VarVector{}
+	for _, tempId := range xIndices2 {
+		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+	}
+
+	// Algorithm
+	_, err := optim.NewQuadraticExpr_qb0(*Q2_as_mat, vv)
 	if err == nil {
 		t.Errorf("Expected an error, but there was none!")
 	}
@@ -72,7 +93,17 @@ func TestQuadraticExpr_NewQuadraticExpr_qb03(t *testing.T) {
 	}
 	xIndices3 := []uint64{1, 2}
 
-	_, err := optim.NewQuadraticExpr_qb0(Q3, xIndices3)
+	// Create Inputs for NewQuadraticExpr_qb0
+	Q3_vectorized := append(Q3[0], Q3[1]...)
+	Q3_as_mat := mat.NewDense(1, 2, Q3_vectorized)
+
+	var vv = optim.VarVector{}
+	for _, tempId := range xIndices3 {
+		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+	}
+
+	// Algorithm
+	_, err := optim.NewQuadraticExpr_qb0(*Q3_as_mat, vv)
 	if err == nil {
 		t.Errorf("Expected an error, but there was none!")
 	}
@@ -101,7 +132,12 @@ func TestQuadraticExpr_NumVars1(t *testing.T) {
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	// Create inputs for NeqQuadraticExpr
+	Q_vectorized := append(Q1[0], Q1[1]...)
+	Q1_as_mat := mat.NewDense(2, 2, Q_vectorized)
+
+	// Algorithm
+	qv1, err := optim.NewQuadraticExpr_qb0(*Q1_as_mat, optim.VarVector{[]optim.Var{v1, v2}})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -132,7 +168,17 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 		[]float64{7.0, 8.0, 9.0},
 	}
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID, v3.ID})
+	// Create Inputs for NewQuadraticExpr_qb0
+	Q2_vectorized := append(Q2[0], Q2[1]...)
+	Q2_vectorized = append(Q2_vectorized, Q2[2]...)
+	Q2_as_mat := mat.NewDense(1, 2, Q2_vectorized)
+
+	// Algorithm
+	qv1, err := optim.NewQuadraticExpr_qb0(
+		*Q2_as_mat,
+		optim.VarVector{
+			[]optim.Var{v1, v2, v3},
+		})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -158,8 +204,17 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 	Q3 := [][]float64{
 		[]float64{2.3},
 	}
+	// Create Inputs for NewQuadraticExpr_qb0
+	Q3_vectorized := Q3[0]
+	Q3_as_mat := mat.NewDense(1, 2, Q3_vectorized)
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q3, []uint64{v1.ID})
+	// Algorithm
+	qv1, err := optim.NewQuadraticExpr_qb0(
+		*Q3_as_mat,
+		optim.VarVector{
+			[]optim.Var{v1},
+		},
+	)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -188,7 +243,17 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	// Create inputs for NeqQuadraticExpr
+	Q_vectorized := append(Q1[0], Q1[1]...)
+	Q1_as_mat := mat.NewDense(2, 2, Q_vectorized)
+
+	// Algorithm
+	qv1, err := optim.NewQuadraticExpr_qb0(
+		*Q1_as_mat,
+		optim.VarVector{
+			[]optim.Var{v1, v2},
+		},
+	)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -221,27 +286,41 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
 	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
-	Q1 := [][]float64{
+	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	Q2 := [][]float64{
+	Q2_aoa := [][]float64{
 		[]float64{1.0, 0.0},
 		[]float64{0.0, 1.0},
 	}
+	// Convert array of arrays to matrices
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	Q2_vals := append(Q2_aoa[0], Q2_aoa[1]...)
+	Q2 := *mat.NewDense(2, 2, Q2_vals)
+
+	vv := optim.VarVector{
+		[]optim.Var{v1, v2},
+	}
+
+	// Algorithm
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	qv2, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v2.ID})
+	qv2, err := optim.NewQuadraticExpr_qb0(Q2, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	e3 := qv1.Plus(qv2)
+	e3, err := qv1.Plus(qv2)
+	if err != nil {
+		t.Errorf("Received an error when computing Plus(): %v", err)
+	}
 
 	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
@@ -253,20 +332,20 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 		t.Errorf("Expected for 2 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
 	}
 
-	if qv3.Q[0][0] != 2.0 {
-		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q[0][0])
+	if qv3.Q.At(0, 0) != 2.0 {
+		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q.At(0, 0))
 	}
 
-	if qv3.Q[0][1] != qv1.Q[0][1] {
-		t.Errorf("Expected for Q's (0,1)-th element to be %v; received %v", qv3.Q[0][1], qv1.Q[0][1])
+	if qv3.Q.At(0, 1) != qv1.Q.At(0, 1) {
+		t.Errorf("Expected for Q's (0,1)-th element to be %v; received %v", qv3.Q.At(0, 1), qv1.Q.At(0, 1))
 	}
 
-	if qv3.Q[1][0] != qv1.Q[1][0] {
-		t.Errorf("Expected for Q's (1,0)-th element to be %v; received %v", qv3.Q[1][0], qv1.Q[1][0])
+	if qv3.Q.At(1, 0) != qv1.Q.At(1, 0) {
+		t.Errorf("Expected for Q's (1,0)-th element to be %v; received %v", qv3.Q.At(1, 0), qv1.Q.At(1, 0))
 	}
 
-	if qv3.Q[1][1] != 5.0 {
-		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q[1][1])
+	if qv3.Q.At(1, 1) != 5.0 {
+		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q.At(1, 1))
 	}
 
 }
@@ -285,24 +364,36 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
 	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
-	Q1 := [][]float64{
+	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
+	// Converting Q to matrices
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	vv := optim.VarVector{
+		[]optim.Var{v1, v2},
+	}
+
+	// Algorithm / Tests
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	L2 := []float64{5.0, 6.0}
+	L2_a := []float64{5.0, 6.0}
+	L2 := *mat.NewVecDense(2, L2_a)
 	le2 := &optim.ScalarLinearExpr{
-		L:        L2,
-		C:        0.1,
-		XIndices: []uint64{v1.ID, v2.ID},
+		L: L2,
+		C: 0.1,
+		X: vv,
 	}
 
-	e3 := qv1.Plus(le2)
+	e3, err := qv1.Plus(le2)
+	if err != nil {
+		t.Errorf("There was an issue adding together the two expressions: %v", err)
+	}
 
 	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
@@ -314,20 +405,20 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 		t.Errorf("Expected for 2 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
 	}
 
-	if qv3.Q[0][0] != 1.0 {
-		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q[0][0])
+	if qv3.Q.At(0, 0) != 1.0 {
+		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q.At(0, 0))
 	}
 
-	if qv3.Q[0][1] != qv1.Q[0][1] {
-		t.Errorf("Expected for Q's (0,1)-th element to be %v; received %v", qv3.Q[0][1], qv1.Q[0][1])
+	if qv3.Q.At(0, 1) != qv1.Q.At(0, 1) {
+		t.Errorf("Expected for Q's (0,1)-th element to be %v; received %v", qv3.Q.At(0, 1), qv1.Q.At(0, 1))
 	}
 
-	if qv3.Q[1][0] != qv1.Q[1][0] {
-		t.Errorf("Expected for Q's (1,0)-th element to be %v; received %v", qv3.Q[1][0], qv1.Q[1][0])
+	if qv3.Q.At(1, 0) != qv1.Q.At(1, 0) {
+		t.Errorf("Expected for Q's (1,0)-th element to be %v; received %v", qv3.Q.At(1, 0), qv1.Q.At(1, 0))
 	}
 
-	if qv3.L[1] != le2.L[1] {
-		t.Errorf("Expected for L's (1)-th element to be 6.0; received %v", qv3.L[1])
+	if qv3.L.AtVec(1) != le2.L.AtVec(1) {
+		t.Errorf("Expected for L's (1)-th element to be 6.0; received %v", qv3.L.AtVec(1))
 	}
 
 }
@@ -347,27 +438,42 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
-	Q1 := [][]float64{
+	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	Q2 := [][]float64{
+	Q2_aoa := [][]float64{
 		[]float64{1.0, 0.0},
 		[]float64{0.0, 1.0},
 	}
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	// Converting Arrays of arrays to matrices
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
+
+	Q2_vals := append(Q2_aoa[0], Q2_aoa[1]...)
+	Q2 := *mat.NewDense(2, 2, Q2_vals)
+
+	vv := optim.VarVector{
+		[]optim.Var{v1, v2, v3},
+	}
+
+	// Algorithm / Testing
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	qv2, err := optim.NewQuadraticExpr_qb0(Q2, []uint64{v1.ID, v3.ID})
+	qv2, err := optim.NewQuadraticExpr_qb0(Q2, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	e3 := qv1.Plus(qv2)
+	e3, err := qv1.Plus(qv2)
+	if err != nil {
+		t.Errorf("There was an issue adding qv1 and qv2: %v", err)
+	}
 
 	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
@@ -379,16 +485,16 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
 	}
 
-	if qv3.Q[0][0] != 2.0 {
-		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q[0][0])
+	if qv3.Q.At(0, 0) != 2.0 {
+		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q.At(0, 0))
 	}
 
-	if qv3.Q[1][1] != 4.0 {
-		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q[1][1])
+	if qv3.Q.At(1, 1) != 4.0 {
+		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q.At(1, 1))
 	}
 
-	if qv3.Q[2][2] != 1.0 {
-		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q[1][1])
+	if qv3.Q.At(1, 1) != 1.0 {
+		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q.At(2, 2))
 	}
 
 }
@@ -408,30 +514,44 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
-	Q1 := [][]float64{
+	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	L1 := []float64{1.0, 7.0}
+	L1_a := []float64{1.0, 7.0}
 
 	C1 := 3.14
 
-	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, []uint64{v1.ID, v2.ID})
+	// Preparing constants for NewQuadraticExpr
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
+
+	L1 := *mat.NewVecDense(2, L1_a)
+
+	vv := optim.VarVector{
+		[]optim.Var{v1, v2, v3},
+	}
+
+	// Algorithm
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	L2 := []float64{2.0, 11.0}
+	L2 := *mat.NewVecDense(2, []float64{2.0, 11.0})
 	C2 := 1.25
 
 	le2 := &optim.ScalarLinearExpr{
-		L:        L2,
-		C:        C2,
-		XIndices: []uint64{v2.ID, v3.ID},
+		L: L2,
+		C: C2,
+		X: vv,
 	}
 
-	e3 := qe1.Plus(le2)
+	e3, err := qe1.Plus(le2)
+	if err != nil {
+		t.Errorf("There was an issue adding qe1 and le2: %v", err)
+	}
 
 	qv3, ok := e3.(*optim.QuadraticExpr)
 	if !ok {
@@ -443,16 +563,16 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
 	}
 
-	if qv3.L[0] != qe1.L[0] {
-		t.Errorf("Expected for L's 0-th element to be 1.0; received %v", qv3.L[0])
+	if qv3.L.AtVec(0) != qe1.L.AtVec(0) {
+		t.Errorf("Expected for L's 0-th element to be 1.0; received %v", qv3.L.AtVec(0))
 	}
 
-	if qv3.L[1] != qe1.L[1]+le2.L[0] {
-		t.Errorf("Expected for L's 1-th element to be 5.0; received %v", qv3.L[1])
+	if qv3.L.AtVec(1) != qe1.L.AtVec(1)+le2.L.AtVec(0) {
+		t.Errorf("Expected for L's 1-th element to be 5.0; received %v", qv3.L.AtVec(1))
 	}
 
-	if qv3.L[2] != le2.L[1] {
-		t.Errorf("Expected for L's 2-th element to be 11.0; received %v", qv3.L[2])
+	if qv3.L.AtVec(2) != le2.L.AtVec(1) {
+		t.Errorf("Expected for L's 2-th element to be 11.0; received %v", qv3.L.AtVec(2))
 	}
 
 }
@@ -470,33 +590,45 @@ func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
 	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
 
-	Q1 := [][]float64{
+	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
 		[]float64{3.0, 4.0},
 	}
 
-	qv1, err := optim.NewQuadraticExpr_qb0(Q1, []uint64{v1.ID, v2.ID})
+	// Prepare variables for use with NewQuadraticExpr_qb0
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
+
+	vv := optim.VarVector{
+		[]optim.Var{v1, v2},
+	}
+
+	// Algorithm/Test
+	qv1, err := optim.NewQuadraticExpr_qb0(Q1, vv)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	qvNew, err := qv1.RewriteInTermsOfIndices([]uint64{v1.ID, v2.ID, 200})
+	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	vv2 := optim.VarVector{
+		[]optim.Var{v1, v2, v3},
+	}
+
+	qvNew, err := qv1.RewriteInTermsOf(vv2)
 	if err != nil {
 		t.Errorf("There was an issue rewriting the quadratic expression when there should not have been: %v", err)
 	}
 
-	if len(qvNew.Q) != 3 {
-		t.Errorf("There were %v rows in the new Q; expected 3", len(qvNew.Q))
+	if n_rows, _ := qvNew.Q.Dims(); n_rows != 3 {
+		t.Errorf("There were %v rows in the new Q; expected 3", n_rows)
 	}
 
-	for rowIndex := 0; rowIndex < len(qvNew.Q); rowIndex++ {
-		if len(qvNew.Q[rowIndex]) != 3 {
-			t.Errorf("There were %v columns in new Q's %v-th row; expected 3", len(qvNew.Q[rowIndex]), rowIndex)
-		}
+	if _, n_cols := qvNew.Q.Dims(); n_cols != 3 {
+		t.Errorf("There were %v columns in the new Q; expected 3", n_cols)
 	}
 
-	if len(qvNew.L) != 3 {
-		t.Errorf("There were %v elements in the new L; expected 3", len(qvNew.L))
+	if qvNew.L.Len() != 3 {
+		t.Errorf("There were %v elements in the new L; expected 3", qvNew.L.Len())
 	}
 
 	if qvNew.C != 0.0 {

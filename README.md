@@ -56,3 +56,4 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
   - GreaterEq
   - Eq
   - Len
+- Decide whether or not we really need the Coeffs() method (What is it doing?)
