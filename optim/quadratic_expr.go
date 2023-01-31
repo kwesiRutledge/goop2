@@ -250,9 +250,7 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 		newQExprAligned.C += linearEIn.C
 		return newQExprAligned, nil
 	default:
-		fmt.Println("Unexpected type given to Plus().")
-
-		return &QuadraticExpr{}, fmt.Errorf("Unexpected type given as first argument to Plus %T.", eIn)
+		return &QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
 	}
 
 }

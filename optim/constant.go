@@ -57,7 +57,7 @@ func (c K) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, er
 		return K(c.Constant() + e.Constant()), nil
 	default:
 		fmt.Sprintf("Unrecognized expression type %T!", e)
-		return c, fmt.Errorf("Unexpected type in Plus() for constant %v: %T", e)
+		return c, fmt.Errorf("Unexpected type in K.Plus() for constant %v: %T", e)
 	}
 }
 

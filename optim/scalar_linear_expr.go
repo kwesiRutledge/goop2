@@ -29,37 +29,37 @@ Description:
 
 	This function returns a slice containing all unique variables in the linear expression le.
 */
-func (le *ScalarLinearExpr) Variables() []Var {
-	return UniqueVars(le.X.Elements)
+func (sle *ScalarLinearExpr) Variables() []Var {
+	return UniqueVars(sle.X.Elements)
 }
 
 // NumVars returns the number of variables in the expression
-func (e *ScalarLinearExpr) NumVars() int {
-	return e.X.Len()
+func (sle *ScalarLinearExpr) NumVars() int {
+	return sle.X.Len()
 }
 
 // Vars returns a slice of the Var ids in the expression
-func (e *ScalarLinearExpr) IDs() []uint64 {
-	return e.X.IDs()
+func (sle *ScalarLinearExpr) IDs() []uint64 {
+	return sle.X.IDs()
 }
 
 // Coeffs returns a slice of the coefficients in the expression
-func (e *ScalarLinearExpr) Coeffs() []float64 {
+func (sle *ScalarLinearExpr) Coeffs() []float64 {
 	var coeffsOut []float64
-	for i := 0; i < e.L.Len(); i++ {
-		coeffsOut = append(coeffsOut, e.L.AtVec(i))
+	for i := 0; i < sle.L.Len(); i++ {
+		coeffsOut = append(coeffsOut, sle.L.AtVec(i))
 	}
 	return coeffsOut
 }
 
 // Constant returns the constant additive value in the expression
-func (e *ScalarLinearExpr) Constant() float64 {
-	return e.C
+func (sle *ScalarLinearExpr) Constant() float64 {
+	return sle.C
 }
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (e *ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (sle *ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
 	// Algorithm depends
 	switch eIn.(type) {
 	//case *QuadraticExpr:
@@ -86,59 +86,57 @@ func (e *ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Sc
 	//	newQExprAligned.C += quadraticEInAligned.C
 	//	return newQExprAligned, nil
 	//
-	//case *ScalarLinearExpr:
-	//	// Collect Expressions
-	//	var newQExpr QuadraticExpr = *qe // get copy of e
-	//	linearEIn := eIn.(*ScalarLinearExpr)
-	//
-	//	// Get Combined set of Variables
-	//	newX := UniqueVars(append(newQExpr.X.Elements, linearEIn.X.Elements...))
-	//	newQExprAligned, _ := newQExpr.RewriteInTermsOf(VarVector{newX})
-	//	linearEInAligned, _ := linearEIn.RewriteInTermsOf(VarVector{newX})
-	//
-	//	// Add linear vector together with the quadratic expression
-	//	//var vectorSum mat.VecDense
-	//	//vectorSum.AddVec(newQExprAligned.L, linearEInAligned.L)
-	//	newQExprAligned.L.AddVec(&newQExprAligned.L, &linearEInAligned.L)
-	//	//for eltInd, qElt := range linearEInAligned.L {
-	//	//	newQExprAligned.L[eltInd] += qElt
-	//	//}
-	//
-	//	// Add constants together
-	//	newQExprAligned.C += linearEIn.C
-	//	return newQExprAligned, nil
+	case *ScalarLinearExpr:
+		// Collect Expressions
+		linearEIn := eIn.(*ScalarLinearExpr)
+
+		// Get Combined set of Variables
+		newX := UniqueVars(append(sle.X.Elements, linearEIn.X.Elements...))
+		newSLEAligned, _ := sle.RewriteInTermsOf(VarVector{newX})
+		linearEInAligned, _ := linearEIn.RewriteInTermsOf(VarVector{newX})
+
+		// Create new vector
+		var newSLE ScalarLinearExpr = *newSLEAligned // get copy of e
+		// Add linear vector together with the quadratic expression
+		//var vectorSum mat.VecDense
+		//vectorSum.AddVec(newQExprAligned.L, linearEInAligned.L)
+		newSLE.L.AddVec(&newSLE.L, &linearEInAligned.L)
+
+		// Add constants together
+		newSLE.C += linearEIn.C
+		return &newSLE, nil
 	default:
 		fmt.Println("Unexpected type given to Plus().")
 
-		return &QuadraticExpr{}, fmt.Errorf("Unexpected type given as first argument to Plus %T.", eIn)
+		return &QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as first argument to Plus as %v.", eIn, eIn)
 	}
 }
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (e *ScalarLinearExpr) Mult(c float64) (ScalarExpression, error) {
-	e.L.ScaleVec(c, &e.L)
-	e.C *= c
+func (sle *ScalarLinearExpr) Mult(c float64) (ScalarExpression, error) {
+	sle.L.ScaleVec(c, &sle.L)
+	sle.C *= c
 
-	return e, nil
+	return sle, nil
 }
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (e *ScalarLinearExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
-	return e.Comparison(other, SenseLessThanEqual)
+func (sle *ScalarLinearExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+	return sle.Comparison(other, SenseLessThanEqual)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (e *ScalarLinearExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
-	return e.Comparison(other, SenseGreaterThanEqual)
+func (sle *ScalarLinearExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+	return sle.Comparison(other, SenseGreaterThanEqual)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (e *ScalarLinearExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
-	return e.Comparison(other, SenseEqual)
+func (sle *ScalarLinearExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
+	return sle.Comparison(other, SenseEqual)
 }
 
 /*
@@ -151,8 +149,8 @@ Usage:
 
 	constr, err := e.Comparison(expr1,SenseGreaterThanEqual)
 */
-func (e *ScalarLinearExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
-	return ScalarConstraint{e, rhs, sense}, nil
+func (sle *ScalarLinearExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+	return ScalarConstraint{sle, rhs, sense}, nil
 }
 
 /*
@@ -165,7 +163,7 @@ Usage:
 
 	rewrittenLE, err := orignalLE.RewriteInTermsOfIndices(newXIndices1)
 */
-func (e *ScalarLinearExpr) RewriteInTermsOf(newX VarVector) (*ScalarLinearExpr, error) {
+func (sle *ScalarLinearExpr) RewriteInTermsOf(newX VarVector) (*ScalarLinearExpr, error) {
 	// Create new Linear Express
 	var newLE ScalarLinearExpr = ScalarLinearExpr{
 		X: newX,
@@ -182,9 +180,9 @@ func (e *ScalarLinearExpr) RewriteInTermsOf(newX VarVector) (*ScalarLinearExpr, 
 	newL := mat.NewVecDense(dimX, newLfloat)
 
 	// Populate L
-	for oi1Index, oldElt1 := range e.X.Elements {
+	for oi1Index, oldElt1 := range sle.X.Elements {
 		// Identify what term is associated with the pair (oldIndex1, oldIndex2)
-		oldLterm := e.L.AtVec(oi1Index)
+		oldLterm := sle.L.AtVec(oi1Index)
 
 		// Get the new indices corresponding to oi1 and oi2
 		ni1Index, err := FindInSlice(oldElt1, newX.Elements)
@@ -193,8 +191,8 @@ func (e *ScalarLinearExpr) RewriteInTermsOf(newX VarVector) (*ScalarLinearExpr, 
 		}
 		//newElt1 := newX.Elements[ni1Index]
 
-		// Plug the oldLinearterm into newLinear expression
-		offset := ZerosVector(e.X.Len())
+		// Plug the old Linearterm into newLinear expression
+		offset := ZerosVector(dimX)
 		offset.SetVec(ni1Index, oldLterm)
 
 		newL.AddVec(newL, &offset)
@@ -202,7 +200,7 @@ func (e *ScalarLinearExpr) RewriteInTermsOf(newX VarVector) (*ScalarLinearExpr, 
 	newLE.L = *newL
 
 	// Populate C
-	newLE.C = e.C
+	newLE.C = sle.C
 
 	return &newLE, nil
 

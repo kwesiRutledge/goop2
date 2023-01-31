@@ -7,13 +7,16 @@ import (
 
 // Sum returns the sum of the given expressions. It creates a new empty
 // expression and adds to it the given expressions.
-func Sum(exprs ...ScalarExpression) ScalarExpression {
+func Sum(exprs ...ScalarExpression) (ScalarExpression, error) {
 	newExpr := NewExpr(0)
 	for _, e := range exprs {
-		newExpr.Plus(e)
+		newExpr, err := newExpr.Plus(e)
+		if err != nil {
+			return newExpr, fmt.Errorf("Error computing Plus() on %v,%v: %v", newExpr, e, err)
+		}
 	}
 
-	return newExpr
+	return newExpr, nil
 }
 
 // SumVars returns the sum of the given variables. It creates a new empty
@@ -112,7 +115,7 @@ func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
 		// Perform Search
 		xLocationInSliceIn := -1
 		for sliceIndex, sliceValue := range slice {
-			if x.ID != sliceValue.ID {
+			if x.ID == sliceValue.ID {
 				xLocationInSliceIn = sliceIndex
 			}
 		}

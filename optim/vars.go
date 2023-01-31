@@ -48,6 +48,9 @@ func (v Var) Constant() float64 {
 // Plus adds the current expression to another and returns the resulting
 // expression.
 func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+	// Input Processing??
+
+	// Algorithm
 	vv := VarVector{
 		UniqueVars(append([]Var{v}, e.Variables()...)),
 	}
