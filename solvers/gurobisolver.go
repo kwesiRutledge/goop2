@@ -241,7 +241,12 @@ Description:
 
 	Adds a single constraint to the gurobi model object inside of the current GurobiSolver object.
 */
-func (gs *GurobiSolver) AddConstr(constrIn optim.ScalarConstraint) error {
+func (gs *GurobiSolver) AddConstr(constrIn optim.Constraint) error {
+	// Input Checking
+	if !optim.IsConstraint(constrIn) {
+		return fmt.Errorf("The input to AddConstr is not recognized as a constraint!")
+	}
+
 	// Constants
 
 	// Identify the variables in the left hand side of this constraint

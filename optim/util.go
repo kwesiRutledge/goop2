@@ -5,20 +5,6 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-// Sum returns the sum of the given expressions. It creates a new empty
-// expression and adds to it the given expressions.
-func Sum(exprs ...ScalarExpression) (ScalarExpression, error) {
-	newExpr := NewExpr(0)
-	for _, e := range exprs {
-		newExpr, err := newExpr.Plus(e)
-		if err != nil {
-			return newExpr, fmt.Errorf("Error computing Plus() on %v,%v: %v", newExpr, e, err)
-		}
-	}
-
-	return newExpr, nil
-}
-
 // SumVars returns the sum of the given variables. It creates a new empty
 // expression and adds to it the given variables.
 func SumVars(vs ...Var) ScalarExpression {

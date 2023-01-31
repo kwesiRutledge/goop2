@@ -197,3 +197,57 @@ func TestScalarLinearExpr_Plus2(t *testing.T) {
 
 	}
 }
+
+/*
+TestScalarLinearExpr_Plus3
+Description:
+
+	This function should test the Plus method of ScalarLinearExpr for the case of (SLE + K).
+*/
+func TestScalarLinearExpr_Plus3(t *testing.T) {
+	// Constants
+	L1 := optim.OnesVector(2)
+	c1 := 2.0
+
+	K1 := optim.K(5)
+
+	m := optim.NewModel()
+	vv1 := m.AddVarVector(2)
+
+	// Create sle's
+	sle1 := optim.ScalarLinearExpr{
+		L: L1, C: c1, X: vv1,
+	}
+
+	// Algorithm
+	sle3, err := sle1.Plus(K1)
+	if err != nil {
+		t.Errorf("There was an issue computing the product of sle1 and sle2: %v", err)
+	}
+
+	sle3AsSLE, ok1 := sle3.(*optim.ScalarLinearExpr)
+	if !ok1 {
+		t.Errorf("Expected the addition of ScalarLinearExpr with another ScalarLinearExpr to create another ScalarLinearExpr. Received %T.", sle3)
+	}
+
+	if sle3AsSLE.C != sle1.C+float64(K1) {
+		t.Errorf(
+			"Expected for the new SLE's constant to be equal to the sum of Kq and c1. %v != %v + %v",
+			sle3AsSLE.C,
+			sle1.C,
+			K1,
+		)
+	}
+
+	for LIndex := 0; LIndex < sle3AsSLE.L.Len(); LIndex++ {
+		if sle3AsSLE.L.AtVec(LIndex) != sle1.L.AtVec(LIndex) {
+			t.Errorf(
+				"The linear vector multiplying X was expected to be the same for sle1 and sle3, but sle3[%v] = %v != %v = sle1[%v]",
+				LIndex,
+				sle3AsSLE.L.AtVec(LIndex),
+				LIndex,
+				sle1.L.AtVec(LIndex),
+			)
+		}
+	}
+}

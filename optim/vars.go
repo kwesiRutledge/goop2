@@ -1,6 +1,9 @@
 package optim
 
-import "gonum.org/v1/gonum/mat"
+import (
+	"fmt"
+	"gonum.org/v1/gonum/mat"
+)
 
 // Var represnts a variable in a optimization problem. The variable is
 // identified with an uint64.
@@ -54,13 +57,28 @@ func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, 
 	vv := VarVector{
 		UniqueVars(append([]Var{v}, e.Variables()...)),
 	}
-	coeffs := append([]float64{1}, e.Coeffs()...)
-	newExpr := &ScalarLinearExpr{
-		X: vv,
-		L: *mat.NewVecDense(vv.Len(), coeffs),
-		C: e.Constant(),
+	switch e.(type) {
+	case Var:
+		// Convert
+		eAsV := e.(Var)
+
+		// Check to see if this is the same Var or a different one
+		if eAsV.ID == v.ID {
+			return &ScalarLinearExpr{
+				X: vv,
+				L: *mat.NewVecDense(1, []float64{2.0}),
+				C: 0.0,
+			}, nil
+		} else {
+			return &ScalarLinearExpr{
+				X: vv,
+				L: OnesVector(2),
+				C: 0.0,
+			}, nil
+		}
+	default:
+		return v, fmt.Errorf("There was an unexpected type (%T) given to Var.Plus()!", e)
 	}
-	return newExpr, nil
 }
 
 // Mult multiplies the current expression to another and returns the
@@ -74,7 +92,7 @@ func (v Var) Mult(m float64) (ScalarExpression, error) {
 	coeffs := []float64{m * v.Coeffs()[0]}
 
 	// Algorithm
-	newExpr := &ScalarLinearExpr{
+	newExpr := ScalarLinearExpr{
 		X: VarVector{vars},
 		L: *mat.NewVecDense(1, coeffs),
 		C: 0,

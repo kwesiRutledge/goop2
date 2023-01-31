@@ -54,7 +54,7 @@ type ScalarExpression interface {
 // for creating new empty expressions that you can perform operatotions on
 // later
 func NewExpr(c float64) ScalarExpression {
-	return &ScalarLinearExpr{C: c}
+	return ScalarLinearExpr{C: c}
 }
 
 func getVarsPtr(e ScalarExpression) *uint64 {

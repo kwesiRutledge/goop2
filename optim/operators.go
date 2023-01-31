@@ -134,3 +134,18 @@ func Dot(vs []Var, coeffs []float64) ScalarExpression {
 
 	return newExpr
 }
+
+// Sum returns the sum of the given expressions. It creates a new empty
+// expression and adds to it the given expressions.
+func Sum(exprs ...ScalarExpression) (ScalarExpression, error) {
+	sum := NewExpr(0)
+	var err error
+	for _, e := range exprs {
+		sum, err = sum.Plus(e)
+		if err != nil {
+			return sum, fmt.Errorf("Error computing Plus() on %v,%v: %v", sum, e, err)
+		}
+	}
+
+	return sum, nil
+}

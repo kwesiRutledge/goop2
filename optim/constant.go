@@ -55,8 +55,12 @@ func (c K) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, er
 	switch e.(type) {
 	case K:
 		return K(c.Constant() + e.Constant()), nil
+	case ScalarLinearExpr:
+		eAsSLE := e.(ScalarLinearExpr)
+		return eAsSLE.Plus(c)
+	case *QuadraticExpr:
+		return e.(*QuadraticExpr).Plus(c) // Very compact, but potentially confusing to read?
 	default:
-		fmt.Sprintf("Unrecognized expression type %T!", e)
 		return c, fmt.Errorf("Unexpected type in K.Plus() for constant %v: %T", e)
 	}
 }
