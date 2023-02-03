@@ -72,7 +72,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
 		t.Errorf("Expected an error, but there was none!")
 	}
 
-	if !strings.Contains(err.Error(), "The number of indices was 2 which did not match the first dimension of QIn (1)") {
+	if !strings.Contains(err.Error(), "The number of indices was 2 which did not match the number of rows in QIn (1)") {
 		t.Errorf("The wrong error was thrown: %v", err)
 	}
 
@@ -108,7 +108,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb03(t *testing.T) {
 		t.Errorf("Expected an error, but there was none!")
 	}
 
-	if !strings.Contains(err.Error(), "The number of indices was 2 which did not match the length of QIn's 0th row (1).") {
+	if !strings.Contains(err.Error(), "The number of indices was 2 which did not match the number of rows in QIn (1).") {
 		t.Errorf("The wrong error was thrown: %v", err)
 	}
 
@@ -171,7 +171,7 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 	// Create Inputs for NewQuadraticExpr_qb0
 	Q2_vectorized := append(Q2[0], Q2[1]...)
 	Q2_vectorized = append(Q2_vectorized, Q2[2]...)
-	Q2_as_mat := mat.NewDense(1, 2, Q2_vectorized)
+	Q2_as_mat := mat.NewDense(3, 3, Q2_vectorized)
 
 	// Algorithm
 	qv1, err := optim.NewQuadraticExpr_qb0(
@@ -206,7 +206,7 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 	}
 	// Create Inputs for NewQuadraticExpr_qb0
 	Q3_vectorized := Q3[0]
-	Q3_as_mat := mat.NewDense(1, 2, Q3_vectorized)
+	Q3_as_mat := mat.NewDense(1, 1, Q3_vectorized)
 
 	// Algorithm
 	qv1, err := optim.NewQuadraticExpr_qb0(

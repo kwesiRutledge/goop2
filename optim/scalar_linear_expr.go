@@ -60,8 +60,7 @@ func (sle ScalarLinearExpr) Constant() float64 {
 // Plus adds the current expression to another and returns the resulting
 // expression
 func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
-	fmt.Printf("sle = %v\n", sle)
-	// Algorithm depends
+	// Algorithm depends on the type of eIn.
 	switch eIn.(type) {
 	case K:
 		// Collect Expression
@@ -77,9 +76,6 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		// Collect Expressions
 		linearEIn := eIn.(ScalarLinearExpr)
 
-		fmt.Printf("linearEIn = %v\n", linearEIn)
-		fmt.Printf("sle = %v\n", sle)
-
 		// Get Combined set of Variables
 		newX := UniqueVars(append(sle.X.Elements, linearEIn.X.Elements...))
 		newSLEAligned, _ := sle.RewriteInTermsOf(VarVector{newX})
@@ -94,7 +90,6 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 
 		// Add constants together
 		newSLE.C += linearEIn.C
-		fmt.Printf("newSLE = %v\n", newSLE)
 		return newSLE, nil
 	case *QuadraticExpr:
 

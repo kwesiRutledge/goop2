@@ -88,12 +88,12 @@ func TestScalarLinearExpr_Plus1(t *testing.T) {
 	}
 
 	// Algorithm
-	sle3, err := sle1.Plus(&sle2)
+	sle3, err := sle1.Plus(sle2)
 	if err != nil {
-		t.Errorf("There was an issue computing the product of sle1 and sle2: %v", err)
+		t.Errorf("There was an issue computing the sum of sle1 and sle2: %v", err)
 	}
 
-	sle3AsSLE, ok1 := sle3.(*optim.ScalarLinearExpr)
+	sle3AsSLE, ok1 := sle3.(optim.ScalarLinearExpr)
 	if !ok1 {
 		t.Errorf("Expected the addition of ScalarLinearExpr with another ScalarLinearExpr to create another ScalarLinearExpr. Received %T.", sle3)
 	}
@@ -147,12 +147,12 @@ func TestScalarLinearExpr_Plus2(t *testing.T) {
 	}
 
 	// Algorithm
-	sle3, err := sle1.Plus(&sle2)
+	sle3, err := sle1.Plus(sle2)
 	if err != nil {
 		t.Errorf("There was an issue computing the product of sle1 and sle2: %v", err)
 	}
 
-	sle3AsSLE, ok1 := sle3.(*optim.ScalarLinearExpr)
+	sle3AsSLE, ok1 := sle3.(optim.ScalarLinearExpr)
 	if !ok1 {
 		t.Errorf("Expected the addition of ScalarLinearExpr with another ScalarLinearExpr to create another ScalarLinearExpr. Received %T.", sle3)
 	}
