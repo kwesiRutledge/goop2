@@ -349,10 +349,8 @@ Usage:
 	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
 */
 func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error) {
-	// Create new Quadratic Express
-	var newQE QuadraticExpr = QuadraticExpr{
-		X: newX,
-	}
+	// Create new Quadratic Expression
+	// ===============================
 
 	// Find length of X indices
 	dimX := newX.Len()
@@ -367,6 +365,14 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 		newQvals = append(newQvals, newRow...)
 	}
 	newQ := mat.NewDense(dimX, dimX, newQvals)
+
+	// Create expression
+	var newQE QuadraticExpr = QuadraticExpr{
+		Q: *newQ,
+		X: newX,
+		L: ZerosVector(dimX),
+		C: 0.0,
+	}
 
 	// Populate Q
 	for oi1Index, oldElt1 := range qe.X.Elements {
@@ -389,7 +395,7 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 
 			// Plug the oldQterm into newQ
 			var updatedRow []float64
-			mat.Row(updatedRow, ni1Index, &newQE.Q)
+			updatedRow = mat.Row(nil, ni1Index, &newQE.Q)
 			updatedRow[ni2Index] = oldQterm
 			newQE.Q.SetRow(ni1Index, updatedRow)
 
@@ -398,11 +404,7 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 	newQE.Q = *newQ
 
 	// Create L matrix of appropriate dimension
-	var newLfloat []float64
-	for rowIndex := 0; rowIndex < dimX; rowIndex++ {
-		newLfloat = append(newLfloat, 0.0)
-	}
-	newL := mat.NewVecDense(dimX, newLfloat)
+	newL := ZerosVector(dimX)
 
 	// Populate L
 	for oi1Index, oldElt1 := range qe.X.Elements {
@@ -419,9 +421,9 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 		// Plug the oldQterm into newQ
 		offset := ZerosVector(dimX)
 		offset.SetVec(ni1Index, oldLterm)
-		newL.AddVec(newL, &offset)
+		(&newL).AddVec(&newL, &offset)
 	}
-	newQE.L = *newL
+	newQE.L = newL
 
 	// Populate C
 	newQE.C = qe.C

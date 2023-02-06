@@ -439,21 +439,25 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
-		[]float64{1.0, 2.0},
-		[]float64{3.0, 4.0},
+		[]float64{1.0, 2.0, 3.0},
+		[]float64{4.0, 5.0, 6.0},
+		[]float64{7.0, 8.0, 9.0},
 	}
 
 	Q2_aoa := [][]float64{
-		[]float64{1.0, 0.0},
-		[]float64{0.0, 1.0},
+		[]float64{10.0, 11.0, 12.0},
+		[]float64{13.0, 14.0, 15.0},
+		[]float64{16.0, 17.0, 18.0},
 	}
 
 	// Converting Arrays of arrays to matrices
 	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
-	Q1 := *mat.NewDense(2, 2, Q1_vals)
+	Q1_vals = append(Q1_vals, Q1_aoa[2]...)
+	Q1 := *mat.NewDense(3, 3, Q1_vals)
 
 	Q2_vals := append(Q2_aoa[0], Q2_aoa[1]...)
-	Q2 := *mat.NewDense(2, 2, Q2_vals)
+	Q2_vals = append(Q2_vals, Q2_aoa[2]...)
+	Q2 := *mat.NewDense(3, 3, Q2_vals)
 
 	vv := optim.VarVector{
 		[]optim.Var{v1, v2, v3},
@@ -485,8 +489,8 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
 	}
 
-	if qv3.Q.At(0, 0) != 2.0 {
-		t.Errorf("Expected for Q's (0,0)-th element to be 2.0; received %v", qv3.Q.At(0, 0))
+	if qv3.Q.At(0, 0) != qv1.Q.At(0, 0)+qv2.Q.At(0, 0) {
+		t.Errorf("Expected for Q's (0,0)-th element to be %v; received %v", qv1.Q.At(0, 0)+qv2.Q.At(0, 0), qv3.Q.At(0, 0))
 	}
 
 	if qv3.Q.At(1, 1) != 4.0 {

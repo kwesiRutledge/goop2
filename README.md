@@ -57,3 +57,4 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
   - Eq
   - Len
 - Decide whether or not we really need the Coeffs() method (What is it doing?)
+- Create function for easily creating MatDense zeros matrix and ones matrices (and Identity)
