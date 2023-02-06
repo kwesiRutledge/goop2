@@ -493,12 +493,12 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 		t.Errorf("Expected for Q's (0,0)-th element to be %v; received %v", qv1.Q.At(0, 0)+qv2.Q.At(0, 0), qv3.Q.At(0, 0))
 	}
 
-	if qv3.Q.At(1, 1) != 4.0 {
-		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q.At(1, 1))
+	if qv3.Q.At(1, 1) != qv1.Q.At(1, 1)+qv2.Q.At(1, 1) {
+		t.Errorf("Expected for Q's (1,1)-th element to be %v; received %v", qv1.Q.At(1, 1)+qv2.Q.At(1, 1), qv3.Q.At(1, 1))
 	}
 
-	if qv3.Q.At(1, 1) != 1.0 {
-		t.Errorf("Expected for Q's (1,1)-th element to be 5.0; received %v", qv3.Q.At(2, 2))
+	if qv3.Q.At(2, 2) != qv1.Q.At(2, 2)+qv2.Q.At(2, 2) {
+		t.Errorf("Expected for Q's (2,2)-th element to be %v; received %v", qv1.Q.At(2, 2)+qv2.Q.At(2, 2), qv3.Q.At(2, 2))
 	}
 
 }
