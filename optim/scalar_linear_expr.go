@@ -91,6 +91,7 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		// Add constants together
 		newSLE.C += linearEIn.C
 		return newSLE, nil
+
 	case *QuadraticExpr:
 
 		//var newQExpr QuadraticExpr = *qe // get copy of e

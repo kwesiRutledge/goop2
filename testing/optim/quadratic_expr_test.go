@@ -384,7 +384,7 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 
 	L2_a := []float64{5.0, 6.0}
 	L2 := *mat.NewVecDense(2, L2_a)
-	le2 := &optim.ScalarLinearExpr{
+	le2 := optim.ScalarLinearExpr{
 		L: L2,
 		C: 0.1,
 		X: vv,
@@ -551,7 +551,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	le2 := &optim.ScalarLinearExpr{
+	le2 := optim.ScalarLinearExpr{
 		L: L2,
 		C: C2,
 		X: vv2,

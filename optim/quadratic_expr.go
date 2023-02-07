@@ -243,10 +243,10 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 		newQExprAligned.C += quadraticEInAligned.C
 		return newQExprAligned, nil
 
-	case *ScalarLinearExpr:
+	case ScalarLinearExpr:
 		// Collect Expressions
 		var newQExpr QuadraticExpr = *qe // get copy of e
-		linearEIn := eIn.(*ScalarLinearExpr)
+		linearEIn := eIn.(ScalarLinearExpr)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(newQExpr.X.Elements, linearEIn.X.Elements...))
