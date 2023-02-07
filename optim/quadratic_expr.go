@@ -204,6 +204,21 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 
 	// Algorithm depends
 	switch eIn.(type) {
+	//case float64:
+	//	// Call the version of this function for K
+	//	return qe.Plus(K(eIn), extras...)
+	case K:
+		// Convert expression to K type
+		KIn := eIn.(K)
+
+		// Get copy of qe
+		var newQExpr QuadraticExpr = *qe
+
+		// Add to constant factor
+		newQExpr.C += float64(KIn)
+
+		return &newQExpr, nil
+
 	case *QuadraticExpr:
 
 		var newQExpr QuadraticExpr = *qe // get copy of e

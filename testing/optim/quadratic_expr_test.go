@@ -533,23 +533,28 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 
 	L1 := *mat.NewVecDense(2, L1_a)
 
-	vv := optim.VarVector{
-		[]optim.Var{v1, v2, v3},
+	vv1 := optim.VarVector{
+		[]optim.Var{v1, v2},
+	}
+
+	// Quantities for Second Expression
+	L2 := *mat.NewVecDense(2, []float64{2.0, 11.0})
+	C2 := 1.25
+
+	vv2 := optim.VarVector{
+		[]optim.Var{v2, v3},
 	}
 
 	// Algorithm
-	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, vv)
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, vv1)
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	L2 := *mat.NewVecDense(2, []float64{2.0, 11.0})
-	C2 := 1.25
-
 	le2 := &optim.ScalarLinearExpr{
 		L: L2,
 		C: C2,
-		X: vv,
+		X: vv2,
 	}
 
 	e3, err := qe1.Plus(le2)
@@ -577,6 +582,80 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 
 	if qv3.L.AtVec(2) != le2.L.AtVec(1) {
 		t.Errorf("Expected for L's 2-th element to be 11.0; received %v", qv3.L.AtVec(2))
+	}
+
+	if qv3.C != qe1.C+le2.C {
+		t.Errorf("Expected for constant of final quadratic expression to be %v; received %v", qe1.C+le2.C, qv3.C)
+	}
+
+}
+
+/*
+TestQuadraticExpr_Plus5
+Description:
+
+	Tests whether or not the Plus() function works for a quadratic expression and a constant one.
+*/
+func TestQuadraticExpr_Plus5(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+
+	Q1_aoa := [][]float64{
+		[]float64{1.0, 2.0},
+		[]float64{3.0, 4.0},
+	}
+
+	L1_a := []float64{1.0, 7.0}
+
+	C1 := 3.14
+
+	// Preparing constants for NewQuadraticExpr
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
+
+	L1 := *mat.NewVecDense(2, L1_a)
+
+	vv1 := optim.VarVector{
+		[]optim.Var{v1, v2},
+	}
+
+	// Quantities for Second Expression
+	K2 := optim.K(1.25)
+
+	// Algorithm
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, vv1)
+	if err != nil {
+		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
+	}
+
+	e3, err := qe1.Plus(K2)
+	if err != nil {
+		t.Errorf("There was an issue adding qe1 and le2: %v", err)
+	}
+
+	qv3, ok := e3.(*optim.QuadraticExpr)
+	if !ok {
+		t.Errorf("Unable to convert expression to Quadratic Expression.")
+	}
+
+	// Number of variables for this quadratic expression should be 2
+	if qv3.NumVars() != 2 {
+		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
+	}
+
+	if qv3.L.AtVec(0) != qe1.L.AtVec(0) {
+		t.Errorf("Expected for L's 0-th element to be %v; received %v", qe1.L.AtVec(0), qv3.L.AtVec(0))
+	}
+
+	if qv3.L.AtVec(1) != qe1.L.AtVec(1) {
+		t.Errorf("Expected for L's 1-th element to be %v; received %v", qe1.L.AtVec(1), qv3.L.AtVec(1))
+	}
+
+	if qv3.C != qe1.C+float64(K2) {
+		t.Errorf("Expected for constant of final quadratic expression to be %v; received %v", qe1.C, qv3.C)
 	}
 
 }
