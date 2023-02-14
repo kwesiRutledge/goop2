@@ -55,6 +55,9 @@ func (c K) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, er
 	switch e.(type) {
 	case K:
 		return K(c.Constant() + e.Constant()), nil
+	case Var:
+		eAsVar := e.(Var)
+		return eAsVar.Plus(c)
 	case ScalarLinearExpr:
 		eAsSLE := e.(ScalarLinearExpr)
 		return eAsSLE.Plus(c)

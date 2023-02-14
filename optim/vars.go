@@ -58,24 +58,53 @@ func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, 
 		UniqueVars(append([]Var{v}, e.Variables()...)),
 	}
 	switch e.(type) {
+	case K:
+		eAsK := e.(K)
+		return ScalarLinearExpr{
+			L: OnesVector(1),
+			X: vv,
+			C: float64(eAsK),
+		}, nil
 	case Var:
 		// Convert
 		eAsV := e.(Var)
 
 		// Check to see if this is the same Var or a different one
 		if eAsV.ID == v.ID {
-			return &ScalarLinearExpr{
+			return ScalarLinearExpr{
 				X: vv,
 				L: *mat.NewVecDense(1, []float64{2.0}),
 				C: 0.0,
 			}, nil
 		} else {
-			return &ScalarLinearExpr{
+			return ScalarLinearExpr{
 				X: vv,
 				L: OnesVector(2),
 				C: 0.0,
 			}, nil
 		}
+	case ScalarLinearExpr:
+		// Convert
+		eAsSLE := e.(ScalarLinearExpr)
+
+		// Convert SLE to new form
+		e2, _ := eAsSLE.RewriteInTermsOf(vv)
+		vIndex, _ := FindInSlice(v, vv.Elements)
+		e2.L.SetVec(vIndex, e2.L.AtVec(vIndex)+1.0)
+
+		return e2, nil
+
+	case *QuadraticExpr:
+		// Convert
+		eAsQE := e.(*QuadraticExpr)
+
+		// Convert QE to new form
+		e2, _ := eAsQE.RewriteInTermsOf(vv)
+		vIndex, _ := FindInSlice(v, vv.Elements)
+		e2.L.SetVec(vIndex, e2.L.AtVec(vIndex)+1.0)
+
+		return e2, nil
+
 	default:
 		return v, fmt.Errorf("There was an unexpected type (%T) given to Var.Plus()!", e)
 	}
