@@ -38,9 +38,6 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
 - Plus
   - General Function (in operators.go)
   - Methods for
-    - Scalars
-      - Constant
-      - Var
     - Vectors
       - Vector Constant
       - VarVector
