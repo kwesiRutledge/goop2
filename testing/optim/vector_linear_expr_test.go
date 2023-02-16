@@ -17,12 +17,12 @@ Description:
 */
 func TestVectorLinearExpression_Check1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
@@ -49,12 +49,12 @@ Description:
 */
 func TestVectorLinearExpression_Check2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -86,12 +86,12 @@ Description:
 */
 func TestVectorLinearExpression_Check3(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	L1 := mat.NewDense(2, 3, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -122,12 +122,12 @@ Description:
 */
 func TestVectorLinearExpression_VariableIDs1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
@@ -163,12 +163,12 @@ Description:
 */
 func TestVectorLinearExpression_VariableIDs2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, x, x, x},
+		Elements: []optim.Variable{x, x, x, x},
 	}
 
 	L1 := mat.NewDense(2, 4, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0})
@@ -208,12 +208,12 @@ Description:
 */
 func TestVectorLinearExpression_Coeffs1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}
@@ -257,11 +257,11 @@ Description:
 */
 func TestVectorLinearExpression_Coeffs2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, x, x, x},
+		Elements: []optim.Variable{x, x, x, x},
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}
@@ -304,11 +304,11 @@ Description:
 //func TestVectorLinearExpression_LessEq1(t *testing.T) {
 //	// Constants
 //	m := optim.NewModel()
-//	x := m.AddBinaryVar()
+//	x := m.AddBinaryVariable()
 //
 //	// Create Vector Variables
 //	vv1 := optim.VarVector{
-//		Elements: []optim.Var{*x, *x, *x, *x},
+//		Elements: []optim.Variable{*x, *x, *x, *x},
 //	}
 //
 //	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}
@@ -350,12 +350,12 @@ func TestVectorLinearExpression_Eq1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 	c := optim.ZerosVector(2)
 	vle1 := optim.VectorLinearExpr{
@@ -399,12 +399,12 @@ func TestVectorLinearExpression_Eq2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 	c := optim.ZerosVector(2)
 	vle1 := optim.VectorLinearExpr{
@@ -441,12 +441,12 @@ func TestVectorLinearExpression_Eq3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 	c := optim.ZerosVector(2)
 	vle1 := optim.VectorLinearExpr{
@@ -488,7 +488,7 @@ Description:
 func TestVectorLinearExpression_Eq4(t *testing.T) {
 	m := optim.NewModel()
 	dimX := 2
-	x := m.AddVarVector(dimX)
+	x := m.AddVariableVector(dimX)
 
 	L1 := optim.Identity(dimX)
 	c1 := optim.OnesVector(dimX)
@@ -524,7 +524,7 @@ Description:
 func TestVectorLinearExpression_Eq5(t *testing.T) {
 	m := optim.NewModel()
 	dimX := 2
-	x := m.AddVarVector(dimX)
+	x := m.AddVariableVector(dimX)
 
 	L1 := optim.Identity(dimX)
 	c1 := optim.OnesVector(dimX)
@@ -556,12 +556,12 @@ Description:
 */
 func TestVectorLinearExpression_Len1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
@@ -592,12 +592,12 @@ Description:
 */
 func TestVectorLinearExpression_Len2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variables
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y},
+		Elements: []optim.Variable{x, y, x, y, x, y, x, y, x, y},
 	}
 
 	dimX := 10

@@ -6,7 +6,7 @@ package optim
 // by single variables, constants, and general linear expressions.
 type ScalarExpression interface {
 	// Variables returns the variables included in the scalar expression
-	Variables() []Var
+	Variables() []Variable
 
 	// NumVars returns the number of variables in the expression
 	NumVars() int

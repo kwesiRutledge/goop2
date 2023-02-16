@@ -29,7 +29,7 @@ Description:
 
 	This function returns a slice containing all unique variables in the linear expression le.
 */
-func (sle ScalarLinearExpr) Variables() []Var {
+func (sle ScalarLinearExpr) Variables() []Variable {
 	return UniqueVars(sle.X.Elements)
 }
 

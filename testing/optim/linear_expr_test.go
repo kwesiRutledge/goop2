@@ -8,8 +8,8 @@ import (
 
 func TestLinearExprCoeffsAndConstant(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// 2 * x + 4 * y - 5
 	coeffs := []float64{2, 4}
@@ -77,7 +77,7 @@ func TestScalarLinearExpr_Plus1(t *testing.T) {
 	c2 := 5.0
 
 	m := optim.NewModel()
-	vv1 := m.AddVarVector(2)
+	vv1 := m.AddVariableVector(2)
 
 	// Create sle's
 	sle1 := optim.ScalarLinearExpr{
@@ -129,7 +129,7 @@ func TestScalarLinearExpr_Plus2(t *testing.T) {
 	c2 := 5.0
 
 	m := optim.NewModel()
-	vv1 := m.AddVarVector(3)
+	vv1 := m.AddVariableVector(3)
 
 	vv2 := optim.VarVector{
 		vv1.Elements[:2],
@@ -213,7 +213,7 @@ func TestScalarLinearExpr_Plus3(t *testing.T) {
 	K1 := optim.K(5)
 
 	m := optim.NewModel()
-	vv1 := m.AddVarVector(2)
+	vv1 := m.AddVariableVector(2)
 
 	// Create sle's
 	sle1 := optim.ScalarLinearExpr{
@@ -264,9 +264,9 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -284,7 +284,7 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 	L1 := *mat.NewVecDense(2, L1_a)
 
 	vv1 := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Quantities for Second Expression
@@ -292,7 +292,7 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 	C2 := 1.25
 
 	vv2 := optim.VarVector{
-		[]optim.Var{v2, v3},
+		[]optim.Variable{v2, v3},
 	}
 
 	// Algorithm

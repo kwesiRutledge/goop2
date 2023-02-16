@@ -24,7 +24,7 @@ func TestConstraint_IsConstraint1(t *testing.T) {
 	// Create a scalar constraint.
 
 	lhs0 := optim.One
-	x := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
 
 	scalarConstr0, err := optim.Eq(lhs0, x)
 	if err != nil {
@@ -49,9 +49,9 @@ func TestConstraint_IsConstraint2(t *testing.T) {
 	// Create a scalar constraint.
 
 	lhs0 := optim.OnesVector(4)
-	x := m.AddVarClassic(0, 3.0, optim.Continuous)
+	x := m.AddVariableClassic(0, 3.0, optim.Continuous)
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, x, x, x},
+		Elements: []optim.Variable{x, x, x, x},
 	}
 
 	scalarConstr0, err := optim.Eq(lhs0, vv1)

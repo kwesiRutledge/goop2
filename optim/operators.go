@@ -119,7 +119,7 @@ func Multiply(term1, term2 interface{}) (Expression, error) {
 }
 
 // Dot returns the dot product of a vector of variables and slice of floats.
-func Dot(vs []Var, coeffs []float64) ScalarExpression {
+func Dot(vs []Variable, coeffs []float64) ScalarExpression {
 	if len(vs) != len(coeffs) {
 		log.WithFields(log.Fields{
 			"num_vars":   len(vs),

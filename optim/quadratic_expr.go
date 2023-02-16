@@ -113,7 +113,7 @@ Description:
 
 	This function returns a slice containing all unique variables in the expression qe.
 */
-func (qe *QuadraticExpr) Variables() []Var {
+func (qe *QuadraticExpr) Variables() []Variable {
 	return UniqueVars(qe.X.Elements)
 }
 

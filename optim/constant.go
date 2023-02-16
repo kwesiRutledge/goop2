@@ -21,8 +21,8 @@ Description:
 	Shares all variables included in the expression that is K.
 	It is a constant, so there are none.
 */
-func (c K) Variables() []Var {
-	return []Var{}
+func (c K) Variables() []Variable {
+	return []Variable{}
 }
 
 // NumVars returns the number of variables in the expression. For constants,
@@ -55,8 +55,8 @@ func (c K) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, er
 	switch e.(type) {
 	case K:
 		return K(c.Constant() + e.Constant()), nil
-	case Var:
-		eAsVar := e.(Var)
+	case Variable:
+		eAsVar := e.(Variable)
 		return eAsVar.Plus(c)
 	case ScalarLinearExpr:
 		eAsSLE := e.(ScalarLinearExpr)

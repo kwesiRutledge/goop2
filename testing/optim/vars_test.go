@@ -20,7 +20,7 @@ Description:
 func TestVar_Plus1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
-	x := m.AddVar()
+	x := m.AddVariable()
 
 	k1 := optim.K(1.0)
 
@@ -61,8 +61,8 @@ Description:
 func TestVar_Plus2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
-	x := m.AddVar()
-	y := m.AddVar()
+	x := m.AddVariable()
+	y := m.AddVariable()
 
 	// Algorithm
 	tempSum, err := x.Plus(y)
@@ -109,11 +109,11 @@ Description:
 func TestVar_Plus3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
-	x := m.AddVar()
-	y := m.AddVar()
-	z := m.AddVar()
+	x := m.AddVariable()
+	y := m.AddVariable()
+	z := m.AddVariable()
 
-	vv := optim.VarVector{[]optim.Var{y, z}}
+	vv := optim.VarVector{[]optim.Variable{y, z}}
 	L := optim.OnesVector(2)
 	C := 3.0
 	sle1 := optim.ScalarLinearExpr{
@@ -200,11 +200,11 @@ Description:
 func TestVar_Plus4(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
-	x := m.AddVar()
-	y := m.AddVar()
-	z := m.AddVar()
+	x := m.AddVariable()
+	y := m.AddVariable()
+	z := m.AddVariable()
 
-	vv := optim.VarVector{[]optim.Var{y, z}}
+	vv := optim.VarVector{[]optim.Variable{y, z}}
 	Q := optim.Identity(2)
 	L := optim.OnesVector(2)
 	C := 3.0

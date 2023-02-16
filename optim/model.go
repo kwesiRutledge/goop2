@@ -14,7 +14,7 @@ import (
 // problem, constraints, objective, and parameters. New variables can only be
 // created using an instantiated Model.
 type Model struct {
-	Variables []Var
+	Variables []Variable
 	constrs   []ScalarConstraint
 	obj       *Objective
 	showLog   bool
@@ -38,101 +38,101 @@ func (m *Model) SetTimeLimit(dur time.Duration) {
 }
 
 /*
-AddVar
+AddVariable
 Description:
 
 	This method adds an "unbounded" continuous variable to the model.
 */
-func (m *Model) AddVar() Var {
-	return m.AddRealVar()
+func (m *Model) AddVariable() Variable {
+	return m.AddRealVariable()
 }
 
 /*
-AddRealVar
+AddRealVariable
 Description:
 
 	Adds a Real variable to the model and returns said variable.
 */
-func (m *Model) AddRealVar() Var {
-	return m.AddVarClassic(-gurobi.INFINITY, gurobi.INFINITY, Continuous)
+func (m *Model) AddRealVariable() Variable {
+	return m.AddVariableClassic(-gurobi.INFINITY, gurobi.INFINITY, Continuous)
 }
 
-// AddVar adds a variable of a given variable type to the model given the lower
+// AddVariable adds a variable of a given variable type to the model given the lower
 // and upper value limits. This variable is returned.
-func (m *Model) AddVarClassic(lower, upper float64, vtype VarType) Var {
+func (m *Model) AddVariableClassic(lower, upper float64, vtype VarType) Variable {
 	id := uint64(len(m.Variables))
-	newVar := Var{id, lower, upper, vtype}
+	newVar := Variable{id, lower, upper, vtype}
 	m.Variables = append(m.Variables, newVar)
 	return newVar
 }
 
 // AddBinaryVar adds a binary variable to the model and returns said variable.
-func (m *Model) AddBinaryVar() Var {
-	return m.AddVarClassic(0, 1, Binary)
+func (m *Model) AddBinaryVariable() Variable {
+	return m.AddVariableClassic(0, 1, Binary)
 }
 
-// AddVarVector adds a vector of variables of a given variable type to the
+// AddVariableVector adds a vector of variables of a given variable type to the
 // model. It then returns the resulting slice.
 /*
-AddVarVector
+AddVariableVector
 Description:
 	Creates a VarVector object using a constructor that assumes you want an "unbounded" vector of real optimization
 	variables.
 */
-func (m *Model) AddVarVector(dim int) VarVector {
+func (m *Model) AddVariableVector(dim int) VarVector {
 	// Constants
 
 	// Algorithm
-	varSlice := make([]Var, dim)
+	varSlice := make([]Variable, dim)
 	for eltIndex := 0; eltIndex < dim; eltIndex++ {
-		varSlice[eltIndex] = m.AddVar()
+		varSlice[eltIndex] = m.AddVariable()
 	}
 	return VarVector{varSlice}
 }
 
 /*
-AddVarVectorClassic
+AddVariableVectorClassic
 Description:
 
-	The classic version of AddVarVector defined in the original goop.
+	The classic version of AddVariableVector defined in the original goop.
 */
-func (m *Model) AddVarVectorClassic(
+func (m *Model) AddVariableVectorClassic(
 	num int, lower, upper float64, vtype VarType,
 ) VarVector {
 	stID := uint64(len(m.Variables))
-	vs := make([]Var, num)
+	vs := make([]Variable, num)
 	for i := range vs {
-		vs[i] = Var{stID + uint64(i), lower, upper, vtype}
+		vs[i] = Variable{stID + uint64(i), lower, upper, vtype}
 	}
 
 	m.Variables = append(m.Variables, vs...)
 	return VarVector{vs}
 }
 
-// AddBinaryVarVector adds a vector of binary variables to the model and
+// AddBinaryVariableVector adds a vector of binary variables to the model and
 // returns the slice.
-func (m *Model) AddBinaryVarVector(num int) VarVector {
-	return m.AddVarVectorClassic(num, 0, 1, Binary)
+func (m *Model) AddBinaryVariableVector(num int) VarVector {
+	return m.AddVariableVectorClassic(num, 0, 1, Binary)
 }
 
-// AddVarMatrix adds a matrix of variables of a given type to the model with
+// AddVariableMatrix adds a matrix of variables of a given type to the model with
 // lower and upper value limits and returns the resulting slice.
-func (m *Model) AddVarMatrix(
+func (m *Model) AddVariableMatrix(
 	rows, cols int, lower, upper float64, vtype VarType,
-) [][]Var {
-	vs := make([][]Var, rows)
+) [][]Variable {
+	vs := make([][]Variable, rows)
 	for i := range vs {
-		tempVV := m.AddVarVectorClassic(cols, lower, upper, vtype)
+		tempVV := m.AddVariableVectorClassic(cols, lower, upper, vtype)
 		vs[i] = tempVV.Elements
 	}
 
 	return vs
 }
 
-// AddBinaryVarMatrix adds a matrix of binary variables to the model and returns
+// AddBinaryVariableMatrix adds a matrix of binary variables to the model and returns
 // the resulting slice.
-func (m *Model) AddBinaryVarMatrix(rows, cols int) [][]Var {
-	return m.AddVarMatrix(rows, cols, 0, 1, Binary)
+func (m *Model) AddBinaryVariableMatrix(rows, cols int) [][]Variable {
+	return m.AddVariableMatrix(rows, cols, 0, 1, Binary)
 }
 
 // AddConstr adds a the given constraint to the model.
@@ -203,7 +203,7 @@ func (m *Model) Optimize(solver Solver) (*Solution, error) {
 		solver.SetTimeLimit(m.timeLimit.Seconds())
 	}
 
-	solver.AddVars(m.Variables)
+	solver.AddVariables(m.Variables)
 
 	for _, constr := range m.constrs {
 		solver.AddConstr(constr)

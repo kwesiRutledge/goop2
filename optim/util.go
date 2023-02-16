@@ -7,7 +7,7 @@ import (
 
 // SumVars returns the sum of the given variables. It creates a new empty
 // expression and adds to it the given variables.
-func SumVars(vs ...Var) ScalarExpression {
+func SumVars(vs ...Variable) ScalarExpression {
 	newExpr := NewExpr(0)
 	for _, v := range vs {
 		newExpr.Plus(v)
@@ -17,7 +17,7 @@ func SumVars(vs ...Var) ScalarExpression {
 
 // SumRow returns the sum of all the variables in a single specified row of
 // a variable matrix.
-func SumRow(vs [][]Var, row int) ScalarExpression {
+func SumRow(vs [][]Variable, row int) ScalarExpression {
 	newExpr := NewExpr(0)
 	for col := 0; col < len(vs[0]); col++ {
 		newExpr.Plus(vs[row][col])
@@ -27,7 +27,7 @@ func SumRow(vs [][]Var, row int) ScalarExpression {
 
 // SumCol returns the sum of all variables in a single specified column of
 // a variable matrix.
-func SumCol(vs [][]Var, col int) ScalarExpression {
+func SumCol(vs [][]Variable, col int) ScalarExpression {
 	newExpr := NewExpr(0)
 	for row := 0; row < len(vs); row++ {
 		newExpr.Plus(vs[row][col])
@@ -91,9 +91,9 @@ func FindInSlice(xIn interface{}, sliceIn interface{}) (int, error) {
 
 		return xLocationInSliceIn, nil
 
-	case Var:
-		x := xIn.(Var)
-		slice, ok := sliceIn.([]Var)
+	case Variable:
+		x := xIn.(Variable)
+		slice, ok := sliceIn.([]Variable)
 		if !ok {
 			return -1, fmt.Errorf("The input slice was not of type %T; expected type %T", x, slice)
 		}

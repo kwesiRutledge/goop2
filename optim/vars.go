@@ -7,7 +7,7 @@ import (
 
 // Var represnts a variable in a optimization problem. The variable is
 // identified with an uint64.
-type Var struct {
+type Variable struct {
 	ID    uint64
 	Lower float64
 	Upper float64
@@ -20,42 +20,42 @@ Description:
 
 	This function returns a slice containing all unique variables in the variable expression v.
 */
-func (v Var) Variables() []Var {
-	return []Var{v}
+func (v Variable) Variables() []Variable {
+	return []Variable{v}
 }
 
 // NumVars returns the number of variables in the expression. For a variable, it
 // always returns one.
-func (v Var) NumVars() int {
+func (v Variable) NumVars() int {
 	return 1
 }
 
 // Vars returns a slice of the Var ids in the expression. For a variable, it
 // always returns a singleton slice with the given variable ID.
-func (v Var) IDs() []uint64 {
+func (v Variable) IDs() []uint64 {
 	return []uint64{v.ID}
 }
 
 // Coeffs returns a slice of the coefficients in the expression. For a variable,
 // it always returns a singleton slice containing the value one.
-func (v Var) Coeffs() []float64 {
+func (v Variable) Coeffs() []float64 {
 	return []float64{1}
 }
 
 // Constant returns the constant additive value in the expression. For a
 // variable, it always returns zero.
-func (v Var) Constant() float64 {
+func (v Variable) Constant() float64 {
 	return 0
 }
 
 // Plus adds the current expression to another and returns the resulting
 // expression.
-func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
 	// Input Processing??
 
 	// Algorithm
 	vv := VarVector{
-		UniqueVars(append([]Var{v}, e.Variables()...)),
+		UniqueVars(append([]Variable{v}, e.Variables()...)),
 	}
 	switch e.(type) {
 	case K:
@@ -65,11 +65,11 @@ func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, 
 			X: vv,
 			C: float64(eAsK),
 		}, nil
-	case Var:
+	case Variable:
 		// Convert
-		eAsV := e.(Var)
+		eAsV := e.(Variable)
 
-		// Check to see if this is the same Var or a different one
+		// Check to see if this is the same Variable or a different one
 		if eAsV.ID == v.ID {
 			return ScalarLinearExpr{
 				X: vv,
@@ -106,18 +106,18 @@ func (v Var) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, 
 		return e2, nil
 
 	default:
-		return v, fmt.Errorf("There was an unexpected type (%T) given to Var.Plus()!", e)
+		return v, fmt.Errorf("There was an unexpected type (%T) given to Variable.Plus()!", e)
 	}
 }
 
 // Mult multiplies the current expression to another and returns the
 // resulting expression
-func (v Var) Mult(m float64) (ScalarExpression, error) {
+func (v Variable) Mult(m float64) (ScalarExpression, error) {
 	// Constants
 	// switch m.(type) {
 	// case float64:
 
-	vars := []Var{v}
+	vars := []Variable{v}
 	coeffs := []float64{m * v.Coeffs()[0]}
 
 	// Algorithm
@@ -127,26 +127,26 @@ func (v Var) Mult(m float64) (ScalarExpression, error) {
 		C: 0,
 	}
 	return newExpr, nil
-	// case *Var:
+	// case *Variable:
 	// 	return nil
 	// }
 }
 
 // LessEq returns a less than or equal to (<=) constraint between the
 // current expression and another
-func (v Var) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+func (v Variable) LessEq(other ScalarExpression) (ScalarConstraint, error) {
 	return v.Comparison(other, SenseLessThanEqual)
 }
 
 // GreaterEq returns a greater than or equal to (>=) constraint between the
 // current expression and another
-func (v Var) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+func (v Variable) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
 	return v.Comparison(other, SenseGreaterThanEqual)
 }
 
 // Eq returns an equality (==) constraint between the current expression
 // and another
-func (v Var) Eq(other ScalarExpression) (ScalarConstraint, error) {
+func (v Variable) Eq(other ScalarExpression) (ScalarConstraint, error) {
 	return v.Comparison(other, SenseEqual)
 }
 
@@ -160,7 +160,7 @@ Usage:
 
 	constr, err := v.Comparison(expr1,SenseGreaterThanEqual)
 */
-func (v Var) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+func (v Variable) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
 	// Constants
 
 	// Algorithm
@@ -169,22 +169,22 @@ func (v Var) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstrai
 
 /*
 // ID returns the ID of the variable
-func (v *Var) ID() uint64 {
+func (v *Variable) ID() uint64 {
 	return v.ID
 }
 
 // Lower returns the lower value limit of the variable
-func (v *Var) Lower() float64 {
+func (v *Variable) Lower() float64 {
 	return v.Lower
 }
 
 // Upper returns the upper value limit of the variable
-func (v *Var) Upper() float64 {
+func (v *Variable) Upper() float64 {
 	return v.Upper
 }
 
 // Type returns the type of variable (continuous, binary, integer, etc)
-func (v *Var) Type() VarType {
+func (v *Variable) Type() VarType {
 	return v.Vtype
 }
 */
@@ -208,11 +208,11 @@ Description:
 	This function creates a slice of unique variables from the slice given in
 	varsIn
 */
-func UniqueVars(varsIn []Var) []Var {
+func UniqueVars(varsIn []Variable) []Variable {
 	// Constants
 
 	// Algorithm
-	var varsOut []Var
+	var varsOut []Variable
 	for _, v := range varsIn {
 		if vIndex, _ := FindInSlice(v, varsOut); vIndex == -1 { // If v is not yet in varsOut, then add it
 			varsOut = append(varsOut, v)

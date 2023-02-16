@@ -9,12 +9,12 @@ import (
 
 func TestVarVector_Length1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	if vv1.Length() != 2 {
@@ -31,12 +31,12 @@ Description:
 */
 func TestVarVector_Length2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x},
+		Elements: []optim.Variable{x, y, x, y, x},
 	}
 
 	if vv1.Length() != 5 {
@@ -53,12 +53,12 @@ Description:
 */
 func TestVarVector_At1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	extractedV := vv1.At(1)
@@ -76,12 +76,12 @@ Description:
 */
 func TestVarVector_At2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	extractedV := vv1.At(1)
@@ -101,12 +101,12 @@ Description:
 */
 func TestVarVector_VariableIDs1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	extractedIDs := vv1.IDs()
@@ -129,12 +129,12 @@ Description:
 */
 func TestVarVector_VariableIDs2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, x, x},
+		Elements: []optim.Variable{x, x, x},
 	}
 
 	extractedIDs := vv1.IDs()
@@ -160,12 +160,12 @@ Description:
 */
 func TestVarVector_Constant1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y},
+		Elements: []optim.Variable{x, y},
 	}
 
 	extractedConstant := vv1.Constant()
@@ -188,12 +188,12 @@ Description:
 */
 func TestVarVector_Constant2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+		Elements: []optim.Variable{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
 	}
 
 	extractedConstant := vv1.Constant()
@@ -208,10 +208,6 @@ func TestVarVector_Constant2(t *testing.T) {
 }
 
 /*
-
- */
-
-/*
 TestVarVector_Eq1
 Description:
 
@@ -219,12 +215,12 @@ Description:
 */
 func TestVarVector_Eq1(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+		Elements: []optim.Variable{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
 	}
 
 	zerosAsVecDense := optim.ZerosVector(vv1.Len())
@@ -246,12 +242,12 @@ Description:
 */
 func TestVarVector_Eq2(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+		Elements: []optim.Variable{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
 	}
 
 	badRHS := false
@@ -272,16 +268,16 @@ Description:
 */
 func TestVarVector_Eq3(t *testing.T) {
 	m := optim.NewModel()
-	x := m.AddBinaryVar()
-	y := m.AddBinaryVar()
+	x := m.AddBinaryVariable()
+	y := m.AddBinaryVariable()
 
 	// Create Vector Variable
 	vv1 := optim.VarVector{
-		Elements: []optim.Var{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
+		Elements: []optim.Variable{x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y},
 	}
 
 	vv2 := optim.VarVector{
-		Elements: []optim.Var{y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x},
+		Elements: []optim.Variable{y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x, y, x},
 	}
 
 	// Verify that constraint can be created with no issues.
@@ -301,8 +297,8 @@ func TestVarVector_Comparison1(t *testing.T) {
 	// Constants
 	desLength := 10
 	m := optim.NewModel()
-	var vec1 = m.AddVarVector(desLength)
-	var vec2 = m.AddVarVector(desLength - 1)
+	var vec1 = m.AddVariableVector(desLength)
+	var vec2 = m.AddVariableVector(desLength - 1)
 
 	L1 := optim.Identity(desLength - 1)
 	c1 := optim.OnesVector(desLength - 1)
@@ -330,8 +326,8 @@ func TestVarVector_Comparison2(t *testing.T) {
 	// Constants
 	desLength := 10
 	m := optim.NewModel()
-	var vec1 = m.AddVarVector(desLength)
-	var vec2 = m.AddVarVector(desLength)
+	var vec1 = m.AddVariableVector(desLength)
+	var vec2 = m.AddVariableVector(desLength)
 
 	L1 := optim.Identity(desLength)
 	c1 := optim.OnesVector(desLength)

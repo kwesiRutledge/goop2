@@ -125,7 +125,7 @@ func TestKVector_Comparison2(t *testing.T) {
 	desLength := 10
 	m := optim.NewModel()
 	var vec1 = optim.KVector(optim.OnesVector(desLength))
-	var vec2 = m.AddVarVector(desLength)
+	var vec2 = m.AddVariableVector(desLength)
 
 	// Create Constraint
 	constr, err := vec1.Comparison(vec2, optim.SenseLessThanEqual)
@@ -157,7 +157,7 @@ func TestKVector_Comparison3(t *testing.T) {
 	desLength := 10
 	m := optim.NewModel()
 	var vec1 = optim.KVector(optim.OnesVector(desLength))
-	var vec2 = m.AddVarVector(desLength)
+	var vec2 = m.AddVariableVector(desLength)
 
 	L1 := optim.Identity(desLength)
 	c1 := optim.OnesVector(desLength)
@@ -198,7 +198,7 @@ func TestKVector_Comparison4(t *testing.T) {
 	desLength := 10
 	m := optim.NewModel()
 	var vec1 = optim.KVector(optim.OnesVector(desLength))
-	var vec2 = m.AddVarVector(desLength - 1)
+	var vec2 = m.AddVariableVector(desLength - 1)
 
 	L1 := optim.Identity(desLength - 1)
 	c1 := optim.OnesVector(desLength - 1)

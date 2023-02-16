@@ -188,12 +188,12 @@ func (gs *GurobiSolver) Free() {
 }
 
 /*
-AddVar
+AddVariable
 Description:
 
 	Adds a variable to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVar(varIn optim.Var) error {
+func (gs *GurobiSolver) AddVariable(varIn optim.Variable) error {
 	// Constants
 
 	// Convert Variable Type
@@ -214,24 +214,24 @@ func (gs *GurobiSolver) AddVar(varIn optim.Var) error {
 }
 
 /*
-AddVars
+AddVariables
 Description:
 
 	Adds a set of variables to the Gurobi Model.
 */
-func (gs *GurobiSolver) AddVars(varSliceIn []optim.Var) error {
+func (gs *GurobiSolver) AddVariables(varSliceIn []optim.Variable) error {
 	// Constants
 
 	// Iterate through ALL variable address in varSliceIn
 	for _, tempVar := range varSliceIn {
-		err := gs.AddVar(tempVar)
+		err := gs.AddVariable(tempVar)
 		if err != nil {
 			// Terminate early.
-			return fmt.Errorf("Error in AddVar(): %v", err)
+			return fmt.Errorf("Error in AddVariable(): %v", err)
 		}
 	}
 
-	// If we successfully made it through all Var objects, then return no errors.
+	// If we successfully made it through all Variable objects, then return no errors.
 	return nil
 }
 

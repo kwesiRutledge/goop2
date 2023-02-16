@@ -102,13 +102,13 @@ func (os OptimizationStatus) ToMessage() (string, error) {
 // }
 
 // Value returns the value assigned to the variable in the solution
-func (s *Solution) Value(v Var) float64 {
+func (s *Solution) Value(v Variable) float64 {
 	return s.Values[v.ID]
 }
 
 // IsOne returns true if the value assigned to the variable is an integer,
 // and assigned to one. This is a convenience method which should not be
 // super trusted...
-func (s *Solution) IsOne(v Var) bool {
+func (s *Solution) IsOne(v Variable) bool {
 	return (v.Vtype == Integer || v.Vtype == Binary) && s.Value(v) > tinyNum
 }

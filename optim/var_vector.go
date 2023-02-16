@@ -18,7 +18,7 @@ Description:
 	Represnts a variable in a optimization problem. The variable is
 */
 type VarVector struct {
-	Elements []Var
+	Elements []Variable
 }
 
 // =========
@@ -51,7 +51,7 @@ Description:
 
 	Mirrors the gonum api for vectors. This extracts the element of the variable vector at the index x.
 */
-func (vv VarVector) At(x int) Var {
+func (vv VarVector) At(x int) Variable {
 	return vv.Elements[x]
 }
 

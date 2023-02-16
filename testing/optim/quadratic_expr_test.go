@@ -33,7 +33,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb01(t *testing.T) {
 
 	var vv = optim.VarVector{}
 	for _, tempId := range xIndices1 {
-		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+		vv.Elements = append(vv.Elements, optim.Variable{ID: tempId})
 	}
 
 	// Algorithm
@@ -63,7 +63,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb02(t *testing.T) {
 
 	var vv = optim.VarVector{}
 	for _, tempId := range xIndices2 {
-		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+		vv.Elements = append(vv.Elements, optim.Variable{ID: tempId})
 	}
 
 	// Algorithm
@@ -99,7 +99,7 @@ func TestQuadraticExpr_NewQuadraticExpr_qb03(t *testing.T) {
 
 	var vv = optim.VarVector{}
 	for _, tempId := range xIndices3 {
-		vv.Elements = append(vv.Elements, optim.Var{ID: tempId})
+		vv.Elements = append(vv.Elements, optim.Variable{ID: tempId})
 	}
 
 	// Algorithm
@@ -124,8 +124,8 @@ func TestQuadraticExpr_NumVars1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -137,7 +137,7 @@ func TestQuadraticExpr_NumVars1(t *testing.T) {
 	Q1_as_mat := mat.NewDense(2, 2, Q_vectorized)
 
 	// Algorithm
-	qv1, err := optim.NewQuadraticExpr_qb0(*Q1_as_mat, optim.VarVector{[]optim.Var{v1, v2}})
+	qv1, err := optim.NewQuadraticExpr_qb0(*Q1_as_mat, optim.VarVector{[]optim.Variable{v1, v2}})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
@@ -158,9 +158,9 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q2 := [][]float64{
 		[]float64{1.0, 2.0, 3.0},
@@ -177,7 +177,7 @@ func TestQuadraticExpr_NumVars2(t *testing.T) {
 	qv1, err := optim.NewQuadraticExpr_qb0(
 		*Q2_as_mat,
 		optim.VarVector{
-			[]optim.Var{v1, v2, v3},
+			[]optim.Variable{v1, v2, v3},
 		})
 	if err != nil {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
@@ -199,7 +199,7 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q3 := [][]float64{
 		[]float64{2.3},
@@ -212,7 +212,7 @@ func TestQuadraticExpr_NumVars3(t *testing.T) {
 	qv1, err := optim.NewQuadraticExpr_qb0(
 		*Q3_as_mat,
 		optim.VarVector{
-			[]optim.Var{v1},
+			[]optim.Variable{v1},
 		},
 	)
 	if err != nil {
@@ -235,8 +235,8 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1 := [][]float64{
 		[]float64{1.0, 2.0},
@@ -251,7 +251,7 @@ func TestQuadraticExpr_Vars1(t *testing.T) {
 	qv1, err := optim.NewQuadraticExpr_qb0(
 		*Q1_as_mat,
 		optim.VarVector{
-			[]optim.Var{v1, v2},
+			[]optim.Variable{v1, v2},
 		},
 	)
 	if err != nil {
@@ -283,8 +283,8 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -303,7 +303,7 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 	Q2 := *mat.NewDense(2, 2, Q2_vals)
 
 	vv := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Algorithm
@@ -361,8 +361,8 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -373,7 +373,7 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 	Q1 := *mat.NewDense(2, 2, Q1_vals)
 
 	vv := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Algorithm / Tests
@@ -434,9 +434,9 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0, 3.0},
@@ -460,7 +460,7 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 	Q2 := *mat.NewDense(3, 3, Q2_vals)
 
 	vv := optim.VarVector{
-		[]optim.Var{v1, v2, v3},
+		[]optim.Variable{v1, v2, v3},
 	}
 
 	// Algorithm / Testing
@@ -514,9 +514,9 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -534,7 +534,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	L1 := *mat.NewVecDense(2, L1_a)
 
 	vv1 := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Quantities for Second Expression
@@ -542,7 +542,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 	C2 := 1.25
 
 	vv2 := optim.VarVector{
-		[]optim.Var{v2, v3},
+		[]optim.Variable{v2, v3},
 	}
 
 	// Algorithm
@@ -600,8 +600,8 @@ func TestQuadraticExpr_Plus5(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -619,7 +619,7 @@ func TestQuadraticExpr_Plus5(t *testing.T) {
 	L1 := *mat.NewVecDense(2, L1_a)
 
 	vv1 := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Quantities for Second Expression
@@ -670,8 +670,8 @@ func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 	// Constants
 	m := optim.NewModel()
 
-	v1 := m.AddVarClassic(-10, 10, optim.Continuous)
-	v2 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
 
 	Q1_aoa := [][]float64{
 		[]float64{1.0, 2.0},
@@ -683,7 +683,7 @@ func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 	Q1 := *mat.NewDense(2, 2, Q1_vals)
 
 	vv := optim.VarVector{
-		[]optim.Var{v1, v2},
+		[]optim.Variable{v1, v2},
 	}
 
 	// Algorithm/Test
@@ -692,9 +692,9 @@ func TestQuadraticExpr_RewriteInTermsOfIndices1(t *testing.T) {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	v3 := m.AddVarClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
 	vv2 := optim.VarVector{
-		[]optim.Var{v1, v2, v3},
+		[]optim.Variable{v1, v2, v3},
 	}
 
 	qvNew, err := qv1.RewriteInTermsOf(vv2)
