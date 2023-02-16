@@ -339,3 +339,66 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 	}
 
 }
+
+/*
+TestScalarLinearExpression_Plus4
+Description:
+
+	Tests whether or not the Plus() function works for a linear expression and a single variable that is not known
+	slightly different variables.
+*/
+func TestScalarLinearExpression_Plus4(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariableClassic(-10, 10, optim.Continuous)
+
+	// Quantities for Second Expression
+	L2 := *mat.NewVecDense(2, []float64{2.0, 11.0})
+	C2 := 1.25
+
+	vv2 := optim.VarVector{
+		[]optim.Variable{v2, v3},
+	}
+
+	// Algorithm
+	le2 := &optim.ScalarLinearExpr{
+		L: L2,
+		C: C2,
+		X: vv2,
+	}
+
+	e3, err := le2.Plus(v1)
+	if err != nil {
+		t.Errorf("There was an issue adding qe1 and le2: %v", err)
+	}
+
+	sle3, ok := e3.(optim.ScalarLinearExpr)
+	if !ok {
+		t.Errorf("Unable to convert expression to Quadratic Expression.")
+	}
+
+	// Number of variables for this quadratic expression should be 2
+	if sle3.NumVars() != 3 {
+		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", sle3.NumVars())
+	}
+
+	if sle3.L.AtVec(0) != 1.0 {
+		t.Errorf("Expected for L's 0-th element to be 1.0; received %v", sle3.L.AtVec(0))
+	}
+
+	if sle3.L.AtVec(1) != le2.L.AtVec(0) {
+		t.Errorf("Expected for L's 1-th element to be 5.0; received %v", sle3.L.AtVec(1))
+	}
+
+	if sle3.L.AtVec(2) != le2.L.AtVec(1) {
+		t.Errorf("Expected for L's 2-th element to be 11.0; received %v", sle3.L.AtVec(2))
+	}
+
+	if sle3.C != le2.C {
+		t.Errorf("Expected for constant of final quadratic expression to be %v; received %v", le2.C+le2.C, sle3.C)
+	}
+
+}

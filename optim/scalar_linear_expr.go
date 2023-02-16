@@ -70,7 +70,11 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		sleOut := sle
 		sleOut.C += float64(KIn)
 
-		return &sleOut, nil
+		return sleOut, nil
+	case Variable:
+		// Collect Expression
+		vIn := eIn.(Variable)
+		return vIn.Plus(sle)
 
 	case ScalarLinearExpr:
 		// Collect Expressions
@@ -92,10 +96,10 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		newSLE.C += linearEIn.C
 		return newSLE, nil
 
-	case *QuadraticExpr:
+	case QuadraticExpr:
 
 		//var newQExpr QuadraticExpr = *qe // get copy of e
-		quadraticEIn := eIn.(*QuadraticExpr)
+		quadraticEIn := eIn.(QuadraticExpr)
 		//
 		//// Get Combined set of Variables
 		//newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))

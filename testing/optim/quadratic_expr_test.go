@@ -661,6 +661,122 @@ func TestQuadraticExpr_Plus5(t *testing.T) {
 }
 
 /*
+TestQuadraticExpr_Plus6
+Description:
+
+	Tests whether or not the Plus() function works for a quadratic expression and a variable.
+*/
+func TestQuadraticExpr_Plus6(t *testing.T) {
+	// Constants
+	m := optim.NewModel()
+
+	v1 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v2 := m.AddVariableClassic(-10, 10, optim.Continuous)
+	v3 := m.AddVariable()
+
+	Q1_aoa := [][]float64{
+		[]float64{1.0, 2.0},
+		[]float64{3.0, 4.0},
+	}
+
+	L1_a := []float64{1.0, 7.0}
+
+	C1 := 3.14
+
+	// Preparing constants for NewQuadraticExpr
+	Q1_vals := append(Q1_aoa[0], Q1_aoa[1]...)
+	Q1 := *mat.NewDense(2, 2, Q1_vals)
+
+	L1 := *mat.NewVecDense(2, L1_a)
+
+	vv1 := optim.VarVector{
+		[]optim.Variable{v1, v2},
+	}
+
+	// Algorithm
+	qe1, err := optim.NewQuadraticExpr(Q1, L1, C1, vv1)
+	if err != nil {
+		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
+	}
+
+	e3, err := qe1.Plus(v3)
+	if err != nil {
+		t.Errorf("There was an issue adding qe1 and le2: %v", err)
+	}
+
+	qv3, ok := e3.(optim.QuadraticExpr)
+	if !ok {
+		t.Errorf("Unable to convert expression to Quadratic Expression.")
+	}
+
+	// Number of variables for this quadratic expression should be 2
+	if qv3.NumVars() != 3 {
+		t.Errorf("Expected for 3 variable to be found in quadratic expression; function says %v variables exist.", qv3.NumVars())
+	}
+
+	// Quadratic Terms
+	for rowIndex := 0; rowIndex < 3; rowIndex++ {
+		for colIndex := 0; colIndex < 3; colIndex++ {
+			switch rowIndex {
+			case 1:
+				if colIndex > 0 {
+					if qv3.Q.At(rowIndex, colIndex) != qe1.Q.At(rowIndex-1, colIndex-1) {
+						t.Errorf(
+							"Expected qv3.Q(%v,%v) to be %v; received %v",
+							rowIndex,
+							colIndex,
+							qe1.Q.At(rowIndex-1, colIndex-1),
+							qv3.Q.At(rowIndex, colIndex),
+						)
+					}
+				}
+			case 0:
+				if qv3.Q.At(rowIndex, colIndex) != 0 {
+					t.Errorf(
+						"Expected qv3.Q(%v,%v) to be 0; received %v",
+						rowIndex,
+						colIndex,
+						qv3.Q.At(rowIndex, colIndex),
+					)
+				}
+			case 2:
+				if colIndex > 0 {
+					if qv3.Q.At(rowIndex, colIndex) != qe1.Q.At(rowIndex-1, colIndex-1) {
+						t.Errorf(
+							"Expected qv3.Q(%v,%v) to be %v; received %v",
+							rowIndex,
+							colIndex,
+							qe1.Q.At(rowIndex-1, colIndex-1),
+							qv3.Q.At(rowIndex, colIndex),
+						)
+					}
+				}
+			default:
+				t.Errorf("This row index should never be reached! (%v)", rowIndex)
+			}
+		}
+	}
+
+	// Linear Experession
+	if qv3.L.AtVec(0) != 1.0 {
+		t.Errorf("Expected for L's 0-th element to be %v; received %v", qe1.L.AtVec(0), qv3.L.AtVec(0))
+	}
+
+	if qv3.L.AtVec(1) != qe1.L.AtVec(0) {
+		t.Errorf("Expected for L's 1-th element to be %v; received %v", qe1.L.AtVec(1), qv3.L.AtVec(1))
+	}
+
+	if qv3.L.AtVec(2) != qe1.L.AtVec(1) {
+		t.Errorf("Expected for L's 2-th element to be %v; received %v", qe1.L.AtVec(1), qv3.L.AtVec(2))
+	}
+
+	if qv3.C != qe1.C {
+		t.Errorf("Expected for constant of final quadratic expression to be %v; received %v", qe1.C, qv3.C)
+	}
+
+}
+
+/*
 TestQuadraticExpr_RewriteInTermsOfIndices1
 Description:
 

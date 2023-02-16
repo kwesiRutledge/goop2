@@ -89,7 +89,7 @@ Description:
 	This function checks the dimensions of all of the members of the quadratic expression which are slices.
 	They should have compatible dimensions.
 */
-func (qe *QuadraticExpr) Check() error {
+func (qe QuadraticExpr) Check() error {
 	// Make the number of elements in q be the dimension of the x in the expression.
 	xLen := qe.X.Len()
 	n_Q_rows, n_Q_cols := qe.Q.Dims()
@@ -113,7 +113,7 @@ Description:
 
 	This function returns a slice containing all unique variables in the expression qe.
 */
-func (qe *QuadraticExpr) Variables() []Variable {
+func (qe QuadraticExpr) Variables() []Variable {
 	return UniqueVars(qe.X.Elements)
 }
 
@@ -124,7 +124,7 @@ Description:
 	Returns the number of variables in the expression.
 	To make this actually meaningful, we only count the unique vars.
 */
-func (qe *QuadraticExpr) NumVars() int {
+func (qe QuadraticExpr) NumVars() int {
 
 	return len(qe.IDs())
 }
@@ -135,7 +135,7 @@ Description:
 
 	Returns the ids of all of the variables in the quadratic expression.
 */
-func (qe *QuadraticExpr) IDs() []uint64 {
+func (qe QuadraticExpr) IDs() []uint64 {
 	return qe.X.IDs()
 }
 
@@ -154,7 +154,7 @@ Description:
 	where
 		mx = [ x[0]*x[0], x[0]*x[1], ... , x[0]*x[N-1], x[1]*x[1] , x[1]*x[2], ... , x[1]*x[N-1], x[2]*x[2], ... , x[N-1]*x[N-1], x[0], x[1], ... , x[N-1] ]
 */
-func (qe *QuadraticExpr) Coeffs() []float64 {
+func (qe QuadraticExpr) Coeffs() []float64 {
 	// Create container for all coefficients
 	var coefficientList []float64
 	var numVars int = qe.NumVars()
@@ -186,7 +186,7 @@ Description:
 
 	Returns the constant value associated with a quadratic expression.
 */
-func (qe *QuadraticExpr) Constant() float64 {
+func (qe QuadraticExpr) Constant() float64 {
 	return qe.C
 }
 
@@ -199,7 +199,7 @@ Description:
 	- A Linear Expression, or
 	- A Constant
 */
-func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (qe QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
 	// Constants
 
 	// Algorithm depends
@@ -212,17 +212,22 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 		KIn := eIn.(K)
 
 		// Get copy of qe
-		var newQExpr QuadraticExpr = *qe
+		var newQExpr QuadraticExpr = qe
 
 		// Add to constant factor
 		newQExpr.C += float64(KIn)
 
 		return &newQExpr, nil
+	case Variable:
+		// Convert express to Variable type
+		vIn := eIn.(Variable)
 
-	case *QuadraticExpr:
+		return vIn.Plus(qe)
 
-		var newQExpr QuadraticExpr = *qe // get copy of e
-		quadraticEIn := eIn.(*QuadraticExpr)
+	case QuadraticExpr:
+
+		var newQExpr QuadraticExpr = qe // get copy of e
+		quadraticEIn := eIn.(QuadraticExpr)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))
@@ -245,7 +250,7 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 
 	case ScalarLinearExpr:
 		// Collect Expressions
-		var newQExpr QuadraticExpr = *qe // get copy of e
+		var newQExpr QuadraticExpr = qe // get copy of e
 		linearEIn := eIn.(ScalarLinearExpr)
 
 		// Get Combined set of Variables
@@ -265,7 +270,7 @@ func (qe *QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scal
 		newQExprAligned.C += linearEIn.C
 		return newQExprAligned, nil
 	default:
-		return &QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
+		return QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
 	}
 
 }
@@ -287,10 +292,10 @@ Description:
 	Mult multiplies the current expression to another and returns the
 	resulting expression
 */
-func (qe *QuadraticExpr) Mult(c float64) (ScalarExpression, error) {
+func (qe QuadraticExpr) Mult(c float64) (ScalarExpression, error) {
 	// Create Output
 	var newQE QuadraticExpr = QuadraticExpr{
-		X: (*qe).X,
+		X: (qe).X,
 	}
 
 	// Iterate through all of the rows and columns of Q
@@ -312,7 +317,7 @@ Description:
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
-func (qe *QuadraticExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe QuadraticExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseLessThanEqual)
 }
 
@@ -323,7 +328,7 @@ Description:
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
-func (qe *QuadraticExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe QuadraticExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseGreaterThanEqual)
 }
 
@@ -335,7 +340,7 @@ Description:
 	Eq returns an equality (==) constraint between the current expression
 	and another
 */
-func (qe *QuadraticExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe QuadraticExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseEqual)
 }
 
@@ -349,7 +354,7 @@ Usage:
 
 	constr, err := qe.Comparison(expr1,SenseGreaterThanEqual)
 */
-func (qe *QuadraticExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+func (qe QuadraticExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
 	return ScalarConstraint{qe, rhs, sense}, nil
 }
 
@@ -363,7 +368,7 @@ Usage:
 
 	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
 */
-func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error) {
+func (qe QuadraticExpr) RewriteInTermsOf(newX VarVector) (QuadraticExpr, error) {
 	// Create new Quadratic Expression
 	// ===============================
 
@@ -371,19 +376,11 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 	dimX := newX.Len()
 
 	// Create Q matrix of appropriate dimension.
-	var newQvals []float64
-	for rowIndex := 0; rowIndex < dimX; rowIndex++ {
-		var newRow []float64
-		for colIndex := 0; colIndex < dimX; colIndex++ {
-			newRow = append(newRow, 0.0)
-		}
-		newQvals = append(newQvals, newRow...)
-	}
-	newQ := mat.NewDense(dimX, dimX, newQvals)
+	newQ := *ZerosMatrix(dimX)
 
 	// Create expression
 	var newQE QuadraticExpr = QuadraticExpr{
-		Q: *newQ,
+		Q: newQ,
 		X: newX,
 		L: ZerosVector(dimX),
 		C: 0.0,
@@ -398,25 +395,20 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 			// Get the new indices corresponding to oi1 and oi2
 			ni1Index, err := FindInSlice(oldElt1, newX.Elements)
 			if err != nil {
-				return &newQE, fmt.Errorf("The element %v was found in the old X indices, but it does not exist in the new ones!", oldElt1)
+				return newQE, fmt.Errorf("The element %v was found in the old X indices, but it does not exist in the new ones!", oldElt1)
 			}
 			//newElt1 := newX.Elements[ni1Index]
 
 			ni2Index, err := FindInSlice(oldElt2, newX.Elements)
 			if err != nil {
-				return &newQE, fmt.Errorf("The element %v was found in the old X indices, but it does not exist in the new ones!", oldElt2)
+				return newQE, fmt.Errorf("The element %v was found in the old X indices, but it does not exist in the new ones!", oldElt2)
 			}
 			//newElt2 := newX.Elements[ni2Index]
 
 			// Plug the oldQterm into newQ
-			var updatedRow []float64
-			updatedRow = mat.Row(nil, ni1Index, &newQE.Q)
-			updatedRow[ni2Index] = oldQterm
-			newQE.Q.SetRow(ni1Index, updatedRow)
-
+			newQE.Q.Set(ni1Index, ni2Index, oldQterm)
 		}
 	}
-	newQE.Q = *newQ
 
 	// Create L matrix of appropriate dimension
 	newL := ZerosVector(dimX)
@@ -429,7 +421,7 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 		// Get the new indices corresponding to oi1 and oi2
 		ni1Index, err := FindInSlice(oldElt1, newX.Elements)
 		if err != nil {
-			return &newQE, fmt.Errorf("The element %v was found in the old X, but it does not exist in the new ones!", oldElt1)
+			return newQE, fmt.Errorf("The element %v was found in the old X, but it does not exist in the new ones!", oldElt1)
 		}
 		//newIndex1 := newXIndices[ni1Index]
 
@@ -443,6 +435,6 @@ func (qe *QuadraticExpr) RewriteInTermsOf(newX VarVector) (*QuadraticExpr, error
 	// Populate C
 	newQE.C = qe.C
 
-	return &newQE, nil
+	return newQE, nil
 
 }
