@@ -6,7 +6,7 @@ import (
 )
 
 /*
-quadratic_expr.go
+scalar_quadratic_expression.go
 Description:
 	Defines some of the functions necessary to define polynomial expressions in terms of the variables
 	of an optimization problem.
