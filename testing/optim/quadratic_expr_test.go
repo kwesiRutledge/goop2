@@ -322,7 +322,7 @@ func TestQuadraticExpr_Plus1(t *testing.T) {
 		t.Errorf("Received an error when computing Plus(): %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -395,7 +395,7 @@ func TestQuadraticExpr_Plus2(t *testing.T) {
 		t.Errorf("There was an issue adding together the two expressions: %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -479,7 +479,7 @@ func TestQuadraticExpr_Plus3(t *testing.T) {
 		t.Errorf("There was an issue adding qv1 and qv2: %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -562,7 +562,7 @@ func TestQuadraticExpr_Plus4(t *testing.T) {
 		t.Errorf("There was an issue adding qe1 and le2: %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -636,7 +636,7 @@ func TestQuadraticExpr_Plus5(t *testing.T) {
 		t.Errorf("There was an issue adding qe1 and le2: %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}
@@ -704,7 +704,7 @@ func TestQuadraticExpr_Plus6(t *testing.T) {
 		t.Errorf("There was an issue adding qe1 and le2: %v", err)
 	}
 
-	qv3, ok := e3.(optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}

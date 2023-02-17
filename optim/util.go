@@ -183,7 +183,7 @@ Description:
 
 	Returns a dense matrix of all zeros.
 */
-func ZerosMatrix(dim int) *mat.Dense {
+func ZerosMatrix(dim int) mat.Dense {
 	// Create empty slice
 	elts := make([]float64, dim*dim)
 	for rowIndex := 0; rowIndex < dim; rowIndex++ {
@@ -192,7 +192,7 @@ func ZerosMatrix(dim int) *mat.Dense {
 		}
 	}
 
-	return mat.NewDense(dim, dim, elts)
+	return *mat.NewDense(dim, dim, elts)
 }
 
 /*
@@ -202,7 +202,7 @@ Description:
 	Returns a symmetric matrix that is the identity matrix.
 	Note: this function assumes lengthIn is a positive number.
 */
-func Identity(dim int) *mat.Dense {
+func Identity(dim int) mat.Dense {
 	// Create the empty matrix.
 	zeroBase := ZerosMatrix(dim)
 

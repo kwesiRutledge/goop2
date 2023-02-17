@@ -19,8 +19,8 @@ import (
 // and C is a constant vector
 type VectorLinearExpr struct {
 	X VarVector
-	L mat.Matrix // Matrix of coefficients. Should match the dimensions of XIndices
-	C mat.Vector
+	L mat.Dense // Matrix of coefficients. Should match the dimensions of XIndices
+	C mat.VecDense
 }
 
 /*
@@ -75,7 +75,7 @@ Description:
 
 	Returns the matrix which is applied as a coefficient to the vector X in our expression.
 */
-func (vle VectorLinearExpr) LinearCoeff() mat.Matrix {
+func (vle VectorLinearExpr) LinearCoeff() mat.Dense {
 
 	return vle.L
 }
@@ -87,7 +87,7 @@ Description:
 	Returns the vector which is given as an offset vector in the linear expression represented by v
 	(the c in the above expression).
 */
-func (vle VectorLinearExpr) Constant() mat.Vector {
+func (vle VectorLinearExpr) Constant() mat.VecDense {
 
 	return vle.C
 }
@@ -128,7 +128,7 @@ Description:
 
 	Returns an expression which adds the expression e to the vector linear expression at hand.
 */
-func (vle VectorLinearExpr) Plus(e VectorExpression) (VectorExpression, error) {
+func (vle VectorLinearExpr) Plus(e interface{}, extras ...interface{}) (VectorExpression, error) {
 	return vle, fmt.Errorf("The addition method has not yet been implemented!")
 }
 

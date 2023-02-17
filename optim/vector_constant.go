@@ -77,7 +77,7 @@ Description:
 
 	This function returns a slice of the coefficients in the expression. For constants, this is always nil.
 */
-func (kv KVector) LinearCoeff() mat.Matrix {
+func (kv KVector) LinearCoeff() mat.Dense {
 	return Identity(kv.Len())
 }
 
@@ -86,10 +86,8 @@ Constant
 
 	Returns the constant additive value in the expression. For constants, this is just the constants value
 */
-func (kv KVector) Constant() mat.Vector {
-	kvAsVector := mat.VecDense(kv)
-
-	return &kvAsVector
+func (kv KVector) Constant() mat.VecDense {
+	return mat.VecDense(kv)
 }
 
 /*
@@ -98,8 +96,31 @@ Description:
 
 	Adds the current expression to another and returns the resulting expression
 */
-func (kv KVector) Plus(e VectorExpression) (VectorExpression, error) {
+func (kv KVector) Plus(e interface{}, extras ...interface{}) (VectorExpression, error) {
+	// Constants
+	kvLen := kv.Len()
+
+	// Extras Management
+
+	// Management
 	switch e.(type) {
+	case float64:
+		// Cast type
+		eAsFloat, _ := e.(float64)
+
+		// Create vector
+		tempOnes := OnesVector(kvLen)
+		var eAsVec mat.VecDense
+		eAsVec.ScaleVec(eAsFloat, &tempOnes)
+
+		// Add the values
+		return kv.Plus(KVector(eAsVec))
+	case K:
+		// Cast type
+		eAsK, _ := e.(K)
+
+		// Return Addition
+		return kv.Plus(float64(eAsK))
 	case KVector:
 		// Cast type
 		eAsKVector, _ := e.(KVector)
@@ -111,8 +132,23 @@ func (kv KVector) Plus(e VectorExpression) (VectorExpression, error) {
 		result.AddVec(&kvAsVec, &eAsVec)
 
 		return KVector(result), nil
+
+	case VarVector:
+		// Cast type
+		eAsVV, _ := e.(VarVector)
+
+		// Return addition
+		return eAsVV.Plus(kv)
+
+	case VectorLinearExpr:
+		// Cast Type
+		eAsVLE, _ := e.(VectorLinearExpr)
+
+		// Return result
+		return eAsVLE.Plus(kv)
+
 	default:
-		errString := fmt.Sprintf("Unrecognized expression type %T for expression %v!", e, e)
+		errString := fmt.Sprintf("Unrecognized expression type %T for addition of KVector kv.Plus(%v)!", e, e)
 		return KVector{}, fmt.Errorf(errString)
 	}
 }

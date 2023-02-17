@@ -94,9 +94,9 @@ func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpress
 
 		return e2, nil
 
-	case QuadraticExpr:
+	case ScalarQuadraticExpression:
 		// Convert
-		eAsQE := e.(QuadraticExpr)
+		eAsQE := e.(ScalarQuadraticExpression)
 
 		// Convert QE to new form
 		e2, _ := eAsQE.RewriteInTermsOf(vv)

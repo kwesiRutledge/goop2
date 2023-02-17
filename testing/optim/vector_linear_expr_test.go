@@ -25,8 +25,8 @@ func TestVectorLinearExpression_Check1(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -57,8 +57,8 @@ func TestVectorLinearExpression_Check2(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -94,8 +94,8 @@ func TestVectorLinearExpression_Check3(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	L1 := mat.NewDense(2, 3, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(2, 3, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -130,8 +130,8 @@ func TestVectorLinearExpression_VariableIDs1(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	L1 := mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
-	c1 := mat.NewVecDense(3, []float64{5.0, 6.0, 7.0})
+	L1 := *mat.NewDense(3, 2, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
+	c1 := *mat.NewVecDense(3, []float64{5.0, 6.0, 7.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -171,8 +171,8 @@ func TestVectorLinearExpression_VariableIDs2(t *testing.T) {
 		Elements: []optim.Variable{x, x, x, x},
 	}
 
-	L1 := mat.NewDense(2, 4, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0})
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(2, 4, []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0})
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -217,8 +217,8 @@ func TestVectorLinearExpression_Coeffs1(t *testing.T) {
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}
-	L1 := mat.NewDense(3, 2, LElts)
-	c1 := mat.NewVecDense(3, []float64{5.0, 6.0, 7.0})
+	L1 := *mat.NewDense(3, 2, LElts)
+	c1 := *mat.NewVecDense(3, []float64{5.0, 6.0, 7.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -265,8 +265,8 @@ func TestVectorLinearExpression_Coeffs2(t *testing.T) {
 	}
 
 	LElts := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}
-	L1 := mat.NewDense(2, 4, LElts)
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(2, 4, LElts)
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -361,7 +361,7 @@ func TestVectorLinearExpression_Eq1(t *testing.T) {
 	vle1 := optim.VectorLinearExpr{
 		vv1,
 		optim.Identity(2),
-		&c,
+		c,
 	}
 
 	ones0 := optim.OnesVector(2)
@@ -374,12 +374,14 @@ func TestVectorLinearExpression_Eq1(t *testing.T) {
 
 	n_R := 2
 	for rowIndex := 0; rowIndex < n_R; rowIndex++ {
-		if constr.LeftHandSide.Constant().AtVec(rowIndex) != vle1.Constant().AtVec(rowIndex) {
+		lhsConstant := constr.LeftHandSide.Constant()
+		vleConstant := vle1.Constant()
+		if lhsConstant.AtVec(rowIndex) != vleConstant.AtVec(rowIndex) {
 			t.Errorf(
 				"The constraint's left hand side has constant value %v at index %v; expected %v!",
-				constr.LeftHandSide.Constant().AtVec(rowIndex),
+				lhsConstant.AtVec(rowIndex),
 				rowIndex,
-				vle1.Constant().AtVec(rowIndex),
+				vleConstant.AtVec(rowIndex),
 			)
 		}
 	}
@@ -410,7 +412,7 @@ func TestVectorLinearExpression_Eq2(t *testing.T) {
 	vle1 := optim.VectorLinearExpr{
 		vv1,
 		optim.Identity(2),
-		&c,
+		c,
 	}
 
 	badRHS := false
@@ -452,7 +454,7 @@ func TestVectorLinearExpression_Eq3(t *testing.T) {
 	vle1 := optim.VectorLinearExpr{
 		vv1,
 		optim.Identity(2),
-		&c,
+		c,
 	}
 
 	onesVec1 := optim.OnesVector(2)
@@ -495,7 +497,7 @@ func TestVectorLinearExpression_Eq4(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		x, L1, &c1,
+		x, L1, c1,
 	}
 
 	err := ve1.Check()
@@ -531,7 +533,7 @@ func TestVectorLinearExpression_Eq5(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		x, L1, &c1,
+		x, L1, c1,
 	}
 
 	err := ve1.Check()
@@ -564,8 +566,8 @@ func TestVectorLinearExpression_Len1(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	L1 := mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
-	c1 := mat.NewVecDense(2, []float64{5.0, 6.0})
+	L1 := *mat.NewDense(2, 2, []float64{1.0, 2.0, 3.0, 4.0})
+	c1 := *mat.NewVecDense(2, []float64{5.0, 6.0})
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
@@ -606,7 +608,7 @@ func TestVectorLinearExpression_Len2(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		vv1, L1, &c1,
+		vv1, L1, c1,
 	}
 
 	err := ve1.Check()

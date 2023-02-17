@@ -164,7 +164,7 @@ func TestKVector_Comparison3(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		vec2, L1, &c1,
+		vec2, L1, c1,
 	}
 
 	// Create Constraint
@@ -205,12 +205,120 @@ func TestKVector_Comparison4(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		vec2, L1, &c1,
+		vec2, L1, c1,
 	}
 
 	// Create Constraint
 	_, err := vec1.Comparison(ve1, optim.SenseGreaterThanEqual)
 	if strings.Contains(err.Error(), fmt.Sprintf("The two vector inputs to Eq() must have the same dimension, but #1 has dimension %v and #2 has dimension %v!", vec1.Len(), ve1.Len())) {
 		t.Errorf("There was an issue creating equality constraint between vec1 and vec2: %v", err)
+	}
+}
+
+/*
+TestKVector_Plus1
+Description:
+
+	Tests the addition of KVector with another KVector
+*/
+func TestKVector_Plus1(t *testing.T) {
+	// Constants
+	desLength := 10
+	//m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var vec2 = optim.KVector(optim.ZerosVector(desLength))
+
+	// Algorithm
+	eOut, err := vec1.Plus(vec2)
+	if err != nil {
+		t.Errorf("There was an issue adding the two expression.")
+	}
+
+	vec3, ok := eOut.(optim.KVector)
+	if !ok {
+		t.Errorf("Expected vec3 to be of type optim.KVector; received %T", eOut)
+	}
+
+	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+vec2.AtVec(dimIndex) {
+			t.Errorf(
+				"Expected v3.AtVec(%v) = %v; received %v",
+				dimIndex,
+				vec3.AtVec(dimIndex),
+				vec1.AtVec(dimIndex)+vec2.AtVec(dimIndex),
+			)
+		}
+	}
+}
+
+/*
+TestKVector_Plus2
+Description:
+
+	Tests the addition of KVector with a float64
+*/
+func TestKVector_Plus2(t *testing.T) {
+	// Constants
+	desLength := 10
+	//m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var f1 float64 = 3.1
+
+	// Algorithm
+	eOut, err := vec1.Plus(f1)
+	if err != nil {
+		t.Errorf("There was an issue adding the two expression: %v", err)
+	}
+
+	vec3, ok := eOut.(optim.KVector)
+	if !ok {
+		t.Errorf("Expected vec3 to be of type optim.KVector; received %T", eOut)
+	}
+
+	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+f1 {
+			t.Errorf(
+				"Expected v3.AtVec(%v) = %v; received %v",
+				dimIndex,
+				vec3.AtVec(dimIndex),
+				vec1.AtVec(dimIndex)+f1,
+			)
+		}
+	}
+}
+
+/*
+TestKVector_Plus3
+Description:
+
+	Tests the addition of KVector with a K
+*/
+func TestKVector_Plus3(t *testing.T) {
+	// Constants
+	desLength := 10
+	//m := optim.NewModel()
+	var vec1 = optim.KVector(optim.OnesVector(desLength))
+	var f1 = optim.K(3.1)
+
+	// Algorithm
+	eOut, err := vec1.Plus(f1)
+	if err != nil {
+		t.Errorf("There was an issue adding the two expression: %v", err)
+	}
+
+	vec3, ok := eOut.(optim.KVector)
+	if !ok {
+		t.Errorf("Expected vec3 to be of type optim.KVector; received %T", eOut)
+	}
+
+	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+float64(f1) {
+			t.Errorf(
+				"Expected v3.AtVec(%v) = %v; received %v",
+				dimIndex,
+				vec3.AtVec(dimIndex),
+				vec1.AtVec(dimIndex)+float64(f1),
+			)
+		}
 	}
 }

@@ -89,9 +89,9 @@ Description:
 
 	Returns an all zeros vector as output from the method.
 */
-func (vv VarVector) Constant() mat.Vector {
+func (vv VarVector) Constant() mat.VecDense {
 	zerosOut := ZerosVector(vv.Len())
-	return &zerosOut
+	return zerosOut
 }
 
 /*
@@ -101,7 +101,7 @@ Description:
 	Returns the matrix which is multiplied by Variables to get the current "expression".
 	For a single vector, this is an identity matrix.
 */
-func (vv VarVector) LinearCoeff() mat.Matrix {
+func (vv VarVector) LinearCoeff() mat.Dense {
 	return Identity(vv.Len())
 }
 
@@ -112,7 +112,34 @@ Description:
 	This member function computes the addition of the receiver vector var with the
 	incoming vector expression ve.
 */
-func (vv VarVector) Plus(ve VectorExpression) (VectorExpression, error) {
+func (vv VarVector) Plus(ve interface{}, extras ...interface{}) (VectorExpression, error) {
+	// Constants
+	vvLen := vv.Len()
+
+	// Processing Extras
+
+	// Algorithm
+	switch ve.(type) {
+	case float64:
+		// Cast Variable
+		veAsFloat, _ := ve.(float64)
+
+		// Transform float to vector
+		tempOnes := OnesVector(vvLen)
+		var eAsVec mat.VecDense
+		eAsVec.ScaleVec(veAsFloat, &tempOnes)
+
+		// Algorithm
+		return VectorLinearExpr{
+			L: Identity(vvLen),
+			X: vv,
+			C: eAsVec,
+		}, nil
+
+	default:
+		errString := fmt.Sprintf("Unrecognized expression type %T for addition of VarVector vv.Plus(%v)!", ve, ve)
+		return VarVector{}, fmt.Errorf(errString)
+	}
 	return vv, fmt.Errorf("The Plus() method for VarVector is not implemented yet!")
 }
 

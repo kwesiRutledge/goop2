@@ -23,7 +23,7 @@ Description:
 	The quadratic expression object defines a quadratic written as follows:
 		x' * Q * x + L * x + C
 */
-type QuadraticExpr struct {
+type ScalarQuadraticExpression struct {
 	Q mat.Dense    // Quadratic Term
 	L mat.VecDense // Linear Term
 	C float64      // Constant Term
@@ -40,7 +40,7 @@ Description:
 	NewQuadraticExpr_q0 returns a basic Quadratic expression with only the matrix Q being defined,
 	all other values are assumed to be zero.
 */
-func NewQuadraticExpr_qb0(QIn mat.Dense, xIn VarVector) (*QuadraticExpr, error) {
+func NewQuadraticExpr_qb0(QIn mat.Dense, xIn VarVector) (ScalarQuadraticExpression, error) {
 	// Constants
 	numXIndices := xIn.Len()
 
@@ -62,11 +62,11 @@ Description:
 
 	NewQuadraticExpr returns a basic Quadratic expression whuch is defined by QIn, qIn and bIn.
 */
-func NewQuadraticExpr(QIn mat.Dense, qIn mat.VecDense, bIn float64, xIn VarVector) (*QuadraticExpr, error) {
+func NewQuadraticExpr(QIn mat.Dense, qIn mat.VecDense, bIn float64, xIn VarVector) (ScalarQuadraticExpression, error) {
 	// Constants
 
 	// Input Checking
-	tempExpr := &QuadraticExpr{
+	tempExpr := ScalarQuadraticExpression{
 		Q: QIn,
 		L: qIn,
 		C: bIn,
@@ -89,7 +89,7 @@ Description:
 	This function checks the dimensions of all of the members of the quadratic expression which are slices.
 	They should have compatible dimensions.
 */
-func (qe QuadraticExpr) Check() error {
+func (qe ScalarQuadraticExpression) Check() error {
 	// Make the number of elements in q be the dimension of the x in the expression.
 	xLen := qe.X.Len()
 	n_Q_rows, n_Q_cols := qe.Q.Dims()
@@ -113,7 +113,7 @@ Description:
 
 	This function returns a slice containing all unique variables in the expression qe.
 */
-func (qe QuadraticExpr) Variables() []Variable {
+func (qe ScalarQuadraticExpression) Variables() []Variable {
 	return UniqueVars(qe.X.Elements)
 }
 
@@ -124,7 +124,7 @@ Description:
 	Returns the number of variables in the expression.
 	To make this actually meaningful, we only count the unique vars.
 */
-func (qe QuadraticExpr) NumVars() int {
+func (qe ScalarQuadraticExpression) NumVars() int {
 
 	return len(qe.IDs())
 }
@@ -135,7 +135,7 @@ Description:
 
 	Returns the ids of all of the variables in the quadratic expression.
 */
-func (qe QuadraticExpr) IDs() []uint64 {
+func (qe ScalarQuadraticExpression) IDs() []uint64 {
 	return qe.X.IDs()
 }
 
@@ -154,7 +154,7 @@ Description:
 	where
 		mx = [ x[0]*x[0], x[0]*x[1], ... , x[0]*x[N-1], x[1]*x[1] , x[1]*x[2], ... , x[1]*x[N-1], x[2]*x[2], ... , x[N-1]*x[N-1], x[0], x[1], ... , x[N-1] ]
 */
-func (qe QuadraticExpr) Coeffs() []float64 {
+func (qe ScalarQuadraticExpression) Coeffs() []float64 {
 	// Create container for all coefficients
 	var coefficientList []float64
 	var numVars int = qe.NumVars()
@@ -186,7 +186,7 @@ Description:
 
 	Returns the constant value associated with a quadratic expression.
 */
-func (qe QuadraticExpr) Constant() float64 {
+func (qe ScalarQuadraticExpression) Constant() float64 {
 	return qe.C
 }
 
@@ -199,7 +199,7 @@ Description:
 	- A Linear Expression, or
 	- A Constant
 */
-func (qe QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
 	// Constants
 
 	// Algorithm depends
@@ -212,22 +212,22 @@ func (qe QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scala
 		KIn := eIn.(K)
 
 		// Get copy of qe
-		var newQExpr QuadraticExpr = qe
+		var newQExpr ScalarQuadraticExpression = qe
 
 		// Add to constant factor
 		newQExpr.C += float64(KIn)
 
-		return &newQExpr, nil
+		return newQExpr, nil
 	case Variable:
 		// Convert express to Variable type
 		vIn := eIn.(Variable)
 
 		return vIn.Plus(qe)
 
-	case QuadraticExpr:
+	case ScalarQuadraticExpression:
 
-		var newQExpr QuadraticExpr = qe // get copy of e
-		quadraticEIn := eIn.(QuadraticExpr)
+		var newQExpr ScalarQuadraticExpression = qe // get copy of e
+		quadraticEIn := eIn.(ScalarQuadraticExpression)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))
@@ -250,7 +250,7 @@ func (qe QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scala
 
 	case ScalarLinearExpr:
 		// Collect Expressions
-		var newQExpr QuadraticExpr = qe // get copy of e
+		var newQExpr ScalarQuadraticExpression = qe // get copy of e
 		linearEIn := eIn.(ScalarLinearExpr)
 
 		// Get Combined set of Variables
@@ -270,7 +270,7 @@ func (qe QuadraticExpr) Plus(eIn ScalarExpression, extras ...interface{}) (Scala
 		newQExprAligned.C += linearEIn.C
 		return newQExprAligned, nil
 	default:
-		return QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
+		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
 	}
 
 }
@@ -292,9 +292,9 @@ Description:
 	Mult multiplies the current expression to another and returns the
 	resulting expression
 */
-func (qe QuadraticExpr) Mult(c float64) (ScalarExpression, error) {
+func (qe ScalarQuadraticExpression) Mult(c float64) (ScalarExpression, error) {
 	// Create Output
-	var newQE QuadraticExpr = QuadraticExpr{
+	var newQE ScalarQuadraticExpression = ScalarQuadraticExpression{
 		X: (qe).X,
 	}
 
@@ -317,7 +317,7 @@ Description:
 	LessEq returns a less than or equal to (<=) constraint between the
 	current expression and another
 */
-func (qe QuadraticExpr) LessEq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe ScalarQuadraticExpression) LessEq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseLessThanEqual)
 }
 
@@ -328,7 +328,7 @@ Description:
 	GreaterEq returns a greater than or equal to (>=) constraint between the
 	current expression and another
 */
-func (qe QuadraticExpr) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe ScalarQuadraticExpression) GreaterEq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseGreaterThanEqual)
 }
 
@@ -340,7 +340,7 @@ Description:
 	Eq returns an equality (==) constraint between the current expression
 	and another
 */
-func (qe QuadraticExpr) Eq(other ScalarExpression) (ScalarConstraint, error) {
+func (qe ScalarQuadraticExpression) Eq(other ScalarExpression) (ScalarConstraint, error) {
 	return qe.Comparison(other, SenseEqual)
 }
 
@@ -354,7 +354,7 @@ Usage:
 
 	constr, err := qe.Comparison(expr1,SenseGreaterThanEqual)
 */
-func (qe QuadraticExpr) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
+func (qe ScalarQuadraticExpression) Comparison(rhs ScalarExpression, sense ConstrSense) (ScalarConstraint, error) {
 	return ScalarConstraint{qe, rhs, sense}, nil
 }
 
@@ -368,7 +368,7 @@ Usage:
 
 	rewrittenQE, err := orignalQE.RewriteInTermsOfIndices(newXIndices1)
 */
-func (qe QuadraticExpr) RewriteInTermsOf(newX VarVector) (QuadraticExpr, error) {
+func (qe ScalarQuadraticExpression) RewriteInTermsOf(newX VarVector) (ScalarQuadraticExpression, error) {
 	// Create new Quadratic Expression
 	// ===============================
 
@@ -376,10 +376,10 @@ func (qe QuadraticExpr) RewriteInTermsOf(newX VarVector) (QuadraticExpr, error) 
 	dimX := newX.Len()
 
 	// Create Q matrix of appropriate dimension.
-	newQ := *ZerosMatrix(dimX)
+	newQ := ZerosMatrix(dimX)
 
 	// Create expression
-	var newQE QuadraticExpr = QuadraticExpr{
+	var newQE ScalarQuadraticExpression = ScalarQuadraticExpression{
 		Q: newQ,
 		X: newX,
 		L: ZerosVector(dimX),

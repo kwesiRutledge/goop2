@@ -226,7 +226,7 @@ func TestScalarLinearExpr_Plus3(t *testing.T) {
 		t.Errorf("There was an issue computing the product of sle1 and sle2: %v", err)
 	}
 
-	sle3AsSLE, ok1 := sle3.(*optim.ScalarLinearExpr)
+	sle3AsSLE, ok1 := sle3.(optim.ScalarLinearExpr)
 	if !ok1 {
 		t.Errorf("Expected the addition of ScalarLinearExpr with another ScalarLinearExpr to create another ScalarLinearExpr. Received %T.", sle3)
 	}
@@ -301,7 +301,7 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 		t.Errorf("There was an issue creating a basic quadratic expression: %v", err)
 	}
 
-	le2 := &optim.ScalarLinearExpr{
+	le2 := optim.ScalarLinearExpr{
 		L: L2,
 		C: C2,
 		X: vv2,
@@ -312,7 +312,7 @@ func TestScalarLinearExpression_Plus3(t *testing.T) {
 		t.Errorf("There was an issue adding qe1 and le2: %v", err)
 	}
 
-	qv3, ok := e3.(*optim.QuadraticExpr)
+	qv3, ok := e3.(optim.ScalarQuadraticExpression)
 	if !ok {
 		t.Errorf("Unable to convert expression to Quadratic Expression.")
 	}

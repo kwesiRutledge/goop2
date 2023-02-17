@@ -96,10 +96,10 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		newSLE.C += linearEIn.C
 		return newSLE, nil
 
-	case QuadraticExpr:
+	case ScalarQuadraticExpression:
 
 		//var newQExpr QuadraticExpr = *qe // get copy of e
-		quadraticEIn := eIn.(QuadraticExpr)
+		quadraticEIn := eIn.(ScalarQuadraticExpression)
 		//
 		//// Get Combined set of Variables
 		//newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))
@@ -124,7 +124,7 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 	default:
 		fmt.Println("Unexpected type given to Plus().")
 
-		return &QuadraticExpr{}, fmt.Errorf("Unexpected type (%T) given as first argument to Plus as %v.", eIn, eIn)
+		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as first argument to Plus as %v.", eIn, eIn)
 	}
 }
 

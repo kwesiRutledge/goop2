@@ -208,8 +208,8 @@ func TestVar_Plus4(t *testing.T) {
 	Q := optim.Identity(2)
 	L := optim.OnesVector(2)
 	C := 3.0
-	qe1 := &optim.QuadraticExpr{
-		Q: *Q,
+	qe1 := optim.ScalarQuadraticExpression{
+		Q: Q,
 		X: vv,
 		L: L,
 		C: C,
@@ -221,7 +221,7 @@ func TestVar_Plus4(t *testing.T) {
 		t.Errorf("There was an issue computing sum: %v", err)
 	}
 
-	sumAsSLE, ok1 := tempSum.(*optim.QuadraticExpr)
+	sumAsSLE, ok1 := tempSum.(optim.ScalarQuadraticExpression)
 	if !ok1 {
 		t.Errorf("The sum is expected to be a ScalarLinearExpression but it was not! (Type = %T)", tempSum)
 	}

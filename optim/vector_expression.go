@@ -26,14 +26,14 @@ type VectorExpression interface {
 	IDs() []uint64
 
 	// Coeffs returns a slice of the coefficients in the expression
-	LinearCoeff() mat.Matrix
+	LinearCoeff() mat.Dense
 
 	// Constant returns the constant additive value in the expression
-	Constant() mat.Vector
+	Constant() mat.VecDense
 
 	// Plus adds the current expression to another and returns the resulting
 	// expression
-	Plus(ve VectorExpression) (VectorExpression, error)
+	Plus(e interface{}, extras ...interface{}) (VectorExpression, error)
 
 	// Mult multiplies the current expression with another and returns the
 	// resulting expression
@@ -72,7 +72,7 @@ Description:
 	and no variables. Creating an expression like sum := NewVectorExpr(0) is useful
 	for creating new empty expressions that you can perform operatotions on later
 */
-func NewVectorExpression(c mat.Vector) VectorLinearExpr {
+func NewVectorExpression(c mat.VecDense) VectorLinearExpr {
 	return VectorLinearExpr{C: c}
 }
 

@@ -305,7 +305,7 @@ func TestVarVector_Comparison1(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		vec2, L1, &c1,
+		vec2, L1, c1,
 	}
 
 	// Create Constraint
@@ -334,7 +334,7 @@ func TestVarVector_Comparison2(t *testing.T) {
 
 	// Use these to create expression.
 	ve1 := optim.VectorLinearExpr{
-		vec2, L1, &c1,
+		vec2, L1, c1,
 	}
 
 	// Create Constraint
