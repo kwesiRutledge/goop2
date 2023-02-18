@@ -183,16 +183,16 @@ Description:
 
 	Returns a dense matrix of all zeros.
 */
-func ZerosMatrix(dim int) mat.Dense {
+func ZerosMatrix(nR, nC int) mat.Dense {
 	// Create empty slice
-	elts := make([]float64, dim*dim)
-	for rowIndex := 0; rowIndex < dim; rowIndex++ {
-		for colIndex := 0; colIndex < dim; colIndex++ {
-			elts[rowIndex*dim+colIndex] = 0.0
+	elts := make([]float64, nR*nC)
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			elts[rowIndex*nR+colIndex] = 0.0
 		}
 	}
 
-	return *mat.NewDense(dim, dim, elts)
+	return *mat.NewDense(nR, nC, elts)
 }
 
 /*
@@ -204,7 +204,7 @@ Description:
 */
 func Identity(dim int) mat.Dense {
 	// Create the empty matrix.
-	zeroBase := ZerosMatrix(dim)
+	zeroBase := ZerosMatrix(dim, dim)
 
 	// Populate Diagonal
 	for rowIndex := 0; rowIndex < dim; rowIndex++ {

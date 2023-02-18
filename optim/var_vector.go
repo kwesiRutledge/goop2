@@ -112,32 +112,73 @@ Description:
 	This member function computes the addition of the receiver vector var with the
 	incoming vector expression ve.
 */
-func (vv VarVector) Plus(ve interface{}, extras ...interface{}) (VectorExpression, error) {
+func (vv VarVector) Plus(e interface{}, extras ...interface{}) (VectorExpression, error) {
 	// Constants
 	vvLen := vv.Len()
 
 	// Processing Extras
 
 	// Algorithm
-	switch ve.(type) {
-	case float64:
+	switch e.(type) {
+	case KVector:
 		// Cast Variable
-		veAsFloat, _ := ve.(float64)
+		eAsKV, _ := e.(KVector)
 
-		// Transform float to vector
-		tempOnes := OnesVector(vvLen)
-		var eAsVec mat.VecDense
-		eAsVec.ScaleVec(veAsFloat, &tempOnes)
+		// Check Lengths
+		if eAsKV.Len() != vv.Len() {
+			return VarVector{},
+				fmt.Errorf(
+					"The lengths of two vectors in Plus must match! VarVector has dimension %v, KVector has dimension %v",
+					vv.Len(),
+					eAsKV.Len(),
+				)
+		}
 
 		// Algorithm
 		return VectorLinearExpr{
 			L: Identity(vvLen),
 			X: vv,
-			C: eAsVec,
+			C: mat.VecDense(eAsKV),
 		}, nil
+	case mat.VecDense:
+		// Cast Variable
+		eAsVD, _ := e.(mat.VecDense)
+
+		// Call KVector version
+		return vv.Plus(KVector(eAsVD))
+
+	case VarVector:
+		// Cast Variable
+		eAsVV, _ := e.(VarVector)
+
+		// Create New Appended vector
+		combinedVV := VarVector{append(vv.Elements, eAsVV.Elements...)}
+		uniqueVV := VarVector{UniqueVars(combinedVV.Elements)}
+
+		// Create Placeholder VLE
+		vleOut := VectorLinearExpr{
+			L: ZerosMatrix(uniqueVV.Len(), uniqueVV.Len()),
+			X: uniqueVV,
+			C: ZerosVector(uniqueVV.Len()),
+		}
+		for dimIndex := 0; dimIndex < vvLen; dimIndex++ {
+			// Extract vv[dimIndex] and eAsVV[dimIndex]
+			vvi := vv.At(dimIndex)
+			eAsVVi := eAsVV.At(dimIndex)
+
+			// Find vvi's index in uniqueVV
+			vviLoc, _ := FindInSlice(vvi, uniqueVV.Elements)
+			vleOut.L.Set(dimIndex, vviLoc, 1.0)
+
+			// Find eAsVVI's index in uniqueVV
+			eAsVViLoc, _ := FindInSlice(eAsVVi, uniqueVV.Elements)
+			vleOut.L.Set(dimIndex, eAsVViLoc, 1.0)
+		}
+
+		return vleOut, nil
 
 	default:
-		errString := fmt.Sprintf("Unrecognized expression type %T for addition of VarVector vv.Plus(%v)!", ve, ve)
+		errString := fmt.Sprintf("Unrecognized expression type %T for addition of VarVector vv.Plus(%v)!", e, e)
 		return VarVector{}, fmt.Errorf(errString)
 	}
 	return vv, fmt.Errorf("The Plus() method for VarVector is not implemented yet!")

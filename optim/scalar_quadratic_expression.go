@@ -275,15 +275,6 @@ func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interfa
 
 }
 
-// // Plus adds the current expression to another and returns the resulting
-// // expression
-// func (e *ScalarLinearExpr) Plus(other ScalarExpression) ScalarExpression {
-// 	e.variables = append(e.variables, other.Vars()...)
-// 	e.coefficients = append(e.coefficients, other.Coeffs()...)
-// 	e.constant += other.Constant()
-// 	return e
-// }
-
 // // Mult multiplies the current expression to another and returns the
 // // resulting expression
 /*
@@ -376,7 +367,7 @@ func (qe ScalarQuadraticExpression) RewriteInTermsOf(newX VarVector) (ScalarQuad
 	dimX := newX.Len()
 
 	// Create Q matrix of appropriate dimension.
-	newQ := ZerosMatrix(dimX)
+	newQ := ZerosMatrix(dimX, dimX)
 
 	// Create expression
 	var newQE ScalarQuadraticExpression = ScalarQuadraticExpression{

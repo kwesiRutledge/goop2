@@ -39,8 +39,8 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
   - General Function (in operators.go)
   - Methods for
     - Vectors
-      - Vector Constant
       - VarVector
+        - Test the Plus of two VarVectors
       - VectorLinearExpression
 - Introducing Optional Input for Variable Name to Var/VarVector
 - Consider renaming VarVector to VectorVar

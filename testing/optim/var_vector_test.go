@@ -343,3 +343,196 @@ func TestVarVector_Comparison2(t *testing.T) {
 		t.Errorf("There was an error computing a comparison for operator >=: %v", err)
 	}
 }
+
+/*
+TestVarVector_Plus1
+Description:
+
+	Testing the Plus operator between a VarVector and a KVector. Proper sizes were given.
+*/
+func TestVarVector_Plus1(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	k2 := optim.KVector(optim.OnesVector(desLength))
+
+	// Algorithm
+	sum3, err := vec1.Plus(k2)
+	if err != nil {
+		t.Errorf("There was an error computing addition: %v", err)
+	}
+
+	sum3AsVLE, ok := sum3.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf(
+			"There was an issue converting sum3 (type %T) to type optim.VectorLinearExpr.",
+			sum3,
+		)
+	}
+
+	// Check values of the variable vector
+	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				vec1.At(vecIndex),
+			)
+		}
+	}
+
+	// Check the values of the constant vector
+	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.C.AtVec(vecIndex) != k2.AtVec(vecIndex) {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				k2.AtVec(vecIndex),
+			)
+		}
+	}
+}
+
+/*
+TestVarVector_Plus2
+Description:
+
+	Testing the Plus operator between a VarVector and a KVector. Incorrect sizes were given.
+*/
+func TestVarVector_Plus2(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	k2 := optim.KVector(optim.OnesVector(desLength - 1))
+
+	// Algorithm
+	_, err := vec1.Plus(k2)
+	if err == nil {
+		t.Errorf("No error detected in bad vector addition!")
+	}
+
+	if !strings.Contains(err.Error(), "The lengths of two vectors in Plus must match!") {
+		t.Errorf("There was an unexpected error computing addition: %v", err)
+	}
+
+}
+
+/*
+TestVarVector_Plus3
+Description:
+
+	Testing the Plus operator between a VarVector and a KVector. Proper sizes were given.
+*/
+func TestVarVector_Plus3(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	k2 := optim.OnesVector(desLength)
+
+	// Algorithm
+	sum3, err := vec1.Plus(k2)
+	if err != nil {
+		t.Errorf("There was an error computing addition: %v", err)
+	}
+
+	sum3AsVLE, ok := sum3.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf(
+			"There was an issue converting sum3 (type %T) to type optim.VectorLinearExpr.",
+			sum3,
+		)
+	}
+
+	// Check values of the vector
+	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				vec1.At(vecIndex),
+			)
+		}
+	}
+
+	// Check the values of the constant vector
+	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.C.AtVec(vecIndex) != k2.AtVec(vecIndex) {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				k2.AtVec(vecIndex),
+			)
+		}
+	}
+}
+
+/*
+TestVarVector_Plus4
+Description:
+
+	Testing the Plus operator between a VarVector and a VarVector. All vectors are of different sizes.
+*/
+func TestVarVector_Plus4(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	k2 := optim.OnesVector(desLength)
+
+	// Algorithm
+	sum3, err := vec1.Plus(k2)
+	if err != nil {
+		t.Errorf("There was an error computing addition: %v", err)
+	}
+
+	sum3AsVLE, ok := sum3.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf(
+			"There was an issue converting sum3 (type %T) to type optim.VectorLinearExpr.",
+			sum3,
+		)
+	}
+
+	// Check values of the vector
+	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				vec1.At(vecIndex),
+			)
+		}
+	}
+
+	// Check the values of the constant vector
+	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.C.AtVec(vecIndex) != k2.AtVec(vecIndex) {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.At(vecIndex),
+				vecIndex,
+				k2.AtVec(vecIndex),
+			)
+		}
+	}
+}
