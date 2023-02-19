@@ -485,7 +485,7 @@ func TestVarVector_Plus3(t *testing.T) {
 TestVarVector_Plus4
 Description:
 
-	Testing the Plus operator between a VarVector and a VarVector. All vectors are of different sizes.
+	Testing the Plus operator between a VarVector and a VarVector. All vectors are of same size. Some overlap in the variables but not all.
 */
 func TestVarVector_Plus4(t *testing.T) {
 	// Constants
@@ -586,6 +586,126 @@ func TestVarVector_Plus4(t *testing.T) {
 				sum3AsVLE.X.AtVec(vecIndex).ID,
 				vecIndex-vec1.Len(),
 				vec2.AtVec(vecIndex-vec1.Len()),
+			)
+		}
+	}
+
+	// Check the values of the constant vector
+	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.C.AtVec(vecIndex) != 0.0 {
+			t.Errorf(
+				"Expected the value of constant to be zero vector, but sum3.C[%v] = %v!",
+				vecIndex,
+				sum3AsVLE.C.AtVec(vecIndex),
+			)
+		}
+	}
+}
+
+/*
+TestVarVector_Plus5
+Description:
+
+	Testing the Plus operator between a VarVector and a VarVector. All vectors are of the same size.
+	No overlap between elements.
+*/
+func TestVarVector_Plus5(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	vec3 := m.AddVariableVector(desLength)
+
+	// Algorithm
+	sum3, err := vec1.Plus(vec3)
+	if err != nil {
+		t.Errorf("There was an error computing addition: %v", err)
+	}
+
+	sum3AsVLE, ok := sum3.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf(
+			"There was an issue converting sum3 (type %T) to type optim.VectorLinearExpr.",
+			sum3,
+		)
+	}
+
+	// Check values of the vector of variables
+	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE and vec1 match
+		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.AtVec(vecIndex),
+				vecIndex,
+				vec1.AtVec(vecIndex),
+			)
+		}
+	}
+
+	// Check values of the matrix multiplier.
+	for rowIndex := 0; rowIndex < desLength; rowIndex++ {
+		// Get elements as needed.
+		vec1Atr := vec1.AtVec(rowIndex)
+		vec3Atr := vec3.AtVec(rowIndex)
+
+		vec1AtRIndex, _ := optim.FindInSlice(vec1Atr, sum3AsVLE.X.Elements)
+		vec3AtRIndex, _ := optim.FindInSlice(vec3Atr, sum3AsVLE.X.Elements)
+
+		// Iterate through all columns (all variables)
+		for colIndex := 0; colIndex < sum3AsVLE.X.Len(); colIndex++ {
+
+			switch {
+			case (colIndex == vec1AtRIndex) && (vec1AtRIndex == vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 2.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 2.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case (colIndex == vec1AtRIndex) && (vec1AtRIndex != vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 1.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case (colIndex == vec3AtRIndex) && (vec1AtRIndex != vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 1.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			default:
+				// All other elements should be 0.0
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 0.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+
+		}
+	}
+
+	// Check offset vector (should be zeros)
+	for vecIndex := vec1.Len(); vecIndex < vec1.Len()+vec3.Len(); vecIndex++ {
+		// Check that values of sum3AsVLE.X matches vec2 at the appropriate indices.
+		if sum3AsVLE.X.AtVec(vecIndex) != vec3.AtVec(vecIndex-vec1.Len()) {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec2[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.AtVec(vecIndex).ID,
+				vecIndex-vec1.Len(),
+				vec3.AtVec(vecIndex-vec1.Len()),
 			)
 		}
 	}
