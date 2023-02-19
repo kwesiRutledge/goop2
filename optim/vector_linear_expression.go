@@ -129,7 +129,98 @@ Description:
 	Returns an expression which adds the expression e to the vector linear expression at hand.
 */
 func (vle VectorLinearExpr) Plus(e interface{}, extras ...interface{}) (VectorExpression, error) {
-	return vle, fmt.Errorf("The addition method has not yet been implemented!")
+	// Constants
+	vleLen := vle.Len()
+
+	// Input Processing
+
+	// Algorithm
+	switch e.(type) {
+	case KVector:
+		// Cast Variable
+		eAsKV, _ := e.(KVector)
+
+		// Check Length
+		if eAsKV.Len() != vleLen {
+			return vle, fmt.Errorf(
+				"The length of input KVector (%v) did not match the length of the VectorLinearExpr (%v).",
+				eAsKV.Len(),
+				vleLen,
+			)
+		}
+
+		// Algorithm
+		vleOut := vle
+		tempSum, err := KVector(vle.C).Plus(eAsKV)
+		if err != nil {
+			return vle,
+				fmt.Errorf(
+					"There was an issue computing the sum of a KVector with your VectorLinearExpression: %v",
+					err,
+				)
+		}
+		KSum, _ := tempSum.(KVector)
+		vleOut.C = mat.VecDense(KSum)
+
+		// Return
+		return vleOut, nil
+	case VarVector:
+		// Cast VarVector
+		eAsVV, _ := e.(VarVector)
+
+		eAsVLE := VectorLinearExpr{
+			L: Identity(eAsVV.Len()),
+			X: eAsVV,
+			C: ZerosVector(eAsVV.Len()),
+		}
+
+		return vle.Plus(eAsVLE)
+
+	case VectorLinearExpr:
+		// Cast VarVector
+		eAsVLE, _ := e.(VectorLinearExpr)
+
+		// Check Lengths
+		if eAsVLE.Len() != vleLen {
+			return vle,
+				fmt.Errorf(
+					"The length of input VectorLinearExpr (%v) did not match the length of the VectorLinearExpr (%v).",
+					eAsVLE.Len(),
+					vleLen,
+				)
+		}
+
+		// Collect VarVectors from expression and vv
+		combinedVV := VarVector{append(vle.X.Elements, eAsVLE.X.Elements...)}
+		uniqueVV := VarVector{UniqueVars(combinedVV.Elements)}
+
+		// Create Placeholder vle
+		vleOut := vle.RewriteInTermsOf(uniqueVV)
+		eRewrittenVLE := eAsVLE.RewriteInTermsOf(uniqueVV)
+
+		// Add elements of eRewrittenVLE.L to vleOut.L
+		nR, nC := vleOut.L.Dims()
+		for rowIndex := 0; rowIndex < nR; rowIndex++ {
+			for colIndex := 0; colIndex < nC; colIndex++ {
+				vleOut.L.Set(
+					rowIndex, colIndex,
+					vleOut.L.At(rowIndex, colIndex)+eRewrittenVLE.L.At(rowIndex, colIndex),
+				)
+			}
+		}
+
+		// Add elements of eRewrittenVLE.C to vleOut.C
+		for rowIndex := 0; rowIndex < nR; rowIndex++ {
+			vleOut.C.SetVec(
+				rowIndex,
+				vleOut.C.AtVec(rowIndex)+eRewrittenVLE.C.AtVec(rowIndex),
+			)
+		}
+
+		return vleOut, nil
+	default:
+		return vle, fmt.Errorf("The addition method has not yet been implemented!")
+	}
 }
 
 /*
@@ -251,4 +342,45 @@ func (vle VectorLinearExpr) Comparison(rhs interface{}, sense ConstrSense) (Vect
 	default:
 		return VectorConstraint{}, fmt.Errorf("The comparison of vector linear expression %v with object of type %T is not currently supported.", vle, rhs)
 	}
+}
+
+/*
+RewriteInTermsOf
+Description:
+
+	Rewrites the VectorLinearExpression in terms of a new set of variables vv
+
+Assumes:
+
+	vv contains all unique variables.
+	All elements of vle.X are in vv.
+*/
+func (vle VectorLinearExpr) RewriteInTermsOf(vv VarVector) VectorLinearExpr {
+	// Constants
+
+	// Create new empty vle
+	vleOut := VectorLinearExpr{
+		L: ZerosMatrix(vle.Len(), vv.Len()),
+		X: vv,
+		C: vle.C,
+	}
+
+	// Create new L
+	nR, _ := vleOut.L.Dims()
+	for xIndex, tempVar := range vle.X.Elements {
+		// Identify new index of x
+		xIndexInVV, _ := FindInSlice(tempVar, vleOut.X.Elements)
+
+		// Change all columns
+		for rowI := 0; rowI < nR; rowI++ {
+			vleOut.L.Set(
+				rowI, xIndexInVV,
+				vle.L.At(rowI, xIndex),
+			)
+		}
+	}
+
+	// Return new vle
+	return vleOut
+
 }

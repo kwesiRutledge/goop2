@@ -151,31 +151,20 @@ func (vv VarVector) Plus(e interface{}, extras ...interface{}) (VectorExpression
 		// Cast Variable
 		eAsVV, _ := e.(VarVector)
 
-		// Create New Appended vector
-		combinedVV := VarVector{append(vv.Elements, eAsVV.Elements...)}
-		uniqueVV := VarVector{UniqueVars(combinedVV.Elements)}
-
-		// Create Placeholder VLE
-		vleOut := VectorLinearExpr{
-			L: ZerosMatrix(uniqueVV.Len(), uniqueVV.Len()),
-			X: uniqueVV,
-			C: ZerosVector(uniqueVV.Len()),
-		}
-		for dimIndex := 0; dimIndex < vvLen; dimIndex++ {
-			// Extract vv[dimIndex] and eAsVV[dimIndex]
-			vvi := vv.AtVec(dimIndex)
-			eAsVVi := eAsVV.AtVec(dimIndex)
-
-			// Find vvi's index in uniqueVV
-			vviLoc, _ := FindInSlice(vvi, uniqueVV.Elements)
-			vleOut.L.Set(dimIndex, vviLoc, 1.0)
-
-			// Find eAsVVI's index in uniqueVV
-			eAsVViLoc, _ := FindInSlice(eAsVVi, uniqueVV.Elements)
-			vleOut.L.Set(dimIndex, eAsVViLoc, 1.0)
+		// Use VLE based plus
+		eAsVLE := VectorLinearExpr{
+			L: Identity(eAsVV.Len()),
+			X: eAsVV,
+			C: ZerosVector(eAsVV.Len()),
 		}
 
-		return vleOut, nil
+		return vv.Plus(eAsVLE)
+
+	case VectorLinearExpr:
+		// Cast expression
+		eAsVLE, _ := e.(VectorLinearExpr)
+
+		return eAsVLE.Plus(vv)
 
 	default:
 		errString := fmt.Sprintf("Unrecognized expression type %T for addition of VarVector vv.Plus(%v)!", e, e)

@@ -622,3 +622,172 @@ func TestVectorLinearExpression_Len2(t *testing.T) {
 	}
 
 }
+
+/*
+TestVectorLinearExpr_Plus1
+Description:
+
+	Add VectorLinearExpr to a KVector of appropriate length.
+*/
+func TestVectorLinearExpr_Plus1(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	kv1 := optim.KVector(
+		optim.OnesVector(n),
+	)
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: m.AddVariableVector(n),
+		C: optim.ZerosVector(n),
+	}
+
+	// Compute Sum
+	tempSum, err := vle2.Plus(kv1)
+	if err != nil {
+		t.Errorf("There was an issue computing this good addition: %v", err)
+	}
+
+	sumAsVLE, ok := tempSum.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf("Expecting sum to be of type VectorLinearExpr; received %T", tempSum)
+	}
+
+	// Verify the values of C
+	for dimIndex := 0; dimIndex < n; dimIndex++ {
+		if kv1.AtVec(dimIndex) != sumAsVLE.C.AtVec(dimIndex) {
+			t.Errorf("kv1[%v] = %v != %v = sumAsVLE.C[%v]",
+				dimIndex,
+				kv1.AtVec(dimIndex),
+				sumAsVLE.C.AtVec(dimIndex),
+				dimIndex,
+			)
+		}
+	}
+
+	// Verify the values of L
+	nR, nC := sumAsVLE.L.Dims()
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			if rowIndex == colIndex {
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			} else {
+				if sumAsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 0.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+		}
+	}
+}
+
+/*
+TestVectorLinearExpr_Plus2
+Description:
+
+	Add VectorLinearExpr to a KVector of inappropriate length.
+*/
+func TestVectorLinearExpr_Plus2(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	kv1 := optim.KVector(
+		optim.OnesVector(n + 1),
+	)
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: m.AddVariableVector(n),
+		C: optim.ZerosVector(n),
+	}
+
+	// Compute Sum
+	_, err := vle2.Plus(kv1)
+	if err == nil {
+		t.Errorf("There should have been an issue adding together these two vector expressions of different dimension, but none was received!")
+	}
+
+	if !strings.Contains(err.Error(), fmt.Sprintf("The length of input KVector (%v) did not match the length of the VectorLinearExpr (%v).", kv1.Len(), vle2.Len())) {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+}
+
+/*
+TestVectorLinearExpr_Plus3
+Description:
+
+	Add VectorLinearExpr to a KVector of appropriate length.
+	Nonzero offset in VectorLinearExpression.
+*/
+func TestVectorLinearExpr_Plus3(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	kv1 := optim.KVector(
+		optim.OnesVector(n),
+	)
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: m.AddVariableVector(n),
+		C: optim.OnesVector(n),
+	}
+
+	// Compute Sum
+	tempSum, err := vle2.Plus(kv1)
+	if err != nil {
+		t.Errorf("There was an issue computing this good addition: %v", err)
+	}
+
+	sumAsVLE, ok := tempSum.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf("Expecting sum to be of type VectorLinearExpr; received %T", tempSum)
+	}
+
+	// Verify the values of C
+	for dimIndex := 0; dimIndex < n; dimIndex++ {
+		if kv1.AtVec(dimIndex)+1.0 != sumAsVLE.C.AtVec(dimIndex) {
+			t.Errorf("kv1[%v] + 1.0 = %v != %v = sumAsVLE.C[%v]",
+				dimIndex,
+				kv1.AtVec(dimIndex)+1.0,
+				sumAsVLE.C.AtVec(dimIndex),
+				dimIndex,
+			)
+		}
+	}
+
+	// Verify the values of L
+	nR, nC := sumAsVLE.L.Dims()
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			if rowIndex == colIndex {
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			} else {
+				if sumAsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 0.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+		}
+	}
+}

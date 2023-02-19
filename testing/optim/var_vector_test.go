@@ -494,7 +494,7 @@ func TestVarVector_Plus4(t *testing.T) {
 	vec1 := m.AddVariableVector(desLength)
 	vec2 := m.AddVariableVector(desLength - 2)
 	vec3 := optim.VarVector{
-		append(vec2.Elements, vec1.AtVec(2), vec1.AtVec(4)),
+		append(vec2.Elements, vec1.AtVec(0), vec1.AtVec(1)),
 	}
 
 	// Algorithm
@@ -512,11 +512,11 @@ func TestVarVector_Plus4(t *testing.T) {
 	}
 
 	// Check values of the vector of variables
-	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
+	for vecIndex := 0; vecIndex < vec3.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).ID != vec3.AtVec(vecIndex).ID {
 			t.Errorf(
-				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec3[%v] (%v).",
 				vecIndex,
 				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
@@ -577,15 +577,15 @@ func TestVarVector_Plus4(t *testing.T) {
 	}
 
 	// Check offset vector (should be zeros)
-	for vecIndex := vec1.Len(); vecIndex < vec1.Len()+vec2.Len()-2; vecIndex++ {
+	for vecIndex := vec1.Len(); vecIndex < vec1.Len()+vec3.Len()-2; vecIndex++ {
 		// Check that values of sum3AsVLE.X matches vec2 at the appropriate indices.
-		if sum3AsVLE.X.AtVec(vecIndex) != vec2.AtVec(vecIndex-vec1.Len()) {
+		if sum3AsVLE.X.AtVec(vecIndex) != vec1.AtVec(vecIndex-vec3.Len()+2) {
 			t.Errorf(
-				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec2[%v] (%v).",
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
 				sum3AsVLE.X.AtVec(vecIndex).ID,
 				vecIndex-vec1.Len(),
-				vec2.AtVec(vecIndex-vec1.Len()),
+				vec1.AtVec(vecIndex-vec3.Len()),
 			)
 		}
 	}
