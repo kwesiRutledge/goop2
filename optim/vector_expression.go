@@ -60,8 +60,7 @@ type VectorExpression interface {
 	Len() int
 
 	//Multiply
-	// Multiplies the given scalar expression with another expression
-	//Multiply(term1 interface{}) (Expression, error)
+	//AtVec(index int) (ScalarExpression, error)
 }
 
 /*

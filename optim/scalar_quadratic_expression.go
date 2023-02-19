@@ -163,7 +163,7 @@ func (qe ScalarQuadraticExpression) Coeffs() []float64 {
 	var xPairs [][2]uint64
 	for vIIndex, varIndex := range qe.X.IDs() {
 		for vIIndex2 := vIIndex; vIIndex2 < numVars; vIIndex2++ {
-			varIndex2 := qe.X.At(vIIndex2).ID
+			varIndex2 := qe.X.AtVec(vIIndex2).ID
 
 			// Save pairs of indices and the associated coefficients
 			xPairs = append(xPairs, [2]uint64{varIndex, varIndex2})

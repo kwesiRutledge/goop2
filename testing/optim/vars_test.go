@@ -39,10 +39,10 @@ func TestVar_Plus1(t *testing.T) {
 		t.Errorf("Expected sum to have scalar variable, but found %v items.", sumAsSLE.X.Len())
 	}
 
-	if sumAsSLE.X.At(0).ID != x.ID {
+	if sumAsSLE.X.AtVec(0).ID != x.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(0).ID,
+			sumAsSLE.X.AtVec(0).ID,
 			x.ID,
 		)
 	}
@@ -79,18 +79,18 @@ func TestVar_Plus2(t *testing.T) {
 		t.Errorf("Expected sum to have scalar variable, but found %v items.", sumAsSLE.X.Len())
 	}
 
-	if sumAsSLE.X.At(0).ID != x.ID {
+	if sumAsSLE.X.AtVec(0).ID != x.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(0).ID,
+			sumAsSLE.X.AtVec(0).ID,
 			x.ID,
 		)
 	}
 
-	if sumAsSLE.X.At(1).ID != y.ID {
+	if sumAsSLE.X.AtVec(1).ID != y.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(1).ID,
+			sumAsSLE.X.AtVec(1).ID,
 			y.ID,
 		)
 	}
@@ -137,26 +137,26 @@ func TestVar_Plus3(t *testing.T) {
 		t.Errorf("Expected sum to have scalar variable, but found %v items.", sumAsSLE.X.Len())
 	}
 
-	if sumAsSLE.X.At(0).ID != x.ID {
+	if sumAsSLE.X.AtVec(0).ID != x.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(0).ID,
+			sumAsSLE.X.AtVec(0).ID,
 			x.ID,
 		)
 	}
 
-	if sumAsSLE.X.At(1).ID != y.ID {
+	if sumAsSLE.X.AtVec(1).ID != y.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(1).ID,
+			sumAsSLE.X.AtVec(1).ID,
 			y.ID,
 		)
 	}
 
-	if sumAsSLE.X.At(2).ID != z.ID {
+	if sumAsSLE.X.AtVec(2).ID != z.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(2).ID,
+			sumAsSLE.X.AtVec(2).ID,
 			z.ID,
 		)
 	}
@@ -230,26 +230,26 @@ func TestVar_Plus4(t *testing.T) {
 		t.Errorf("Expected sum to have scalar variable, but found %v items.", sumAsSLE.X.Len())
 	}
 
-	if sumAsSLE.X.At(0).ID != x.ID {
+	if sumAsSLE.X.AtVec(0).ID != x.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(0).ID,
+			sumAsSLE.X.AtVec(0).ID,
 			x.ID,
 		)
 	}
 
-	if sumAsSLE.X.At(1).ID != y.ID {
+	if sumAsSLE.X.AtVec(1).ID != y.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(1).ID,
+			sumAsSLE.X.AtVec(1).ID,
 			y.ID,
 		)
 	}
 
-	if sumAsSLE.X.At(2).ID != z.ID {
+	if sumAsSLE.X.AtVec(2).ID != z.ID {
 		t.Errorf(
 			"Expected scalar variable (ID %v) to have same ID as x's ID (%v), but they are different.",
-			sumAsSLE.X.At(2).ID,
+			sumAsSLE.X.AtVec(2).ID,
 			z.ID,
 		)
 	}

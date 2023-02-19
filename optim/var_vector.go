@@ -51,7 +51,7 @@ Description:
 
 	Mirrors the gonum api for vectors. This extracts the element of the variable vector at the index x.
 */
-func (vv VarVector) At(x int) Variable {
+func (vv VarVector) AtVec(x int) Variable {
 	return vv.Elements[x]
 }
 
@@ -163,8 +163,8 @@ func (vv VarVector) Plus(e interface{}, extras ...interface{}) (VectorExpression
 		}
 		for dimIndex := 0; dimIndex < vvLen; dimIndex++ {
 			// Extract vv[dimIndex] and eAsVV[dimIndex]
-			vvi := vv.At(dimIndex)
-			eAsVVi := eAsVV.At(dimIndex)
+			vvi := vv.AtVec(dimIndex)
+			eAsVVi := eAsVV.AtVec(dimIndex)
 
 			// Find vvi's index in uniqueVV
 			vviLoc, _ := FindInSlice(vvi, uniqueVV.Elements)

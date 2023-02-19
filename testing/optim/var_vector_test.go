@@ -61,7 +61,7 @@ func TestVarVector_At1(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	extractedV := vv1.At(1)
+	extractedV := vv1.AtVec(1)
 	if extractedV != y {
 		t.Errorf("Expected for extracted variable, %v, to be the same as %v. They were different!", extractedV, y)
 	}
@@ -84,7 +84,7 @@ func TestVarVector_At2(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	extractedV := vv1.At(1)
+	extractedV := vv1.AtVec(1)
 	extractedV.ID = 100
 
 	if extractedV == y {
@@ -374,13 +374,13 @@ func TestVarVector_Plus1(t *testing.T) {
 	// Check values of the variable vector
 	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
+				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
-				vec1.At(vecIndex),
+				vec1.AtVec(vecIndex),
 			)
 		}
 	}
@@ -392,7 +392,7 @@ func TestVarVector_Plus1(t *testing.T) {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
+				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
 				k2.AtVec(vecIndex),
 			)
@@ -455,13 +455,13 @@ func TestVarVector_Plus3(t *testing.T) {
 	// Check values of the vector
 	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
+				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
-				vec1.At(vecIndex),
+				vec1.AtVec(vecIndex),
 			)
 		}
 	}
@@ -473,7 +473,7 @@ func TestVarVector_Plus3(t *testing.T) {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
+				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
 				k2.AtVec(vecIndex),
 			)
@@ -492,10 +492,13 @@ func TestVarVector_Plus4(t *testing.T) {
 	desLength := 10
 	m := optim.NewModel()
 	vec1 := m.AddVariableVector(desLength)
-	k2 := optim.OnesVector(desLength)
+	vec2 := m.AddVariableVector(desLength - 2)
+	vec3 := optim.VarVector{
+		append(vec2.Elements, vec1.AtVec(2), vec1.AtVec(4)),
+	}
 
 	// Algorithm
-	sum3, err := vec1.Plus(k2)
+	sum3, err := vec1.Plus(vec3)
 	if err != nil {
 		t.Errorf("There was an error computing addition: %v", err)
 	}
@@ -508,16 +511,81 @@ func TestVarVector_Plus4(t *testing.T) {
 		)
 	}
 
-	// Check values of the vector
+	// Check values of the vector of variables
 	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.At(vecIndex).ID != vec1.At(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
+				sum3AsVLE.X.AtVec(vecIndex),
 				vecIndex,
-				vec1.At(vecIndex),
+				vec1.AtVec(vecIndex),
+			)
+		}
+	}
+
+	// Check values of the matrix multiplier.
+	for rowIndex := 0; rowIndex < desLength; rowIndex++ {
+		// Get elements as needed.
+		vec1Atr := vec1.AtVec(rowIndex)
+		vec3Atr := vec3.AtVec(rowIndex)
+
+		vec1AtRIndex, _ := optim.FindInSlice(vec1Atr, sum3AsVLE.X.Elements)
+		vec3AtRIndex, _ := optim.FindInSlice(vec3Atr, sum3AsVLE.X.Elements)
+
+		// Iterate through all columns (all variables)
+		for colIndex := 0; colIndex < sum3AsVLE.X.Len(); colIndex++ {
+
+			switch {
+			case (colIndex == vec1AtRIndex) && (vec1AtRIndex == vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 2.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 2.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case (colIndex == vec1AtRIndex) && (vec1AtRIndex != vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 1.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case (colIndex == vec3AtRIndex) && (vec1AtRIndex != vec3AtRIndex):
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 1.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			default:
+				// All other elements should be 0.0
+				if sum3AsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L(%v,%v) to be 0.0; received %v",
+						rowIndex, colIndex,
+						sum3AsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+
+		}
+	}
+
+	// Check offset vector (should be zeros)
+	for vecIndex := vec1.Len(); vecIndex < vec1.Len()+vec2.Len()-2; vecIndex++ {
+		// Check that values of sum3AsVLE.X matches vec2 at the appropriate indices.
+		if sum3AsVLE.X.AtVec(vecIndex) != vec2.AtVec(vecIndex-vec1.Len()) {
+			t.Errorf(
+				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec2[%v] (%v).",
+				vecIndex,
+				sum3AsVLE.X.AtVec(vecIndex).ID,
+				vecIndex-vec1.Len(),
+				vec2.AtVec(vecIndex-vec1.Len()),
 			)
 		}
 	}
@@ -525,13 +593,11 @@ func TestVarVector_Plus4(t *testing.T) {
 	// Check the values of the constant vector
 	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.C.AtVec(vecIndex) != k2.AtVec(vecIndex) {
+		if sum3AsVLE.C.AtVec(vecIndex) != 0.0 {
 			t.Errorf(
-				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
+				"Expected the value of constant to be zero vector, but sum3.C[%v] = %v!",
 				vecIndex,
-				sum3AsVLE.X.At(vecIndex),
-				vecIndex,
-				k2.AtVec(vecIndex),
+				sum3AsVLE.C.AtVec(vecIndex),
 			)
 		}
 	}

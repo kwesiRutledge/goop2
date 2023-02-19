@@ -37,8 +37,8 @@ func TestOperators_LessEq1(t *testing.T) {
 	}
 
 	for varIndex := 0; varIndex < vec1.Len(); varIndex++ {
-		vec1_i := vec1.At(varIndex)
-		lhs_i := lhsAsVarVector.At(varIndex)
+		vec1_i := vec1.AtVec(varIndex)
+		lhs_i := lhsAsVarVector.AtVec(varIndex)
 		if vec1_i.ID != lhs_i.ID {
 			t.Errorf(
 				"vec1's %v-th element (%v) is different from left hand side's %v-th element (%v).",
