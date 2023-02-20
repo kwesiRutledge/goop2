@@ -51,10 +51,14 @@ func (c K) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (c K) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (c K) Plus(e interface{}, extras ...interface{}) (ScalarExpression, error) {
+	// TODO: Create input processing to:
+	// 			- process errors in the extras slice
+	//			- address extra input expressions in extras
 	switch e.(type) {
 	case K:
-		return K(c.Constant() + e.Constant()), nil
+		eAsK, _ := e.(K)
+		return K(c.Constant() + eAsK.Constant()), nil
 	case Variable:
 		eAsVar := e.(Variable)
 		return eAsVar.Plus(c)

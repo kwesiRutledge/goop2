@@ -50,16 +50,20 @@ func (v Variable) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression.
-func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (v Variable) Plus(e interface{}, extras ...interface{}) (ScalarExpression, error) {
 	// Input Processing??
 
 	// Algorithm
-	vv := VarVector{
-		UniqueVars(append([]Variable{v}, e.Variables()...)),
-	}
 	switch e.(type) {
 	case K:
 		eAsK := e.(K)
+
+		// Organize vector variables
+		vv := VarVector{
+			UniqueVars(append([]Variable{v}, eAsK.Variables()...)),
+		}
+
+		// Return
 		return ScalarLinearExpr{
 			L: OnesVector(1),
 			X: vv,
@@ -68,6 +72,10 @@ func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpress
 	case Variable:
 		// Convert
 		eAsV := e.(Variable)
+
+		vv := VarVector{
+			UniqueVars(append([]Variable{v}, eAsV.Variables()...)),
+		}
 
 		// Check to see if this is the same Variable or a different one
 		if eAsV.ID == v.ID {
@@ -87,6 +95,10 @@ func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpress
 		// Convert
 		eAsSLE := e.(ScalarLinearExpr)
 
+		vv := VarVector{
+			UniqueVars(append([]Variable{v}, eAsSLE.Variables()...)),
+		}
+
 		// Convert SLE to new form
 		e2, _ := eAsSLE.RewriteInTermsOf(vv)
 		vIndex, _ := FindInSlice(v, vv.Elements)
@@ -97,6 +109,10 @@ func (v Variable) Plus(e ScalarExpression, extras ...interface{}) (ScalarExpress
 	case ScalarQuadraticExpression:
 		// Convert
 		eAsQE := e.(ScalarQuadraticExpression)
+
+		vv := VarVector{
+			UniqueVars(append([]Variable{v}, eAsQE.Variables()...)),
+		}
 
 		// Convert QE to new form
 		e2, _ := eAsQE.RewriteInTermsOf(vv)

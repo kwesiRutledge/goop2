@@ -59,12 +59,12 @@ func (sle ScalarLinearExpr) Constant() float64 {
 
 // Plus adds the current expression to another and returns the resulting
 // expression
-func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (sle ScalarLinearExpr) Plus(e interface{}, extras ...interface{}) (ScalarExpression, error) {
 	// Algorithm depends on the type of eIn.
-	switch eIn.(type) {
+	switch e.(type) {
 	case K:
 		// Collect Expression
-		KIn := eIn.(K)
+		KIn := e.(K)
 
 		// Create new expression and add to its constant term
 		sleOut := sle
@@ -73,12 +73,12 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 		return sleOut, nil
 	case Variable:
 		// Collect Expression
-		vIn := eIn.(Variable)
+		vIn := e.(Variable)
 		return vIn.Plus(sle)
 
 	case ScalarLinearExpr:
 		// Collect Expressions
-		linearEIn := eIn.(ScalarLinearExpr)
+		linearEIn := e.(ScalarLinearExpr)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(sle.X.Elements, linearEIn.X.Elements...))
@@ -99,7 +99,7 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 	case ScalarQuadraticExpression:
 
 		//var newQExpr QuadraticExpr = *qe // get copy of e
-		quadraticEIn := eIn.(ScalarQuadraticExpression)
+		quadraticEIn := e.(ScalarQuadraticExpression)
 		//
 		//// Get Combined set of Variables
 		//newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))
@@ -124,7 +124,7 @@ func (sle ScalarLinearExpr) Plus(eIn ScalarExpression, extras ...interface{}) (S
 	default:
 		fmt.Println("Unexpected type given to Plus().")
 
-		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as first argument to Plus as %v.", eIn, eIn)
+		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as first argument to Plus as %v.", e, e)
 	}
 }
 

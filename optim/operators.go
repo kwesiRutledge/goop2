@@ -137,15 +137,85 @@ func Dot(vs []Variable, coeffs []float64) ScalarExpression {
 
 // Sum returns the sum of the given expressions. It creates a new empty
 // expression and adds to it the given expressions.
-func Sum(exprs ...ScalarExpression) (ScalarExpression, error) {
-	sum := NewExpr(0)
-	var err error
-	for _, e := range exprs {
-		sum, err = sum.Plus(e)
-		if err != nil {
-			return sum, fmt.Errorf("Error computing Plus() on %v,%v: %v", sum, e, err)
-		}
+func Sum(exprs ...interface{}) (Expression, error) {
+	// Constants
+
+	// Input Processing
+	// ================
+
+	if !IsExpression(exprs[0]) {
+		return ScalarLinearExpr{}, fmt.Errorf("The first input to Sum must be an expression! Received type %T", exprs[0])
+	}
+	e0, _ := ToExpression(exprs[0])
+
+	if len(exprs) == 1 { // If only one expression was given, then return that.
+		return ToExpression(exprs[0])
 	}
 
-	return sum, nil
+	// Check whether or not the second argument is an error or not.
+	var (
+		e1        interface{}
+		exprIndex int
+		tf        bool
+	)
+	switch exprs[1].(type) {
+	case error:
+		if len(exprs) < 3 {
+			return e0, nil
+		}
+
+		e1AsErr, _ := exprs[1].(error)
+		if e1AsErr != nil {
+			return ScalarLinearExpr{}, fmt.Errorf("An error occurred in the sum: %v", e1AsErr)
+		}
+		tf = IsExpression(exprs[2])
+		if !tf {
+			return ScalarLinearExpr{}, fmt.Errorf("Expected third expression in sum to be an Expression; received %T (%v)", exprs[2], exprs[2])
+		}
+
+		exprIndex = 3
+	case Expression:
+		e1, _ = exprs[1].(Expression)
+		exprIndex = 2
+	case nil:
+		if len(exprs) < 3 {
+			return e0, nil
+		}
+
+		tf = IsExpression(exprs[2])
+		if !tf {
+			return ScalarLinearExpr{}, fmt.Errorf("Expected third expression in sum to be an Expression; received %T (%v)", exprs[2], exprs[2])
+		}
+		e1 = exprs[2]
+		exprIndex = 3
+	default:
+		e1 = ScalarLinearExpr{}
+		return ScalarLinearExpr{}, fmt.Errorf("Unexpected input to Sum %v of type %T", exprs[1], exprs[1])
+	}
+
+	// Recursive call to sum
+	if len(exprs) > exprIndex {
+		tempSum, err := Sum(e0, e1)
+		if err != nil {
+			return e0, fmt.Errorf("Error computing sum between %v and %v: %v", e0, e1, err)
+		}
+
+		var tempInter []interface{} = []interface{}{tempSum, err}
+		tempInter = append(tempInter, exprs[exprIndex:]...)
+		return Sum(tempInter...)
+	}
+
+	// Collect Expression
+	// ==================
+
+	switch e0.(type) {
+	case ScalarExpression:
+		exprAsSE, _ := e0.(ScalarExpression)
+		return exprAsSE.Plus(e1)
+	case VectorExpression:
+		exprAsVE, _ := e0.(VectorExpression)
+		return exprAsVE.Plus(e1)
+	default:
+		return e0, fmt.Errorf("Unexpected type input to Sum: %T", e0)
+	}
 }

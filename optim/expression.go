@@ -27,7 +27,7 @@ type Expression interface {
 
 	//// Plus adds the current expression to another and returns the resulting
 	//// expression
-	//Plus(e Expression, extras interface{}) (Expression, error)
+	// Plus(e Expression, extras interface{}) (Expression, error)
 	//
 	//// Mult multiplies the current expression to another and returns the
 	//// resulting expression
@@ -50,6 +50,20 @@ func ToExpression(eIn interface{}) (Expression, error) {
 	// Constants
 
 	// Algorithm
+
+	// Attempt conversion to float64
+	if eAsFloat, tf := eIn.(float64); tf {
+		return K(eAsFloat), nil
+	}
+
+	if eAsK, tf := eIn.(K); tf {
+		return eAsK, nil
+	}
+
+	if eAsVariable, tf := eIn.(Variable); tf {
+		return eAsVariable, nil
+	}
+
 	switch eIn.(type) {
 	case float64:
 		eAsFloat, _ := eIn.(float64)
@@ -81,4 +95,20 @@ func ToExpression(eIn interface{}) (Expression, error) {
 	default:
 		return K(-1.0), fmt.Errorf("Unexpected type input to ToExpression(): %T", eIn)
 	}
+}
+
+/*
+IsExpression
+Description:
+
+	Tests whether or not the input variable is one of the expression types.
+*/
+func IsExpression(e interface{}) bool {
+	// Constants
+
+	// Checks
+	_, isScalarExpression := e.(ScalarExpression)
+	_, isVectorExpression := e.(VectorExpression)
+
+	return isScalarExpression || isVectorExpression
 }

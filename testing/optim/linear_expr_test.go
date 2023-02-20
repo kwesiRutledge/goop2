@@ -28,14 +28,15 @@ func TestLinearExprCoeffsAndConstant(t *testing.T) {
 		t.Errorf("There was an issue computing the Sum of the expressions: %v", err)
 	}
 
-	for i, coeff := range expr.Coeffs() {
+	exprAsSLE, _ := expr.(optim.ScalarLinearExpr)
+	for i, coeff := range exprAsSLE.Coeffs() {
 		if coeffs[i] != coeff {
 			t.Errorf("Coeff mismatch: %v != %v", coeff, coeffs[i])
 		}
 	}
 
-	if expr.Constant() != constant {
-		t.Errorf("Constant mismatch: %v != %v", expr.Constant(), constant)
+	if exprAsSLE.Constant() != constant {
+		t.Errorf("Constant mismatch: %v != %v", exprAsSLE.Constant(), constant)
 	}
 }
 

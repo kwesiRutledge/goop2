@@ -199,17 +199,17 @@ Description:
 	- A Linear Expression, or
 	- A Constant
 */
-func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interface{}) (ScalarExpression, error) {
+func (qe ScalarQuadraticExpression) Plus(e interface{}, extras ...interface{}) (ScalarExpression, error) {
 	// Constants
 
 	// Algorithm depends
-	switch eIn.(type) {
+	switch e.(type) {
 	//case float64:
 	//	// Call the version of this function for K
 	//	return qe.Plus(K(eIn), extras...)
 	case K:
 		// Convert expression to K type
-		KIn := eIn.(K)
+		KIn := e.(K)
 
 		// Get copy of qe
 		var newQExpr ScalarQuadraticExpression = qe
@@ -220,14 +220,14 @@ func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interfa
 		return newQExpr, nil
 	case Variable:
 		// Convert express to Variable type
-		vIn := eIn.(Variable)
+		vIn := e.(Variable)
 
 		return vIn.Plus(qe)
 
 	case ScalarQuadraticExpression:
 
 		var newQExpr ScalarQuadraticExpression = qe // get copy of e
-		quadraticEIn := eIn.(ScalarQuadraticExpression)
+		quadraticEIn := e.(ScalarQuadraticExpression)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(newQExpr.X.Elements, quadraticEIn.X.Elements...))
@@ -251,7 +251,7 @@ func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interfa
 	case ScalarLinearExpr:
 		// Collect Expressions
 		var newQExpr ScalarQuadraticExpression = qe // get copy of e
-		linearEIn := eIn.(ScalarLinearExpr)
+		linearEIn := e.(ScalarLinearExpr)
 
 		// Get Combined set of Variables
 		newX := UniqueVars(append(newQExpr.X.Elements, linearEIn.X.Elements...))
@@ -270,7 +270,7 @@ func (qe ScalarQuadraticExpression) Plus(eIn ScalarExpression, extras ...interfa
 		newQExprAligned.C += linearEIn.C
 		return newQExprAligned, nil
 	default:
-		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", eIn, eIn)
+		return ScalarQuadraticExpression{}, fmt.Errorf("Unexpected type (%T) given as argument to Plus: %v.", e, e)
 	}
 
 }
