@@ -791,3 +791,242 @@ func TestVectorLinearExpr_Plus3(t *testing.T) {
 		}
 	}
 }
+
+/*
+TestVectorLinearExpr_Plus4
+Description:
+
+	Add VectorLinearExpr to a VarVector of appropriate length.
+*/
+func TestVectorLinearExpr_Plus4(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	vv1 := m.AddVariableVector(n)
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: m.AddVariableVector(n),
+		C: optim.OnesVector(n),
+	}
+
+	// Compute Sum
+	tempSum, err := vle2.Plus(vv1)
+	if err != nil {
+		t.Errorf("There was an issue computing this good addition: %v", err)
+	}
+
+	sumAsVLE, ok := tempSum.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf("Expecting sum to be of type VectorLinearExpr; received %T", tempSum)
+	}
+
+	// Verify the values of C
+	for dimIndex := 0; dimIndex < n; dimIndex++ {
+		if vle2.C.AtVec(dimIndex) != sumAsVLE.C.AtVec(dimIndex) {
+			t.Errorf("kv1[%v] = %v != %v = sumAsVLE.C[%v]",
+				dimIndex,
+				vle2.C.AtVec(dimIndex),
+				sumAsVLE.C.AtVec(dimIndex),
+				dimIndex,
+			)
+		}
+	}
+
+	// Verify the values of L
+	nR, nC := sumAsVLE.L.Dims()
+	if nC != 2*n {
+		t.Errorf("Expected for the number of columns in sum.L (%v) to match 2*n = %v.", nC, 2*n)
+	}
+
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			switch {
+			case rowIndex == colIndex:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case rowIndex+n == colIndex:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			default:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 0.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+		}
+	}
+}
+
+/*
+TestVectorLinearExpr_Plus5
+Description:
+
+	Add VectorLinearExpr to a VarVector of appropriate length.
+*/
+func TestVectorLinearExpr_Plus5(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	vv1 := m.AddVariableVector(n)
+	vle1 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: vv1,
+		C: optim.ZerosVector(n),
+	}
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: vv1,
+		C: optim.OnesVector(n),
+	}
+
+	// Compute Sum
+	tempSum, err := vle2.Plus(vle1)
+	if err != nil {
+		t.Errorf("There was an issue computing this good addition: %v", err)
+	}
+
+	sumAsVLE, ok := tempSum.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf("Expecting sum to be of type VectorLinearExpr; received %T", tempSum)
+	}
+
+	// Verify the values of C
+	for dimIndex := 0; dimIndex < n; dimIndex++ {
+		if vle2.C.AtVec(dimIndex)+vle1.C.AtVec(dimIndex) != sumAsVLE.C.AtVec(dimIndex) {
+			t.Errorf("vle1[%v] + vle2[%v] = %v != %v = sumAsVLE.C[%v]",
+				dimIndex, dimIndex,
+				vle2.C.AtVec(dimIndex)+vle1.C.AtVec(dimIndex),
+				sumAsVLE.C.AtVec(dimIndex),
+				dimIndex,
+			)
+		}
+	}
+
+	// Verify the values of L
+	nR, nC := sumAsVLE.L.Dims()
+	if nC != n {
+		t.Errorf("Expected for the number of columns in sum.L (%v) to match 2*n = %v.", nC, 2*n)
+	}
+
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			switch {
+			case rowIndex == colIndex:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 2.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			default:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 0.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+		}
+	}
+}
+
+/*
+TestVectorLinearExpr_Plus6
+Description:
+
+	Add VectorLinearExpr to a VectorLinearExpression of appropriate length. (But different variables)
+*/
+func TestVectorLinearExpr_Plus6(t *testing.T) {
+	// Constants
+	n := 5
+	m := optim.NewModel()
+
+	vv1 := m.AddVariableVector(n)
+	vle1 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: vv1,
+		C: optim.ZerosVector(n),
+	}
+	vle2 := optim.VectorLinearExpr{
+		L: optim.Identity(n),
+		X: m.AddVariableVector(n),
+		C: optim.OnesVector(n),
+	}
+
+	// Compute Sum
+	tempSum, err := vle2.Plus(vle1)
+	if err != nil {
+		t.Errorf("There was an issue computing this good addition: %v", err)
+	}
+
+	sumAsVLE, ok := tempSum.(optim.VectorLinearExpr)
+	if !ok {
+		t.Errorf("Expecting sum to be of type VectorLinearExpr; received %T", tempSum)
+	}
+
+	// Verify the values of C
+	for dimIndex := 0; dimIndex < n; dimIndex++ {
+		if vle2.C.AtVec(dimIndex)+vle1.C.AtVec(dimIndex) != sumAsVLE.C.AtVec(dimIndex) {
+			t.Errorf("vle1[%v] + vle2[%v] = %v != %v = sumAsVLE.C[%v]",
+				dimIndex, dimIndex,
+				vle2.C.AtVec(dimIndex)+vle1.C.AtVec(dimIndex),
+				sumAsVLE.C.AtVec(dimIndex),
+				dimIndex,
+			)
+		}
+	}
+
+	// Verify the values of L
+	nR, nC := sumAsVLE.L.Dims()
+	if nC != 2*n {
+		t.Errorf("Expected for the number of columns in sum.L (%v) to match 2*n = %v.", nC, 2*n)
+	}
+
+	for rowIndex := 0; rowIndex < nR; rowIndex++ {
+		for colIndex := 0; colIndex < nC; colIndex++ {
+			switch {
+			case rowIndex == colIndex:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			case rowIndex+n == colIndex:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 1.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 1.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			default:
+				if sumAsVLE.L.At(rowIndex, colIndex) != 0.0 {
+					t.Errorf(
+						"Expected L[%v,%v] = 0.0; received %v",
+						rowIndex, colIndex,
+						sumAsVLE.L.At(rowIndex, colIndex),
+					)
+				}
+			}
+		}
+	}
+}

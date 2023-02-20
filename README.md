@@ -37,11 +37,6 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
       - VectorLinearExpression
 - Plus
   - General Function (in operators.go)
-  - Methods for
-    - Vectors
-      - VarVector
-        - Test the Plus of two VarVectors
-      - VectorLinearExpression
 - Introducing Optional Input for Variable Name to Var/VarVector
 - Consider renaming VarVector to VectorVar
 - VarVector
@@ -53,6 +48,7 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
   - Len
 - Decide whether or not we really need the Coeffs() method (What is it doing?)
 - Create function for easily creating MatDense:
-  - zeros matrix 
-  - ones matrices 
-  - (and Identity)
+  - ones matrices
+- Create function for:
+  - IsScalar()
+  - IsVector()

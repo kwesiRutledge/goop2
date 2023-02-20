@@ -1,5 +1,10 @@
 package optim
 
+import (
+	"fmt"
+	"gonum.org/v1/gonum/mat"
+)
+
 /*
 expression.go
 Description:
@@ -22,7 +27,7 @@ type Expression interface {
 
 	//// Plus adds the current expression to another and returns the resulting
 	//// expression
-	//Plus(e Expression) Expression
+	//Plus(e Expression, extras interface{}) (Expression, error)
 	//
 	//// Mult multiplies the current expression to another and returns the
 	//// resulting expression
@@ -39,4 +44,41 @@ type Expression interface {
 	//// Eq returns an equality (==) constraint between the current expression
 	//// and another
 	//Eq(e ScalarExpression) *ScalarConstraint
+}
+
+func ToExpression(eIn interface{}) (Expression, error) {
+	// Constants
+
+	// Algorithm
+	switch eIn.(type) {
+	case float64:
+		eAsFloat, _ := eIn.(float64)
+		return K(eAsFloat), nil
+	case K:
+		eAsK, _ := eIn.(K)
+		return eAsK, nil
+	case Variable:
+		eAsVar, _ := eIn.(Variable)
+		return eAsVar, nil
+	case ScalarLinearExpr:
+		eAsSLE, _ := eIn.(ScalarLinearExpr)
+		return eAsSLE, nil
+	case ScalarQuadraticExpression:
+		eAsSQE, _ := eIn.(ScalarQuadraticExpression)
+		return eAsSQE, nil
+	case mat.VecDense:
+		eAsVD, _ := eIn.(mat.VecDense)
+		return ToExpression(KVector(eAsVD))
+	case KVector:
+		eAsKV, _ := eIn.(KVector)
+		return eAsKV, nil
+	case VarVector:
+		eAsVV, _ := eIn.(VarVector)
+		return eAsVV, nil
+	case VectorLinearExpr:
+		eAsVLE, _ := eIn.(VectorLinearExpr)
+		return eAsVLE, nil
+	default:
+		return K(-1.0), fmt.Errorf("Unexpected type input to ToExpression(): %T", eIn)
+	}
 }
