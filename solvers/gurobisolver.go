@@ -241,7 +241,7 @@ Description:
 
 	Adds a single constraint to the gurobi model object inside of the current GurobiSolver object.
 */
-func (gs *GurobiSolver) AddConstr(constrIn optim.Constraint) error {
+func (gs *GurobiSolver) AddConstraint(constrIn optim.Constraint) error {
 	// Input Checking
 	if !optim.IsConstraint(constrIn) {
 		return fmt.Errorf("The input to AddConstr is not recognized as a constraint!")
@@ -249,29 +249,36 @@ func (gs *GurobiSolver) AddConstr(constrIn optim.Constraint) error {
 
 	// Constants
 
-	// Identify the variables in the left hand side of this constraint
-	var tempVarSlice []*gurobi.Var
-	for _, tempGoopID := range constrIn.LeftHandSide.IDs() {
-		tempGurobiIdx := gs.GoopIDToGurobiIndexMap[tempGoopID]
+	switch constrIn.(type) {
+	case optim.ScalarConstraint:
+		// Cast
+		constrAsSC, _ := constrIn.(optim.ScalarConstraint)
+		// Identify the variables in the left hand side of this constraint
+		var tempVarSlice []*gurobi.Var
+		for _, tempGoopID := range constrAsSC.LeftHandSide.IDs() {
+			tempGurobiIdx := gs.GoopIDToGurobiIndexMap[tempGoopID]
 
-		// Locate the gurobi variable in the current model that has matching ID
-		for _, tempGurobiVar := range gs.CurrentModel.Variables {
-			if tempGurobiIdx == tempGurobiVar.Index {
-				tempVarSlice = append(tempVarSlice, &tempGurobiVar)
+			// Locate the gurobi variable in the current model that has matching ID
+			for _, tempGurobiVar := range gs.CurrentModel.Variables {
+				if tempGurobiIdx == tempGurobiVar.Index {
+					tempVarSlice = append(tempVarSlice, &tempGurobiVar)
+				}
 			}
 		}
-	}
 
-	// Call Gurobi library's AddConstr() function
-	_, err := gs.CurrentModel.AddConstr(
-		tempVarSlice,
-		constrIn.LeftHandSide.Coeffs(),
-		int8(constrIn.Sense),
-		constrIn.RightHandSide.Constant(),
-		fmt.Sprintf("goop Constraint #%v", len(gs.CurrentModel.Constraints)),
-	)
-	if err != nil {
-		return fmt.Errorf("There was an issue with adding the constraint to the gurobi model: %v", err)
+		// Call Gurobi library's AddConstr() function
+		_, err := gs.CurrentModel.AddConstr(
+			tempVarSlice,
+			constrAsSC.LeftHandSide.Coeffs(),
+			int8(constrAsSC.Sense),
+			constrAsSC.RightHandSide.Constant(),
+			fmt.Sprintf("goop Constraint #%v", len(gs.CurrentModel.Constraints)),
+		)
+		if err != nil {
+			return fmt.Errorf("There was an issue with adding the constraint to the gurobi model: %v", err)
+		}
+	default:
+		return fmt.Errorf("Unexpected type of constraint input: %T (%v)", constrIn, constrIn)
 	}
 
 	// Create no errors if there were no errors!
@@ -290,7 +297,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 
 	// Handle this differently for different types of expression inputs
 	switch objExpression.(type) {
-	case *optim.ScalarLinearExpr:
+	case optim.ScalarLinearExpr:
 		gurobiLE := &gurobi.LinExpr{}
 		for varIndex, goopIndex := range objExpression.IDs() {
 			gurobiIndex := gs.GoopIDToGurobiIndexMap[goopIndex]
@@ -316,8 +323,8 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 
 		return nil
 
-	case *optim.QuadraticExpr:
-		objExpressionAsQE := objExpression.(*optim.QuadraticExpr)
+	case optim.ScalarQuadraticExpression:
+		objExpressionAsQE := objExpression.(optim.ScalarQuadraticExpression)
 		gurobiQE := &gurobi.QuadExpr{}
 
 		// Create quadratic part of quadratic expression
@@ -337,7 +344,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 					Index: gurobiIndex2,
 				}
 
-				gurobiQE = gurobiQE.AddQTerm(&tempGurobiVar1, &tempGurobiVar2, objExpressionAsQE.Q[varIndex1][varIndex2])
+				gurobiQE = gurobiQE.AddQTerm(&tempGurobiVar1, &tempGurobiVar2, objExpressionAsQE.Q.At(varIndex1, varIndex2))
 			}
 		}
 
@@ -350,7 +357,7 @@ func (gs *GurobiSolver) SetObjective(objIn optim.Objective) error {
 				Model: gs.CurrentModel,
 				Index: gurobiIndex,
 			}
-			gurobiQE = gurobiQE.AddTerm(&tempGurobiVar, objExpressionAsQE.L[varIndex])
+			gurobiQE = gurobiQE.AddTerm(&tempGurobiVar, objExpressionAsQE.L.AtVec(varIndex))
 		}
 
 		// Create offset

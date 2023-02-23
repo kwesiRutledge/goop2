@@ -206,7 +206,7 @@ func (m *Model) Optimize(solver Solver) (*Solution, error) {
 	solver.AddVariables(m.Variables)
 
 	for _, constr := range m.constrs {
-		solver.AddConstr(constr)
+		solver.AddConstraint(constr)
 	}
 
 	if m.obj != nil {
