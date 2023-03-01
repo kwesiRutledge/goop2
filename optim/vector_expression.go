@@ -59,8 +59,8 @@ type VectorExpression interface {
 	// Len returns the length of the vector expression.
 	Len() int
 
-	//Multiply
-	//AtVec(index int) (ScalarExpression, error)
+	//AtVec returns the expression at a given index
+	AtVec(idx int) ScalarExpression
 }
 
 /*

@@ -51,8 +51,11 @@ Description:
 
 	Mirrors the gonum api for vectors. This extracts the element of the variable vector at the index x.
 */
-func (vv VarVector) AtVec(x int) Variable {
-	return vv.Elements[x]
+func (vv VarVector) AtVec(idx int) ScalarExpression {
+	// Constants
+
+	// Algorithm
+	return vv.Elements[idx]
 }
 
 /*

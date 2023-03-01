@@ -62,7 +62,7 @@ func TestVarVector_At1(t *testing.T) {
 	}
 
 	extractedV := vv1.AtVec(1)
-	if extractedV != y {
+	if extractedV.(optim.Variable) != y {
 		t.Errorf("Expected for extracted variable, %v, to be the same as %v. They were different!", extractedV, y)
 	}
 }
@@ -84,7 +84,7 @@ func TestVarVector_At2(t *testing.T) {
 		Elements: []optim.Variable{x, y},
 	}
 
-	extractedV := vv1.AtVec(1)
+	extractedV := vv1.AtVec(1).(optim.Variable)
 	extractedV.ID = 100
 
 	if extractedV == y {
@@ -374,7 +374,7 @@ func TestVarVector_Plus1(t *testing.T) {
 	// Check values of the variable vector
 	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID != vec1.AtVec(vecIndex).(optim.Variable).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
@@ -388,7 +388,7 @@ func TestVarVector_Plus1(t *testing.T) {
 	// Check the values of the constant vector
 	for vecIndex := 0; vecIndex < sum3AsVLE.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.C.AtVec(vecIndex) != k2.AtVec(vecIndex) {
+		if sum3AsVLE.C.AtVec(vecIndex) != float64(k2.AtVec(vecIndex).(optim.K)) {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as k2[%v] (%v).",
 				vecIndex,
@@ -455,7 +455,7 @@ func TestVarVector_Plus3(t *testing.T) {
 	// Check values of the vector
 	for vecIndex := 0; vecIndex < vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID != vec1.AtVec(vecIndex).(optim.Variable).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
@@ -494,7 +494,7 @@ func TestVarVector_Plus4(t *testing.T) {
 	vec1 := m.AddVariableVector(desLength)
 	vec2 := m.AddVariableVector(desLength - 2)
 	vec3 := optim.VarVector{
-		append(vec2.Elements, vec1.AtVec(0), vec1.AtVec(1)),
+		append(vec2.Elements, vec1.AtVec(0).(optim.Variable), vec1.AtVec(1).(optim.Variable)),
 	}
 
 	// Algorithm
@@ -514,7 +514,7 @@ func TestVarVector_Plus4(t *testing.T) {
 	// Check values of the vector of variables
 	for vecIndex := 0; vecIndex < vec3.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.AtVec(vecIndex).ID != vec3.AtVec(vecIndex).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID != vec3.AtVec(vecIndex).(optim.Variable).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec3[%v] (%v).",
 				vecIndex,
@@ -583,7 +583,7 @@ func TestVarVector_Plus4(t *testing.T) {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.AtVec(vecIndex).ID,
+				sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID,
 				vecIndex-vec1.Len(),
 				vec1.AtVec(vecIndex-vec3.Len()),
 			)
@@ -634,7 +634,7 @@ func TestVarVector_Plus5(t *testing.T) {
 	// Check values of the vector of variables
 	for vecIndex := vec3.Len(); vecIndex < vec3.Len()+vec1.Len(); vecIndex++ {
 		// Check that values of sum3AsVLE and vec1 match
-		if sum3AsVLE.X.AtVec(vecIndex).ID != vec1.AtVec(vecIndex-vec3.Len()).ID {
+		if sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID != vec1.AtVec(vecIndex-vec3.Len()).(optim.Variable).ID {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec1[%v] (%v).",
 				vecIndex,
@@ -703,7 +703,7 @@ func TestVarVector_Plus5(t *testing.T) {
 			t.Errorf(
 				"Expected the value at index in sum3.X[%v] (%v) to be the same as vec2[%v] (%v).",
 				vecIndex,
-				sum3AsVLE.X.AtVec(vecIndex).ID,
+				sum3AsVLE.X.AtVec(vecIndex).(optim.Variable).ID,
 				vecIndex-vec1.Len(),
 				vec3.AtVec(vecIndex),
 			)
@@ -720,5 +720,40 @@ func TestVarVector_Plus5(t *testing.T) {
 				sum3AsVLE.C.AtVec(vecIndex),
 			)
 		}
+	}
+}
+
+/*
+TestVarVector_AtVec1
+Description:
+
+	Testing the At operator on a VarVector object.
+*/
+func TestVarVector_AtVec1(t *testing.T) {
+	// Constants
+	desLength := 10
+	m := optim.NewModel()
+	vec1 := m.AddVariableVector(desLength)
+	idx1 := 2
+
+	// Algorithm
+
+	vec1AtIdx1Casted, tf := vec1.AtVec(idx1).(optim.Variable)
+	if !tf {
+		t.Errorf(
+			"vec1.AtVec(%v) is not of type optim.Variable; instead it is %T",
+			idx1,
+			vec1.AtVec(idx1),
+		)
+	}
+
+	if vec1AtIdx1Casted.ID != vec1.Elements[idx1].ID {
+		t.Errorf(
+			"vec1.AtVec(%v) = %v != %v = vec1.Elements[%v]",
+			idx1,
+			vec1AtIdx1Casted,
+			vec1.Elements[idx1],
+			idx1,
+		)
 	}
 }

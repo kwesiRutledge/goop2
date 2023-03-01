@@ -656,7 +656,7 @@ func TestVectorLinearExpr_Plus1(t *testing.T) {
 
 	// Verify the values of C
 	for dimIndex := 0; dimIndex < n; dimIndex++ {
-		if kv1.AtVec(dimIndex) != sumAsVLE.C.AtVec(dimIndex) {
+		if float64(kv1.AtVec(dimIndex).(optim.K)) != sumAsVLE.C.AtVec(dimIndex) {
 			t.Errorf("kv1[%v] = %v != %v = sumAsVLE.C[%v]",
 				dimIndex,
 				kv1.AtVec(dimIndex),
@@ -757,10 +757,10 @@ func TestVectorLinearExpr_Plus3(t *testing.T) {
 
 	// Verify the values of C
 	for dimIndex := 0; dimIndex < n; dimIndex++ {
-		if kv1.AtVec(dimIndex)+1.0 != sumAsVLE.C.AtVec(dimIndex) {
+		if float64(kv1.AtVec(dimIndex).(optim.K))+1.0 != sumAsVLE.C.AtVec(dimIndex) {
 			t.Errorf("kv1[%v] + 1.0 = %v != %v = sumAsVLE.C[%v]",
 				dimIndex,
-				kv1.AtVec(dimIndex)+1.0,
+				float64(kv1.AtVec(dimIndex).(optim.K))+1.0,
 				sumAsVLE.C.AtVec(dimIndex),
 				dimIndex,
 			)

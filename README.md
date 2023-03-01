@@ -52,3 +52,5 @@ Check out the files in `testing/solvers` for such examples (for example, `lp_sol
 - Create function for:
   - IsScalar()
   - IsVector()
+- VectorConstraint
+  - AtVec()

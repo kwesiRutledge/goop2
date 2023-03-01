@@ -384,3 +384,23 @@ func (vle VectorLinearExpr) RewriteInTermsOf(vv VarVector) VectorLinearExpr {
 	return vleOut
 
 }
+
+/*
+AtVec
+Description:
+*/
+func (vle VectorLinearExpr) AtVec(idx int) ScalarExpression {
+	// Constants
+	Li := vle.L.RowView(idx)
+	LiAsVecDense := Li.(*mat.VecDense)
+
+	// Cast
+	sleOut := ScalarLinearExpr{
+		L: *LiAsVecDense,
+		X: vle.X,
+		C: vle.C.AtVec(idx),
+	}
+
+	return sleOut
+
+}

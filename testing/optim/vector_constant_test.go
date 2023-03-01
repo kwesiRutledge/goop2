@@ -240,12 +240,12 @@ func TestKVector_Plus1(t *testing.T) {
 	}
 
 	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
-		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+vec2.AtVec(dimIndex) {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex).(optim.K)+vec2.AtVec(dimIndex).(optim.K) {
 			t.Errorf(
 				"Expected v3.AtVec(%v) = %v; received %v",
 				dimIndex,
 				vec3.AtVec(dimIndex),
-				vec1.AtVec(dimIndex)+vec2.AtVec(dimIndex),
+				vec1.AtVec(dimIndex).(optim.K)+vec2.AtVec(dimIndex).(optim.K),
 			)
 		}
 	}
@@ -276,12 +276,12 @@ func TestKVector_Plus2(t *testing.T) {
 	}
 
 	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
-		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+f1 {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex).(optim.K)+optim.K(f1) {
 			t.Errorf(
 				"Expected v3.AtVec(%v) = %v; received %v",
 				dimIndex,
 				vec3.AtVec(dimIndex),
-				vec1.AtVec(dimIndex)+f1,
+				vec1.AtVec(dimIndex).(optim.K)+optim.K(f1),
 			)
 		}
 	}
@@ -312,12 +312,12 @@ func TestKVector_Plus3(t *testing.T) {
 	}
 
 	for dimIndex := 0; dimIndex < desLength; dimIndex++ {
-		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex)+float64(f1) {
+		if vec3.AtVec(dimIndex) != vec1.AtVec(dimIndex).(optim.K)+f1 {
 			t.Errorf(
 				"Expected v3.AtVec(%v) = %v; received %v",
 				dimIndex,
 				vec3.AtVec(dimIndex),
-				vec1.AtVec(dimIndex)+float64(f1),
+				vec1.AtVec(dimIndex).(optim.K)+f1,
 			)
 		}
 	}

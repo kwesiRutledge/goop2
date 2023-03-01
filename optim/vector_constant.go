@@ -35,9 +35,14 @@ At
 Description:
 
 	This function returns the value at the k index.
+	(Legacy)
 */
 func (kv KVector) At(i int) float64 {
-	return kv.AtVec(i)
+	// Constants
+	kvI := kv.AtVec(i)
+	kvIAsK := kvI.(K)
+
+	return float64(kvIAsK)
 }
 
 /*
@@ -46,9 +51,9 @@ Description:
 
 	This function returns the value at the k index.
 */
-func (kv KVector) AtVec(i int) float64 {
+func (kv KVector) AtVec(idx int) ScalarExpression {
 	kvAsVector := mat.VecDense(kv)
-	return kvAsVector.AtVec(i)
+	return K(kvAsVector.AtVec(idx))
 }
 
 /*
